@@ -1,1 +1,35 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Book | Rahul Kumar Das</title><link rel="stylesheet" href="styles.css"></head><body><header class="site-header"><div class="container nav-wrap"><a class="brand" href="index.html"><span>Rahul Kumar Das</span><small>Author · Academic · Educator · Researcher</small></a><nav style="display:flex"><a href="books.html">Books</a><a href="library.html">My Library</a></nav></div></header><main class="inner-page"><div class="container split"><div class="cover" id="cover" style="max-width:430px"></div><div><p class="eyebrow">RAHUL KUMAR DAS</p><h1 class="page-title" id="title"></h1><p id="desc"></p><h3>About the Book</h3><p>This product page is ready to be connected to the full CMS, secure PDF storage, reviews and payment system.</p><p class="price" id="price"></p><div class="actions"><a class="btn dark" id="buy">Buy Ebook</a><a class="btn light" href="#">Read Free Sample</a></div></div></div></main><script>let i=new URLSearchParams(location.search).get("i")||0;let b=(JSON.parse(localStorage.getItem("rkd_books")||"null")||[{title:"The Human Need to Be Remembered",desc:"Why we want our lives to matter even after we are gone.",price:299}])[i]||{};title.textContent=b.title;desc.textContent=b.desc;price.textContent="₹"+b.price;cover.textContent=b.title;buy.href="checkout.html?i="+i;</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Book | Rahul Kumar Das</title><link rel="stylesheet" href="styles.css">
+<style>
+.sample{margin-top:45px;max-width:820px;margin-left:auto;margin-right:auto}
+.sample-page{background:#fffdf8;border:1px solid #e6e0d5;padding:30px 34px;margin:18px 0;border-radius:8px;line-height:1.85;box-shadow:0 3px 14px rgba(0,0,0,.04)}
+.sample-page h3{margin-top:0}
+.sample-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.sample-note{color:#777;font-size:14px}
+</style></head>
+<body>
+<header class="site-header"><div class="container nav-wrap"><a class="brand" href="index.html"><span>Rahul Kumar Das</span><small>Author · Academic · Educator · Researcher</small></a><nav style="display:flex"><a href="books.html">Books</a><a href="library.html">My Library</a></nav></div></header>
+<main class="inner-page"><div class="container">
+<div class="split"><div class="cover" id="cover" style="max-width:430px"></div><div><p class="eyebrow">RAHUL KUMAR DAS</p><h1 class="page-title" id="title"></h1><p id="desc"></p><h3>About the Book</h3><p>Explore the book and read a free sample before deciding to purchase it.</p><p class="price" id="price"></p><div class="actions"><a class="btn dark" id="buy">Buy Ebook</a><a class="btn light" href="#sample">Read Sample</a></div></div></div>
+<section class="sample" id="sample"><p class="eyebrow">FREE PREVIEW</p><h2 id="sampleTitle">Read a Sample</h2><p class="sample-note">Read selected pages from this book before purchasing the complete edition.</p><div id="sampleContent"></div></section>
+</div></main>
+<script>
+const i=Number(new URLSearchParams(location.search).get("i")||0);
+const books=JSON.parse(localStorage.getItem("rkd_books")||"null")||[];
+const defaults=[
+{title:"The Human Need to Be Remembered",desc:"Why we want our lives to matter even after we are gone.",price:299,cover:""},
+{title:"The Things We Learn Too Late",desc:"Reflections on the lessons life rarely teaches us early.",price:249,cover:""},
+{title:"The Life We Are Selling",desc:"A reflection on attention, identity, ambition and modern life.",price:299,cover:""},
+{title:"The Human Shadow",desc:"Fear, desire, ego, belonging and the parts of ourselves we hide.",price:299,cover:""}
+];
+const b=books[i]||defaults[i]||defaults[0];
+title.textContent=b.title||"Book";desc.textContent=b.desc||"";price.textContent="₹"+(b.price||0);
+cover.innerHTML=b.cover?'<img src="'+b.cover+'" alt="'+(b.title||"Book cover")+'" style="width:100%;height:100%;object-fit:cover;border-radius:6px">':"<span>"+(b.title||"Book")+"</span>";
+buy.href=b.buyLink||("checkout.html?i="+i);
+sampleTitle.textContent=b.sampleTitle||"Read a Sample";
+const raw=(b.samplePages||"").trim();
+const parts=raw?raw.split(/\n\s*\n/).filter(Boolean):[];
+sampleContent.innerHTML=parts.length?parts.map((p,n)=>'<article class="sample-page"><h3>Sample Page '+(n+1)+'</h3><p>'+p.replace(/\n/g,"<br>")+'</p></article>').join(""):'<div class="sample-page"><p>A free sample has not been added for this book yet.</p></div>';
+</script></body></html>
