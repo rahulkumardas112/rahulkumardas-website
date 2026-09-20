@@ -5,7 +5,7 @@ const defaultBooks=[
  {title:"The Human Shadow",author:"Rahul Kumar Das",desc:"Fear, desire, ego, belonging and the parts of ourselves we hide.",price:299,category:"Books",status:"Published",cover:"",amazon:"",buyLink:"",downloadLink:"",new:true}
 ];
 let rkdBooksCache=defaultBooks;
-async function loadBooks(){try{const d=await new Promise((res,rej)=>{const q=indexedDB.open("rkd_books_v2",1);q.onupgradeneeded=()=>q.result.createObjectStore("books",{keyPath:"id",autoIncrement:true});q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)});const a=await new Promise((res,rej)=>{const q=d.transaction("books","readonly").objectStore("books").getAll();q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)});if(a.length){rkdBooksCache=a;renderBooks()}}catch(e){console.warn(e)}} 
+async function loadBooks(){try{const d=await new Promise((res,rej)=>{const q=indexedDB.open("rkd_books_v2",3);q.onupgradeneeded=()=>q.result.createObjectStore("books",{keyPath:"id",autoIncrement:true});q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)});const a=await new Promise((res,rej)=>{const q=d.transaction("books","readonly").objectStore("books").getAll();q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)});if(a.length){rkdBooksCache=a;renderBooks();document.dispatchEvent(new Event("rkdbooksloaded"))}}catch(e){console.warn(e)}} 
 function getBooks(){return rkdBooksCache}
 function bookCover(b){return b.cover?`<img src="${b.cover}" alt="${b.title}" style="width:100%;height:100%;object-fit:cover;border-radius:6px">`:`<span>${b.title}</span>`}
 function renderBooks(){
