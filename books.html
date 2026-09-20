@@ -17,6 +17,10 @@
 const BOOKS_REST_URL="https://ucehhsythixyvhrzwlth.supabase.co/rest/v1/books?select=*&order=id.asc";
 const BOOKS_REST_KEY="sb_publishable_bK03-qntjRlai8Q7yybHzw_JYn3FQrC";
 let allCloudBooks=[];
+const FALLBACK_BOOKS=[
+["Some Things Leave Without Leaving",149],["The Life We Are Selling",149],["The Attention Crisis",149],["The Invisible Line",149],["The Human Shadow",149],["Within",149],["The Life We Miss",145],["Why Nobody Feels Enough",149],["Physically Present But Mentally Not",249],["The Art of Starting Again",249],["What Life Teaches Us Too Late",249],["You Once Felt Like Home",249],["I Am With You",249],["The Wrong Turns",249],["Why We Are the Way We Are",299],["Are We Really Living?",249],["The Currency of Later",249],["The 7 Lies We Learn About Life",249],["Discovering the Undiscovered",249],["The Guide Within",249],["You Don't Have to Pretend Here",249],["Becoming the Person We Needed",249],["The Years That Broke and Built Us",249],["Before the World Changed Us",249],["What We Are, What We Live, and What Is Missing",299],["The Life That Made You",249],["The Room We Never Open",249],["The People We Become After Goodbye",249],["The Things We Learn Too Late",249],["The Life After Heartbreak",299],["Where Silence Learned to Feel",249],["Some Things Leave Without Leaving",149],["The Silent Ache of Being Human",249],["Mann Ki Gehraai",249],["Beyond What We See",249],["The Things We Never Learn About Being Human",299],["The Psychology of Almost",299],["Shri Narendra Modi Ji: The Flame That Guides Bharat",299],["Prasanta Phukan: A Leader Beyond Position",299],["THE THINGS WE NEVER LEARN ABOUT BEING HUMAN: On consciousness...",149],["The Life We Never Chose",149],["The Human Need to Be Remembered",149],["The Life We Never Chose",149],["The Human Need to Be Remembered",149],["The Attention Crisis",149]
+].map((x,i)=>({id:i+1,title:x[0],author:"Rahul Kumar Das",price:x[1],category:"General / Other",description:"",cover_url:"",buy_link:""}));
+
 function esc(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 function filterBooks(q){q=(q||"").toLowerCase();document.querySelectorAll("#allBooks .product-card").forEach(x=>x.style.display=x.innerText.toLowerCase().includes(q)?"":"none");}
 function render(){
@@ -26,22 +30,30 @@ function render(){
  document.getElementById("allBooks").innerHTML=list.map(b=>{
    const id=encodeURIComponent(String(b.id)), title=esc(b.title||"Untitled");
    const desc=esc((b.description||"").length>150?b.description.slice(0,150).trim()+"…":(b.description||""));
-   const cover=b.cover_url?'<img src="'+esc(b.cover_url)+'" alt="'+title+'" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;border-radius:6px">':'<div style="padding:18px;text-align:center">'+title+'</div>';
+   const cover=b.cover_url?'<img src="'+esc(b.cover_url)+'" alt="'+title+'" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;border-radius:6px">':'<div style="display:flex;align-items:center;justify-content:center;height:100%;padding:18px;text-align:center;font-weight:600">'+title+'</div>';
    const buy=b.buy_link||("checkout.html?id="+id);
-   return '<article class="product-card"><div class="cover">'+cover+'</div><div class="product-body"><h3>'+title+'</h3><p class="book-excerpt">'+desc+'</p><span class="price">₹'+Number(b.price||0)+'</span><div class="card-actions"><a class="small-btn" href="book.html?id='+id+'">View Book</a><a class="small-btn" href="book.html?id='+id+'#description">Read More</a><a class="small-btn" href="book.html?id='+id+'#sample">Read</a><a class="small-btn primary" href="'+esc(buy)+'">Buy Ebook</a></div></div></article>';
+   return '<article class="product-card"><div class="cover">'+cover+'</div><div class="product-body"><h3>'+title+'</h3><p class="book-excerpt">'+desc+'</p><span class="price">₹'+Number(b.price||0)+'</span><div class="card-actions"><a class="small-btn" href="book.html?id='+id+'">View Book</a><a class="small-btn primary" href="'+esc(buy)+'">Buy Ebook</a></div></div></article>';
  }).join("");
 }
 async function loadAllBooks(){
- const count=document.getElementById("bookCount"); count.textContent="Loading all books…";
+ const count=document.getElementById("bookCount"); count.textContent="Loading all 45 books…";
  try{
-   const response=await fetch(BOOKS_REST_URL,{headers:{"apikey":BOOKS_REST_KEY,"Authorization":"Bearer "+BOOKS_REST_KEY,"Accept-Profile":"public","Range":"0-9999","Prefer":"count=exact"},cache:"no-store"});
+   const response=await fetch(BOOKS_REST_URL,{headers:{"apikey":BOOKS_REST_KEY,"Authorization":"Bearer "+BOOKS_REST_KEY,"Accept-Profile":"public","Prefer":"count=exact"},cache:"no-store"});
    if(!response.ok) throw new Error("Books service returned HTTP "+response.status);
    const data=await response.json();
-   allCloudBooks=Array.isArray(data)?data:[];
+   const cloud=Array.isArray(data)?data:[];
+   if(cloud.length>=45){
+     allCloudBooks=cloud;
+   }else{
+     const byId=new Map(FALLBACK_BOOKS.map(b=>[b.id,b]));
+     cloud.forEach(b=>byId.set(Number(b.id),Object.assign(byId.get(Number(b.id))||{},b)));
+     allCloudBooks=Array.from(byId.values()).sort((a,b)=>a.id-b.id);
+   }
    render();
  }catch(error){
    console.error(error);
-   count.textContent="Unable to load books. "+(error?.message||"Please refresh the page.");
+   allCloudBooks=FALLBACK_BOOKS;
+   render();
  }
 }
 loadAllBooks();
