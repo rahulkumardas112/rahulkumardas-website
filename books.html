@@ -16,7 +16,8 @@
 <script>
 const BOOKS_SUPABASE_URL="https://ucehhsythixyvhrzwlth.supabase.co";
 const BOOKS_SUPABASE_KEY="sb_publishable_bK03-qntjRlai8Q7yybHzw_JYn3FQrC";
-const booksClient=window.supabase.createClient(BOOKS_SUPABASE_URL,BOOKS_SUPABASE_KEY);
+const BOOKS_REST_URL="https://ucehhsythixyvhrzwlth.supabase.co/rest/v1/books?select=*&order=id.asc";
+const BOOKS_REST_KEY="sb_publishable_bK03-qntjRlai8Q7yybHzw_JYn3FQrC";
 let allCloudBooks=[];
 function esc(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 function filterBooks(q){q=(q||"").toLowerCase();document.querySelectorAll("#allBooks .product-card").forEach(x=>x.style.display=x.innerText.toLowerCase().includes(q)?"":"none");}
@@ -34,9 +35,18 @@ function render(){
 }
 async function loadAllBooks(){
  const count=document.getElementById("bookCount"); count.textContent="Loading all books…";
- try{const {data,error}=await booksClient.from("books").select("*").order("id",{ascending:true}).range(0,9999);if(error)throw error;allCloudBooks=Array.isArray(data)?data:[];render();}
- catch(error){console.error(error);count.textContent="Unable to load books: "+(error?.message||"Please refresh the page.");}
+ try{
+   const response=await fetch(BOOKS_REST_URL,{headers:{"apikey":BOOKS_REST_KEY,"Authorization":"Bearer "+BOOKS_REST_KEY},cache:"no-store"});
+   if(!response.ok) throw new Error("Books service returned HTTP "+response.status);
+   const data=await response.json();
+   allCloudBooks=Array.isArray(data)?data:[];
+   render();
+   count.textContent=allCloudBooks.length+" books available";
+ }catch(error){
+   console.error(error);
+   count.textContent="Unable to load books. "+(error?.message||"Please refresh the page.");
+ }
 }
-document.getElementById("categoryFilter").addEventListener("change",render);
+
 loadAllBooks();
 </script></body></html>
