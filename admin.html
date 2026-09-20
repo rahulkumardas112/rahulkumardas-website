@@ -32,7 +32,7 @@
 const DB="rkd_books_v2", STORE="books"; let editingId=null, coverFile=null, pdfFile=null;
 const PHOTO_STORE="photos";
 const $=id=>document.getElementById(id);
-function db(){return new Promise((res,rej)=>{const q=indexedDB.open(DB,1);q.onupgradeneeded=()=>{const d=q.result;if(!d.objectStoreNames.contains(STORE))d.createObjectStore(STORE,{keyPath:"id",autoIncrement:true});if(!d.objectStoreNames.contains(PHOTO_STORE))d.createObjectStore(PHOTO_STORE,{keyPath:"id",autoIncrement:true})};q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)})}
+function db(){return new Promise((res,rej)=>{const q=indexedDB.open(DB,2);q.onupgradeneeded=()=>{const d=q.result;if(!d.objectStoreNames.contains(STORE))d.createObjectStore(STORE,{keyPath:"id",autoIncrement:true});if(!d.objectStoreNames.contains(PHOTO_STORE))d.createObjectStore(PHOTO_STORE,{keyPath:"id",autoIncrement:true})};q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)})}
 async function all(){const d=await db();return new Promise((res,rej)=>{const q=d.transaction(STORE,"readonly").objectStore(STORE).getAll();q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)})}
 async function saveBook(b){const d=await db();return new Promise((res,rej)=>{const s=d.transaction(STORE,"readwrite").objectStore(STORE);const q=editingId?s.put({...b,id:editingId}):s.add(b);q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)})}
 async function removeBook(id){const d=await db();return new Promise((res,rej)=>{const q=d.transaction(STORE,"readwrite").objectStore(STORE).delete(id);q.onsuccess=res;q.onerror=()=>rej(q.error)})}
