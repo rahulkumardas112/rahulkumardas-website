@@ -55,6 +55,8 @@
 <label>Price (₹)<input id="price" type="number" min="0" required></label>
 <label>Category<select id="category"><option>Books</option><option>Academic Books</option><option>Notes & Study Materials</option><option>Question Banks</option></select></label>
 <label class="full">Short Description<textarea id="desc" required></textarea></label>
+<label class="full">Free Sample Pages<textarea id="samplePages" placeholder="Paste a few pages or an excerpt here. You can use paragraphs separated by blank lines."></textarea></label>
+<label>Sample Page Title<input id="sampleTitle" placeholder="Read a Sample"></label>
 <label>Amazon Link<input id="amazon" type="url" placeholder="https://..."></label>
 <label>Payment / Buy Link<input id="buyLink" type="url" placeholder="https://..."></label>
 <label>Digital Download Link<input id="downloadLink" type="url" placeholder="https://..."></label>
@@ -93,7 +95,7 @@ cover.onchange=function(){
 };
 
 function resetForm(){
- bookForm.reset();author.value="Rahul Kumar Das";selectedCover="";coverPreview.style.display="none";coverPreview.src="";coverName.textContent="Choose a JPG, PNG or WEBP cover image";
+ bookForm.reset();author.value="Rahul Kumar Das";sampleTitle.value="Read a Sample";selectedCover="";coverPreview.style.display="none";coverPreview.src="";coverName.textContent="Choose a JPG, PNG or WEBP cover image";
  editing=-1;formHeading.textContent="Add New Book";saveBtn.textContent="Save Book";cancelBtn.style.display="none";
 }
 function draw(){
@@ -105,13 +107,13 @@ function draw(){
  subCount.textContent=(JSON.parse(localStorage.getItem("rkd_subscribers")||"[]")).length;
 }
 function editBook(i){
- const b=getBooks()[i];editing=i;title.value=b.title||"";author.value=b.author||"Rahul Kumar Das";price.value=b.price||0;category.value=b.category||"Books";desc.value=b.desc||"";amazon.value=b.amazon||"";buyLink.value=b.buyLink||"";downloadLink.value=b.downloadLink||"";status.value=b.status||"Published";selectedCover=b.cover||"";
+ const b=getBooks()[i];editing=i;title.value=b.title||"";author.value=b.author||"Rahul Kumar Das";price.value=b.price||0;samplePages.value=b.samplePages||"";sampleTitle.value=b.sampleTitle||"Read a Sample";category.value=b.category||"Books";desc.value=b.desc||"";amazon.value=b.amazon||"";buyLink.value=b.buyLink||"";downloadLink.value=b.downloadLink||"";status.value=b.status||"Published";selectedCover=b.cover||"";
  if(selectedCover){coverPreview.src=selectedCover;coverPreview.style.display="block";coverName.textContent="Current cover retained"}else{coverPreview.style.display="none"}
  formHeading.textContent="Edit Book";saveBtn.textContent="Update Book";cancelBtn.style.display="inline-block";window.scrollTo({top:0,behavior:"smooth"});
 }
 function deleteBook(i){if(!confirm("Delete this book?"))return;const a=getBooks();a.splice(i,1);saveBooks(a);draw();if(editing===i)resetForm()}
 bookForm.onsubmit=function(e){
- e.preventDefault();const a=getBooks();const b={title:title.value.trim(),author:author.value.trim()||"Rahul Kumar Das",price:Number(price.value),category:category.value,desc:desc.value.trim(),amazon:amazon.value.trim(),buyLink:buyLink.value.trim(),downloadLink:downloadLink.value.trim(),status:status.value,cover:selectedCover};
+ e.preventDefault();const a=getBooks();const b={title:title.value.trim(),author:author.value.trim()||"Rahul Kumar Das",price:Number(price.value),category:category.value,desc:desc.value.trim(),samplePages:samplePages.value.trim(),sampleTitle:sampleTitle.value.trim()||"Read a Sample",amazon:amazon.value.trim(),buyLink:buyLink.value.trim(),downloadLink:downloadLink.value.trim(),status:status.value,cover:selectedCover};
  if(editing>=0)a[editing]=b;else a.push(b);saveBooks(a);draw();alert(editing>=0?"Book updated successfully.":"Book added successfully.");resetForm();
 };
 cancelBtn.onclick=resetForm;draw();
