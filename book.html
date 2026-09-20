@@ -15,7 +15,7 @@
 <div class="split"><div class="cover" id="cover" style="max-width:430px"></div><div><p class="eyebrow">RAHUL KUMAR DAS</p><h1 class="page-title" id="title"></h1><p id="desc"></p><section id="description" style="margin-top:28px"><h2>About the Book</h2><p id="fullDescription" style="line-height:1.9;white-space:pre-line"></p></section><p>Explore the book and read a free sample before deciding to purchase it.</p><p class="price" id="price"></p><div class="actions"><a class="btn dark" id="buy">Buy Ebook</a><a class="btn light" href="#sample">Read Sample</a></div></div></div>
 <section class="sample" id="sample"><p class="eyebrow">FREE PREVIEW</p><h2 id="sampleTitle">Read a Sample</h2><p class="sample-note">Read selected pages from this book before purchasing the complete edition.</p><div id="sampleContent"></div></section>
 </div></main>
-<script src="app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="cloud-cms.js"></script><script src="app.js"></script>
 <script>
 const i=Number(new URLSearchParams(location.search).get("i")||0);
 function renderBookPage(){
