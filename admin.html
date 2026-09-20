@@ -132,33 +132,37 @@ async function getLocalBooksForMigration(){
     });
   }catch(e){console.warn("Local book migration read failed:",e);return []}
 }
+async function dataUrlToFile(dataUrl,name){
+  if(!dataUrl||typeof dataUrl!="string"||!dataUrl.startsWith("data:"))return null;
+  const r=await fetch(dataUrl);const blob=await r.blob();return new File([blob],name||"upload",{type:blob.type||"application/octet-stream"});
+}
 async function migrateLocalBooksToCloud(){
   const local=await getLocalBooksForMigration();
   if(!local.length)return false;
   const cloud=await rkdCloud.getBooks();
-  if(!cloud.length){
-    await rkdCloud.seedBooks(local);
-    return local.length>0;
-  }
   const byTitle=new Map(cloud.map(b=>[String(b.title||"").trim().toLowerCase(),b]));
   let changed=false;
   for(const b of local){
-    const existing=byTitle.get(String(b.title||"").trim().toLowerCase());
-    if(!existing)continue;
-    const localHasCover=!!b.cover;
-    const localHasPdf=!!b.pdf;
-    const localPrice=Number(b.price||0);
-    const needs=localHasCover||localHasPdf||localPrice!==Number(existing.price||0)||(b.desc||"")!==(existing.desc||"")||(b.amazon||"")!==(existing.amazon||"")||(b.buyLink||"")!==(existing.buyLink||"");
-    if(!needs)continue;
-    await rkdCloud.saveBook({
-      title:b.title,author:b.author||"Rahul Kumar Das",price:localPrice,
-      category:b.category||existing.category||"General / Other",desc:b.desc||"",
-      samplePages:b.samplePages||existing.samplePages||"",amazon:b.amazon||"",
-      buyLink:b.buyLink||"",cover:localHasCover?b.cover:(existing.cover||""),
-      pdf:localHasPdf?b.pdf:(existing.pdf||null),pdfName:b.pdfName||existing.pdfName||"",
-      status:b.status||existing.status||"Published",new:!!b.new
-    },existing.id);
-    changed=true;
+    const key=String(b.title||"").trim().toLowerCase();
+    if(!key)continue;
+    const existing=byTitle.get(key);
+    let cover=existing?.cover||"",pdf=existing?.pdf||null,pdfName=existing?.pdfName||"";
+    if(b.cover){
+      if(/^data:/i.test(b.cover)){const f=await dataUrlToFile(b.cover,(b.title||"book")+"-cover.jpg");if(f)cover=await rkdCloud.upload(f,"covers")}
+      else cover=b.cover;
+    }
+    if(b.pdf){
+      if(/^data:/i.test(b.pdf)){const f=await dataUrlToFile(b.pdf,b.pdfName||((b.title||"book")+".pdf"));if(f)pdf=await rkdCloud.upload(f,"pdf")}
+      else pdf=b.pdf;
+      pdfName=b.pdfName||pdfName||((b.title||"book")+".pdf");
+    }
+    const payload={title:b.title||existing?.title||"Untitled",author:b.author||existing?.author||"Rahul Kumar Das",price:Number(b.price??existing?.price??0),category:b.category||existing?.category||"General / Other",desc:b.desc||existing?.desc||"",samplePages:b.samplePages||existing?.samplePages||"",amazon:b.amazon||existing?.amazon||"",buyLink:b.buyLink||existing?.buyLink||"",cover,pdf,pdfName,status:b.status||existing?.status||"Published",new:!!b.new};
+    if(existing){
+      const needs=payload.cover!==existing.cover||payload.pdf!==existing.pdf||payload.pdfName!==existing.pdfName||payload.price!==Number(existing.price||0)||payload.desc!==existing.desc||payload.amazon!==existing.amazon||payload.buyLink!==existing.buyLink;
+      if(needs){await rkdCloud.saveBook(payload,existing.id);changed=true}
+    }else{
+      const created=await rkdCloud.saveBook(payload,null);const fresh=created?.[0]||created;if(fresh?.id)byTitle.set(key,rkdCloud.mapBook(fresh));changed=true;
+    }
   }
   return changed;
 }
