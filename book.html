@@ -17,20 +17,36 @@
 </div></main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="cloud-cms.js"></script><script src="app.js"></script>
 <script>
-const i=Number(new URLSearchParams(location.search).get("i")||0);
-function renderBookPage(){
- const list=getBooks();
- const b=list[i]||list[0];
- if(!b)return;
- document.title=(b.title||"Book")+" | Rahul Kumar Das";
- document.getElementById("title").textContent=b.title||"Book";
- document.getElementById("desc").textContent=b.desc||"";
- document.getElementById("fullDescription").textContent=b.desc||"Complete description will be added here.";
+const params=new URLSearchParams(location.search);
+const bookId=params.get("id");
+const legacyIndex=Number(params.get("i")||0);
+async function renderBookPage(){
+ try{
+   let list=[];
+   if(window.rkdCloud) list=await rkdCloud.getBooks();
+   if(bookId){
+     const b=list.find(x=>String(x.id)===String(bookId));
+     if(b){renderBook(b);return;}
+     const response=await fetch("https://ucehhsythixyvhrzwlth.supabase.co/rest/v1/books?id=eq."+encodeURIComponent(bookId)+"&select=*",{headers:{"apikey":"sb_publishable_bK03-qntjRlai8Q7yybHzw_JYn3FQrC","Authorization":"Bearer sb_publishable_Bk03-qntjRlai8Q7yybHzw_JYn3FQrC"},cache:"no-store"});
+     if(response.ok){const rows=await response.json();if(rows[0]){renderBook(rows[0]);return;}}
+   }
+   const b=list[legacyIndex]||list[0];
+   if(b) renderBook(b);
+ }catch(e){console.error("Book page load failed:",e);}
+}
+function renderBook(b){
+ const title=b.title||"Book";
+ document.title=title+" | Rahul Kumar Das";
+ document.getElementById("title").textContent=title;
+ document.getElementById("desc").textContent=b.desc||b.description||"";
+ document.getElementById("fullDescription").textContent=b.desc||b.description||"Complete description will be added here.";
  document.getElementById("price").textContent="₹"+(b.price||0);
- document.getElementById("cover").innerHTML=b.cover?'<img src="'+b.cover+'" alt="'+(b.title||"Book cover")+'" style="width:100%;height:100%;object-fit:cover;border-radius:6px">':"<span>"+(b.title||"Book")+"</span>";
- document.getElementById("buy").href=b.buyLink||("checkout.html?i="+i);
+ const cover=b.cover||b.cover_url||"";
+ document.getElementById("cover").innerHTML=cover?'<img src="'+cover+'" alt="'+title.replace(/"/g,"&quot;")+'" style="width:100%;height:100%;object-fit:cover;border-radius:6px">':"<span>"+title+"</span>";
+ const buy=b.buyLink||b.buy_link||("checkout.html?id="+encodeURIComponent(String(b.id)));
+ document.getElementById("buy").href=buy;
  document.getElementById("sampleTitle").textContent=b.sampleTitle||"Read a Sample";
- const raw=(b.samplePages||"").trim();
+ const raw=(b.samplePages||b.sample_pages||"").trim();
  const parts=raw?raw.split(/\n\s*\n/).filter(Boolean):[];
  document.getElementById("sampleContent").innerHTML=parts.length?parts.map((p,n)=>'<article class="sample-page"><h3>Sample Page '+(n+1)+'</h3><p>'+p.replace(/\n/g,"<br>")+'</p></article>').join(""):'<div class="sample-page"><p>A free sample has not been added for this book yet.</p></div>';
 }
