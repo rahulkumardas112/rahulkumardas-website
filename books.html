@@ -12,41 +12,31 @@
 <option>Competitive Exam Books</option><option>Question Banks</option><option>Notes & Study Materials</option><option>UGC NET / SET</option><option>School & College Textbooks</option><option>Reference Books</option><option>Research Reports</option>
 <option>Assam Studies</option><option>North East India</option><option>History</option><option>Political Science</option><option>Sociology</option><option>Language & Literature</option><option>Health & Wellness</option><option>Children's Books</option><option>Digital Guides & Workbooks</option>
 </select></div>
-<div id="bookCount" style="margin:18px 0;font-size:13px;color:#6c665e"></div><div class="product-grid" id="allBooks"></div></div></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="cloud-cms.js"></script><script src="app.js"></script><script>
-function filterBooks(q){
-  q=(q||"").trim().toLowerCase();
-  document.querySelectorAll("#allBooks .product-card").forEach(x=>{
-    x.style.display=x.innerText.toLowerCase().includes(q)?"":"none";
-  });
-}
+<div id="bookCount" style="margin:18px 0;font-size:13px;color:#6c665e"></div><div class="product-grid" id="allBooks"></div></div></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const BOOKS_SUPABASE_URL="https://ucehhsythixyvhrzwlth.supabase.co";
+const BOOKS_SUPABASE_KEY="sb_publishable_bK03-qntjRlai8Q7yybHzw_JYn3FQrC";
+const booksClient=window.supabase.createClient(BOOKS_SUPABASE_URL,BOOKS_SUPABASE_KEY);
+let allCloudBooks=[];
+function esc(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function filterBooks(q){q=(q||"").toLowerCase();document.querySelectorAll("#allBooks .product-card").forEach(x=>x.style.display=x.innerText.toLowerCase().includes(q)?"":"none");}
 function render(){
-  const selected=document.getElementById("categoryFilter").value;
-  const source=Array.isArray(window.rkdBooksCache)?window.rkdBooksCache:[];
-  const list=source.filter(b=>(b.status||"Published")==="Published"&&(selected==="All Categories"||b.category===selected));
-  const el=document.getElementById("allBooks");
-  const count=document.getElementById("bookCount");
-  count.textContent=list.length+" books available";
-  el.innerHTML=list.map(b=>{
-    const id=encodeURIComponent(String(b.id));
-    const title=escapeHtml(b.title||"Untitled");
-    const desc=escapeHtml((b.desc||"").length>150?(b.desc.slice(0,150).trim()+"…"):(b.desc||""));
-    const cover=b.cover?'<img src="'+b.cover+'" alt="'+title+'" style="width:100%;height:100%;object-fit:cover;border-radius:6px">':'<span>'+title+'</span>';
-    const buy=b.buyLink||("checkout.html?id="+id);
-    return '<article class="product-card"><div class="cover">'+cover+'</div><div class="product-body"><h3>'+title+'</h3><p class="book-excerpt">'+desc+'</p><span class="price">₹'+Number(b.price||0)+'</span><div class="card-actions"><a class="small-btn" href="book.html?id='+id+'">View Book</a><a class="small-btn" href="book.html?id='+id+'#description">Read More</a><a class="small-btn" href="book.html?id='+id+'#sample">Read</a><a class="small-btn primary" href="'+buy+'">Buy Ebook</a></div></div></article>';
-  }).join("");
+ const selected=document.getElementById("categoryFilter").value;
+ const list=allCloudBooks.filter(b=>(b.status||"Published")==="Published"&&(selected==="All Categories"||b.category===selected));
+ document.getElementById("bookCount").textContent=list.length+" books available";
+ document.getElementById("allBooks").innerHTML=list.map(b=>{
+   const id=encodeURIComponent(String(b.id)), title=esc(b.title||"Untitled");
+   const desc=esc((b.description||"").length>150?b.description.slice(0,150).trim()+"…":(b.description||""));
+   const cover=b.cover_url?'<img src="'+esc(b.cover_url)+'" alt="'+title+'" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:6px">':'<span>'+title+'</span>';
+   const buy=b.buy_link||("checkout.html?id="+id);
+   return '<article class="product-card"><div class="cover">'+cover+'</div><div class="product-body"><h3>'+title+'</h3><p class="book-excerpt">'+desc+'</p><span class="price">₹'+Number(b.price||0)+'</span><div class="card-actions"><a class="small-btn" href="book.html?id='+id+'">View Book</a><a class="small-btn" href="book.html?id='+id+'#description">Read More</a><a class="small-btn" href="book.html?id='+id+'#sample">Read</a><a class="small-btn primary" href="'+esc(buy)+'">Buy Ebook</a></div></div></article>';
+ }).join("");
 }
-async function loadBooksPage(){
-  try{
-    if(window.rkdCloud){
-      const books=await rkdCloud.getBooks();
-      window.rkdBooksCache=Array.isArray(books)?books:[];
-      render();
-      return;
-    }
-  }catch(e){console.warn("Books page cloud load failed:",e)}
-  window.rkdBooksCache=window.rkdBooksCache||[];
-  render();
+async function loadAllBooks(){
+ const count=document.getElementById("bookCount"); count.textContent="Loading all books…";
+ try{const {data,error}=await booksClient.from("books").select("*").order("id",{ascending:true});if(error)throw error;allCloudBooks=data||[];render();}
+ catch(error){console.error(error);count.textContent="Unable to load books. Please refresh the page.";}
 }
-document.addEventListener("rkdbooksloaded",render);
-loadBooksPage();
-</script></script></body></html>
+document.getElementById("categoryFilter").addEventListener("change",render);
+loadAllBooks();
+</script></body></html>
