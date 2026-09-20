@@ -122,7 +122,55 @@ seedDefaultBooks().then(()=>{render();renderPhotos();loadSettings();renderAnalyt
 (function(){
 let cloudBooks=[];
 async function guard(){const u=await rkdCloud.user();if(!u){location.href="login.html";return null}return u}
-async function cloudLoadBooks(){cloudBooks=await rkdCloud.getBooks();if(!cloudBooks.length&&typeof adminDefaultBooks!=="undefined"){await rkdCloud.seedBooks(adminDefaultBooks);cloudBooks=await rkdCloud.getBooks()}return cloudBooks}
+async function getLocalBooksForMigration(){
+  try{
+    const d=await db();
+    return await new Promise((res,rej)=>{
+      const q=d.transaction(STORE,"readonly").objectStore(STORE).getAll();
+      q.onsuccess=()=>res(q.result||[]);
+      q.onerror=()=>rej(q.error);
+    });
+  }catch(e){console.warn("Local book migration read failed:",e);return []}
+}
+async function migrateLocalBooksToCloud(){
+  const local=await getLocalBooksForMigration();
+  if(!local.length)return false;
+  const cloud=await rkdCloud.getBooks();
+  if(!cloud.length){
+    for(const b of local) await rkdCloud.seedBooks(local);
+    return local.length>0;
+  }
+  const byTitle=new Map(cloud.map(b=>[String(b.title||"").trim().toLowerCase(),b]));
+  let changed=false;
+  for(const b of local){
+    const existing=byTitle.get(String(b.title||"").trim().toLowerCase());
+    if(!existing)continue;
+    const localHasCover=!!b.cover;
+    const localHasPdf=!!b.pdf;
+    const localPrice=Number(b.price||0);
+    const needs=localHasCover||localHasPdf||localPrice!==Number(existing.price||0)||(b.desc||"")!==(existing.desc||"")||(b.amazon||"")!==(existing.amazon||"")||(b.buyLink||"")!==(existing.buyLink||"");
+    if(!needs)continue;
+    await rkdCloud.saveBook({
+      title:b.title,author:b.author||"Rahul Kumar Das",price:localPrice,
+      category:b.category||existing.category||"General / Other",desc:b.desc||"",
+      samplePages:b.samplePages||existing.samplePages||"",amazon:b.amazon||"",
+      buyLink:b.buyLink||"",cover:localHasCover?b.cover:(existing.cover||""),
+      pdf:localHasPdf?b.pdf:(existing.pdf||null),pdfName:b.pdfName||existing.pdfName||"",
+      status:b.status||existing.status||"Published",new:!!b.new
+    },existing.id);
+    changed=true;
+  }
+  return changed;
+}
+async function cloudLoadBooks(){
+  try{await migrateLocalBooksToCloud()}catch(e){console.warn("Book migration skipped:",e)}
+  cloudBooks=await rkdCloud.getBooks();
+  if(!cloudBooks.length&&typeof adminDefaultBooks!=="undefined"){
+    await rkdCloud.seedBooks(adminDefaultBooks);
+    cloudBooks=await rkdCloud.getBooks();
+  }
+  return cloudBooks
+}
 async function cloudRender(){const a=await cloudLoadBooks();count.textContent="("+a.length+")";list.innerHTML=a.length?a.map(b=>'<div class="row">'+(b.cover?'<img class="thumb" src="'+b.cover+'">':'<div class="thumb"></div>')+'<div class="info"><b>'+escapeHtml(b.title)+'</b><br><small>₹'+b.price+' · '+escapeHtml(b.category||"General / Other")+'</small></div><div><button type="button" onclick="cloudEditBook('+b.id+')">Edit</button><button type="button" onclick="cloudDeleteBook('+b.id+')">Delete</button></div></div>').join(""):'<p>No books added yet.</p>'}
 window.cloudEditBook=async id=>{const b=(await rkdCloud.getBooks()).find(x=>x.id===id);if(!b)return;editingId=id;title.value=b.title||"";author.value=b.author||"Rahul Kumar Das";price.value=b.price||0;category.value=b.category||"General / Other";desc.value=b.desc||"";samplePages.value=b.samplePages||"";amazon.value=b.amazon||"";buyLink.value=b.buyLink||"";coverFile=null;pdfFile=null;coverText.textContent=b.cover?"Current cover retained":"Choose cover image";pdfText.textContent=b.pdfName?"Current PDF: "+b.pdfName:"Choose PDF file";preview.src=b.cover||"";preview.style.display=b.cover?"block":"none";heading.textContent="Edit Book";save.textContent="Save Changes";cancel.style.display="inline-block";scrollTo({top:0,behavior:"smooth"})};
 window.cloudDeleteBook=async id=>{if(!confirm("Delete this book?"))return;try{await rkdCloud.deleteBook(id);if(editingId===id)reset();await cloudRender();showSaved("Book deleted successfully.")}catch(e){alert(e.message||"Could not delete the book.")}};
