@@ -65,5 +65,6 @@ function renderBooks(){
    </article>`;
  }).join("");
 }
+function recordRkdVisit(){try{const key="rkd_visit_session";if(sessionStorage.getItem(key))return;sessionStorage.setItem(key,"1");const a=JSON.parse(localStorage.getItem("rkd_visits")||"[]");a.push({date:new Date().toISOString(),path:location.pathname,title:document.title});localStorage.setItem("rkd_visits",JSON.stringify(a))}catch(e){console.warn(e)}}
 function subscribe(e){e.preventDefault();const email=document.getElementById("email").value;let a=JSON.parse(localStorage.getItem("rkd_subscribers")||"[]");a.push(email);localStorage.setItem("rkd_subscribers",JSON.stringify([...new Set(a)]));alert("Thank you for subscribing.");e.target.reset()}
 document.addEventListener("DOMContentLoaded",()=>{renderBooks();loadBooks();const m=document.getElementById("menuBtn");if(m)m.onclick=()=>{document.getElementById("mainNav").style.display=document.getElementById("mainNav").style.display==="flex"?"none":"flex"}});
