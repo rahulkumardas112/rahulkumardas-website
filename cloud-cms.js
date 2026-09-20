@@ -15,8 +15,8 @@ window.rkdCloud={
  async saveBook(b,id){await this.requireUser();const row={title:b.title,author:b.author||"Rahul Kumar Das",price:Number(b.price||0),category:b.category||"General / Other",description:b.desc||"",sample_pages:b.samplePages||"",amazon:b.amazon||"",buy_link:b.buyLink||"",cover_url:b.cover||"",pdf_path:b.pdf||"",pdf_name:b.pdfName||"",status:b.status||"Published",is_new:!!b.new,updated_at:new Date().toISOString()};const r=id?await sb.from("books").update(row).eq("id",id):await sb.from("books").insert(row);if(r.error)throw r.error;return r.data},
  async deleteBook(id){await this.requireUser();const {error}=await sb.from("books").delete().eq("id",id);if(error)throw error},
  async upload(file,folder){await this.requireUser();if(!file)throw new Error("No file selected.");const safe=file.name.toLowerCase().replace(/[^a-z0-9._-]+/g,"-");const path=folder+"/"+Date.now()+"-"+safe;const {error}=await sb.storage.from("website-media").upload(path,file,{upsert:true,contentType:file.type||undefined});if(error)throw error;const {data}=sb.storage.from("website-media").getPublicUrl(path);return data.publicUrl},
- async getPhotos(){const {data,error}=await sb.from("website_photos").select("*").order("id",{ascending:false});if(error)throw error;return data||[]},
- async savePhoto(p){await this.requireUser();const {data,error}=await sb.from("website_photos").insert({title:p.title||"",category:p.category||"Other",image_url:p.image,file_name:p.fileName||""}).select().single();if(error)throw error;return data},
+ async getPhotos(){const {data,error}=await sb.from("website_photos").select("*").order("id",{ascending:false});if(error)throw error;return (data||[]).filter(p=>p.image_url)},
+ async savePhoto(p){await this.requireUser();if(!p.image)throw new Error("Photo URL is missing.");const {data,error}=await sb.from("website_photos").insert({title:p.title||"",category:p.category||"Other",image_url:p.image,file_name:p.fileName||""}).select().single();if(error)throw error;return data},
  async deletePhoto(id){await this.requireUser();const {error}=await sb.from("website_photos").delete().eq("id",id);if(error)throw error}
 };
 })();
