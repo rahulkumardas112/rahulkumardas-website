@@ -22,7 +22,7 @@ function esc(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").
 function filterBooks(q){q=(q||"").toLowerCase();document.querySelectorAll("#allBooks .product-card").forEach(x=>x.style.display=x.innerText.toLowerCase().includes(q)?"":"none");}
 function render(){
  const selected=document.getElementById("categoryFilter").value;
- const list=allCloudBooks.filter(b=>(b.status||"Published")==="Published"&&(selected==="All Categories"||b.category===selected));
+ const list=allCloudBooks.filter(b=>selected==="All Categories"||b.category===selected);
  document.getElementById("bookCount").textContent=list.length+" books available";
  document.getElementById("allBooks").innerHTML=list.map(b=>{
    const id=encodeURIComponent(String(b.id)), title=esc(b.title||"Untitled");
@@ -34,8 +34,8 @@ function render(){
 }
 async function loadAllBooks(){
  const count=document.getElementById("bookCount"); count.textContent="Loading all books…";
- try{const {data,error}=await booksClient.from("books").select("*").order("id",{ascending:true});if(error)throw error;allCloudBooks=data||[];render();}
- catch(error){console.error(error);count.textContent="Unable to load books. Please refresh the page.";}
+ try{const {data,error}=await booksClient.from("books").select("*").order("id",{ascending:true}).range(0,9999);if(error)throw error;allCloudBooks=Array.isArray(data)?data:[];render();}
+ catch(error){console.error(error);count.textContent="Unable to load books: "+(error?.message||"Please refresh the page.");}
 }
 document.getElementById("categoryFilter").addEventListener("change",render);
 loadAllBooks();
