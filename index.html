@@ -177,8 +177,8 @@ window.addEventListener("load",async function(){
   if(!s.id)return;
   const set=(id,v)=>{if(v)document.getElementById(id).textContent=v};
   set("siteEyebrow",s.eyebrow);set("siteTitle",s.title);set("siteHeroCopy",s.heroCopy);set("siteName",s.name);set("siteRole",s.role);set("siteAbout",s.about);set("siteAboutShort",s.about);
-  if(s.aboutSecond)set("siteAboutSecond",s.about_second);
-  if(s.profilePhoto){document.getElementById("profilePhotoBox").innerHTML="<img src='"+s.profile_photo_url+"' alt='"+(s.name||"Rahul Kumar Das")+"'>";document.getElementById("aboutHomePhoto").src=s.profile_photo_url}
+  if(s.aboutSecond)set("siteAboutSecond",s.aboutSecond);
+  if(s.profilePhoto){document.getElementById("profilePhotoBox").innerHTML="<img src=\""+s.profilePhoto+"\" alt=\""+(s.name||"Rahul Kumar Das")+"\">";document.getElementById("aboutHomePhoto").src=s.profilePhoto}
   if(s.coverPhoto){document.getElementById("homeHero").style.backgroundImage='linear-gradient(135deg,rgba(244,240,232,.94),rgba(251,250,247,.96)),url("'+s.cover_photo_url+'")';document.getElementById("homeHero").style.backgroundSize="cover";document.getElementById("homeHero").style.backgroundPosition="center"}
  }catch(e){console.warn(e)}
 });
