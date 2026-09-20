@@ -1,21 +1,24 @@
-Rahul Kumar Das Website
-This version is a working static website prototype.
-Open `index.html` in a browser.
-Open `admin.html` to manage the catalogue.
-Working features
-The public homepage displays books from the local catalogue.
-The Books page has search and category filtering.
-Each book has a detail page.
-The Admin Dashboard can add, edit, delete, publish, hide and feature books.
-You can manually change the title, price, category, description and cover image URL.
-Changes are stored in the browser with localStorage and appear immediately on the public pages in that browser.
-The checkout form records a demo order.
-My Library displays demo purchases.
-The Admin Dashboard displays demo orders and newsletter subscribers.
-The catalogue can be exported as JSON.
-Important before going live
-This is a front end prototype. It does not yet provide real customer authentication, real payment verification or protected ebook downloads.
-For live selling, connect a secure backend, authentication, a payment gateway such as Razorpay, protected ebook storage and server side payment verification. Only issue a protected download link after verified payment.
-Do not place your paid PDF files in the public website folder if you want them protected.
-How to deploy
-The static portion can be uploaded to GitHub Pages, Netlify or Vercel. The live payment, customer account and secure ebook delivery functions should be connected to a backend before accepting payments.
+# Rahul Kumar Das Website
+
+This is a working front-end prototype of the Rahul Kumar Das publishing and academic platform.
+
+## Included
+- Premium responsive homepage
+- Books catalogue
+- Book detail pages
+- Academic Store
+- Notes and study materials
+- Research, Articles, News and About pages
+- Login and My Library interface
+- Checkout flow placeholder
+- Admin Dashboard prototype
+- Editable book title, description and price using browser localStorage
+- Responsive design
+
+## Important
+This prototype is intentionally ready for the next production step. Live payments, secure authentication, protected PDF storage, customer accounts, email delivery and a real database require a backend.
+
+For production, connect the CMS to PostgreSQL/Supabase or another secure database, object storage for ebooks/PDFs, authentication, and a payment gateway such as Razorpay after verifying the current integration requirements.
+
+Open `index.html` to preview the site.
+Open `admin.html` to test the editable book dashboard.
