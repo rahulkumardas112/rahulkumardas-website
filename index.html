@@ -25,7 +25,7 @@
 </header>
 
 <main>
-<section class="hero">
+<section class="hero" id="homeHero">
   <div class="container hero-grid">
     <div>
       <p class="eyebrow" id="siteEyebrow">BOOKS · IDEAS · RESEARCH · LEARNING</p>
@@ -97,10 +97,10 @@
 <script src="app.js"></script><script>
 (function(){
 const DB="rkd_books_v2";
-const defaults={eyebrow:"BOOKS · IDEAS · RESEARCH · LEARNING",title:"A place for the books, ideas and work of Rahul Kumar Das.",heroCopy:"Discover books on life and the human experience, academic resources for learners, and research and writing from an author and educator from Assam.",name:"Rahul Kumar Das",role:"Author · Academic · Educator · Researcher",about:"Rahul Kumar Das is an author, academic and educator from Tinsukia, Assam. He serves as Assistant Professor in the Department of Accountancy at Lakhimpur Commerce College and is associated with academic research at Dibrugarh University.",profilePhoto:""};
+const defaults={eyebrow:"BOOKS · IDEAS · RESEARCH · LEARNING",title:"A place for the books, ideas and work of Rahul Kumar Das.",heroCopy:"Discover books on life and the human experience, academic resources for learners, and research and writing from an author and educator from Assam.",name:"Rahul Kumar Das",role:"Author · Academic · Educator · Researcher",about:"Rahul Kumar Das is an author, academic and educator from Tinsukia, Assam. He serves as Assistant Professor in the Department of Accountancy at Lakhimpur Commerce College and is associated with academic research at Dibrugarh University.",profilePhoto:"",coverPhoto:""};
 function load(){
  const q=indexedDB.open(DB,3);
- q.onsuccess=()=>{const d=q.result;if(!d.objectStoreNames.contains("settings"))return;const t=d.transaction("settings","readonly").objectStore("settings").get("site");t.onsuccess=()=>{const s=Object.assign({},defaults,t.result?t.result.value:{});document.getElementById("siteEyebrow").textContent=s.eyebrow;document.getElementById("siteTitle").textContent=s.title;document.getElementById("siteHeroCopy").textContent=s.heroCopy;document.getElementById("siteName").textContent=s.name;document.getElementById("siteRole").textContent=s.role;document.getElementById("siteAbout").textContent=s.about;document.getElementById("siteAboutShort").textContent=s.about; if(s.profilePhoto){const box=document.getElementById("profilePhotoBox");box.innerHTML='<img src="'+s.profilePhoto+'" alt="'+s.name+'">';box.classList.add("has-profile")}}};
+ q.onsuccess=()=>{const d=q.result;if(!d.objectStoreNames.contains("settings"))return;const t=d.transaction("settings","readonly").objectStore("settings").get("site");t.onsuccess=()=>{const s=Object.assign({},defaults,t.result?t.result.value:{});document.getElementById("siteEyebrow").textContent=s.eyebrow;document.getElementById("siteTitle").textContent=s.title;document.getElementById("siteHeroCopy").textContent=s.heroCopy;document.getElementById("siteName").textContent=s.name;document.getElementById("siteRole").textContent=s.role;document.getElementById("siteAbout").textContent=s.about;document.getElementById("siteAboutShort").textContent=s.about; if(s.profilePhoto){const box=document.getElementById("profilePhotoBox");box.innerHTML='<img src="'+s.profilePhoto+'" alt="'+s.name+'">';box.classList.add("has-profile")}if(s.coverPhoto){document.getElementById("homeHero").style.backgroundImage='linear-gradient(135deg,rgba(244,240,232,.94),rgba(251,250,247,.96)),url("'+s.coverPhoto+'")';document.getElementById("homeHero").style.backgroundSize="cover";document.getElementById("homeHero").style.backgroundPosition="center"}}};
 }
 load();
 })();
