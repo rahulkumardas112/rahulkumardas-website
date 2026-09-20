@@ -3,6 +3,7 @@ const SUPABASE_URL="https://ucehhsythixyvhrzwlth.supabase.co";
 const SUPABASE_KEY="sb_publishable_bK03-qntjRlai8Q7yybHzw_JYn3FQrC";
 window.rkdSupabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const sb=window.rkdSupabase;
+window.escapeHtml=function(value){return String(value==null?"":value).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/\x27/g,"&#39;");};
 window.rkdCloud={
  async user(){const r=await sb.auth.getUser();return r.data.user||null},
  async requireUser(){const u=await this.user();if(!u)throw new Error("Please log in first.");return u},
