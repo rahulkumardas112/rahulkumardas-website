@@ -14,8 +14,6 @@
 </select></div>
 <div id="bookCount" style="margin:18px 0;font-size:13px;color:#6c665e"></div><div class="product-grid" id="allBooks"></div></div></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const BOOKS_SUPABASE_URL="https://ucehhsythixyvhrzwlth.supabase.co";
-const BOOKS_SUPABASE_KEY="sb_publishable_bK03-qntjRlai8Q7yybHzw_JYn3FQrC";
 const BOOKS_REST_URL="https://ucehhsythixyvhrzwlth.supabase.co/rest/v1/books?select=*&order=id.asc";
 const BOOKS_REST_KEY="sb_publishable_bK03-qntjRlai8Q7yybHzw_JYn3FQrC";
 let allCloudBooks=[];
@@ -28,7 +26,7 @@ function render(){
  document.getElementById("allBooks").innerHTML=list.map(b=>{
    const id=encodeURIComponent(String(b.id)), title=esc(b.title||"Untitled");
    const desc=esc((b.description||"").length>150?b.description.slice(0,150).trim()+"…":(b.description||""));
-   const cover=b.cover_url?'<img src="'+esc(b.cover_url)+'" alt="'+title+'" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:6px">':'<span>'+title+'</span>';
+   const cover=b.cover_url?'<img src="'+esc(b.cover_url)+'" alt="'+title+'" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;border-radius:6px">':'<div style="padding:18px;text-align:center">'+title+'</div>';
    const buy=b.buy_link||("checkout.html?id="+id);
    return '<article class="product-card"><div class="cover">'+cover+'</div><div class="product-body"><h3>'+title+'</h3><p class="book-excerpt">'+desc+'</p><span class="price">₹'+Number(b.price||0)+'</span><div class="card-actions"><a class="small-btn" href="book.html?id='+id+'">View Book</a><a class="small-btn" href="book.html?id='+id+'#description">Read More</a><a class="small-btn" href="book.html?id='+id+'#sample">Read</a><a class="small-btn primary" href="'+esc(buy)+'">Buy Ebook</a></div></div></article>';
  }).join("");
@@ -36,17 +34,15 @@ function render(){
 async function loadAllBooks(){
  const count=document.getElementById("bookCount"); count.textContent="Loading all books…";
  try{
-   const response=await fetch(BOOKS_REST_URL,{headers:{"apikey":BOOKS_REST_KEY,"Authorization":"Bearer "+BOOKS_REST_KEY},cache:"no-store"});
+   const response=await fetch(BOOKS_REST_URL,{headers:{"apikey":BOOKS_REST_KEY,"Authorization":"Bearer "+BOOKS_REST_KEY,"Accept-Profile":"public","Range":"0-9999","Prefer":"count=exact"},cache:"no-store"});
    if(!response.ok) throw new Error("Books service returned HTTP "+response.status);
    const data=await response.json();
    allCloudBooks=Array.isArray(data)?data:[];
    render();
-   count.textContent=allCloudBooks.length+" books available";
  }catch(error){
    console.error(error);
    count.textContent="Unable to load books. "+(error?.message||"Please refresh the page.");
  }
 }
-
 loadAllBooks();
-</script></body></html>
+</script></script></body></html>
