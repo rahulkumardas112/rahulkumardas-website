@@ -8,3 +8,15 @@
 .portrait-placeholder.has-profile img{width:auto!important;height:auto!important;max-width:min(100%,420px)!important;max-height:560px!important;object-fit:contain!important;display:block!important;border-radius:0!important}
 .about-photo-box{width:auto!important;height:auto!important;aspect-ratio:auto!important;background:transparent!important;border:0!important;overflow:visible!important;padding:0!important;display:flex!important;align-items:flex-start!important;justify-content:flex-start!important}
 .about-photo-box img{width:auto!important;height:auto!important;max-width:100%!important;max-height:560px!important;object-fit:contain!important;border-radius:0!important;display:block!important}
+
+<style id="homepage-author-photo-layout">
+/* Homepage author photo layout */
+.hero-card{display:flex;flex-direction:column;align-items:center;text-align:center}
+.hero-card .about-photo-box{order:1;margin:0 auto 20px}
+.hero-card .hero-card-caption{order:2;align-items:center;text-align:center;padding-top:0}
+.hero-card .hero-card-caption strong{display:block}
+.hero-card .hero-card-caption span{display:block}
+.hero-card .hero-about-text{max-width:520px;margin:12px auto 18px}
+.hero-card .hero-read-more{margin:0 auto}
+.hero-card .photo-edit-link{margin-top:10px}
+</style>
