@@ -36,7 +36,7 @@
     </div>
     <div class="hero-card">
       <div class="portrait-placeholder about-photo-box" id="profilePhotoBox"><span>RKD</span></div>
-      <div class="hero-card-caption"><strong id="siteName">Rahul Kumar Das</strong><span id="siteRole">Author · Academic · Educator · Researcher</span><a class="photo-edit-link" href="admin.html#profile-photo">Upload / Change Profile Photo</a></div>
+      <div class="hero-card-caption"><strong id="siteName">Rahul Kumar Das</strong><span id="siteRole">Author · Academic · Educator · Researcher</span><p class="hero-about-text" id="siteAboutShort">Rahul Kumar Das is an author, academic and educator from Tinsukia, Assam. He serves as Assistant Professor in the Department of Accountancy at Lakhimpur Commerce College and is associated with academic research at Dibrugarh University.</p><a class="btn dark hero-read-more" href="about.html">Read More About Me</a><a class="photo-edit-link" href="admin.html#profile-photo">Upload / Change Profile Photo</a></div>
     </div>
   </div>
 </section>
@@ -100,7 +100,7 @@ const DB="rkd_books_v2";
 const defaults={eyebrow:"BOOKS · IDEAS · RESEARCH · LEARNING",title:"A place for the books, ideas and work of Rahul Kumar Das.",heroCopy:"Discover books on life and the human experience, academic resources for learners, and research and writing from an author and educator from Assam.",name:"Rahul Kumar Das",role:"Author · Academic · Educator · Researcher",about:"Rahul Kumar Das is an author, academic and educator from Tinsukia, Assam. He serves as Assistant Professor in the Department of Accountancy at Lakhimpur Commerce College and is associated with academic research at Dibrugarh University.",profilePhoto:""};
 function load(){
  const q=indexedDB.open(DB,3);
- q.onsuccess=()=>{const d=q.result;if(!d.objectStoreNames.contains("settings"))return;const t=d.transaction("settings","readonly").objectStore("settings").get("site");t.onsuccess=()=>{const s=Object.assign({},defaults,t.result?t.result.value:{});document.getElementById("siteEyebrow").textContent=s.eyebrow;document.getElementById("siteTitle").textContent=s.title;document.getElementById("siteHeroCopy").textContent=s.heroCopy;document.getElementById("siteName").textContent=s.name;document.getElementById("siteRole").textContent=s.role;document.getElementById("siteAbout").textContent=s.about;if(s.profilePhoto){const box=document.getElementById("profilePhotoBox");box.innerHTML='<img src="'+s.profilePhoto+'" alt="'+s.name+'">';box.classList.add("has-profile")}}};
+ q.onsuccess=()=>{const d=q.result;if(!d.objectStoreNames.contains("settings"))return;const t=d.transaction("settings","readonly").objectStore("settings").get("site");t.onsuccess=()=>{const s=Object.assign({},defaults,t.result?t.result.value:{});document.getElementById("siteEyebrow").textContent=s.eyebrow;document.getElementById("siteTitle").textContent=s.title;document.getElementById("siteHeroCopy").textContent=s.heroCopy;document.getElementById("siteName").textContent=s.name;document.getElementById("siteRole").textContent=s.role;document.getElementById("siteAbout").textContent=s.about;document.getElementById("siteAboutShort").textContent=s.about; if(s.profilePhoto){const box=document.getElementById("profilePhotoBox");box.innerHTML='<img src="'+s.profilePhoto+'" alt="'+s.name+'">';box.classList.add("has-profile")}}};
 }
 load();
 })();
