@@ -41,42 +41,52 @@ const defaultBooks=[
 ];
 let rkdBooksCache=[];
 async function loadBooks(){
- try{
-   let books=[];
-   if(window.rkdCloud){
-     try{books=await rkdCloud.getBooks()}catch(e){console.warn("Supabase book load failed:",e)}
-   }
-   if(!books.length && window.rkdSupabase){
-     try{
-       const {data,error}=await rkdSupabase.from("books").select("*").order("id",{ascending:true});
-       if(error)throw error;
-       books=(data||[]).map(b=>({id:b.id,title:b.title,author:b.author||"Rahul Kumar Das",price:Number(b.price||0),category:b.category||"General / Other",desc:b.description||"",samplePages:b.sample_pages||"",amazon:b.amazon||"",buyLink:b.buy_link||"",cover:b.cover_url||"",pdf:b.pdf_path||null,pdfName:b.pdf_name||"",status:b.status||"Published",new:!!b.is_new}));
-     }catch(e){console.warn("Direct Supabase book load failed:",e)}
-   }
-   rkdBooksCache=books;
-   renderBooks();
-   document.dispatchEvent(new Event("rkdbooksloaded"));
- }catch(e){console.warn("Book loading failed:",e);rkdBooksCache=[];renderBooks()}
+  try{
+    let books=[];
+    const url="https://ucehhsythixyvhrzwlth.supabase.co/rest/v1/books?select=*&order=id.asc";
+    const headers={"apikey":"sb_publishable_bK03-qntjRlai8Q7yybHzw_JYn3FQrC","Authorization":"Bearer sb_publishable_bK03-qntjRlai8Q7yybHzw_JYn3FQrC"};
+    try{
+      const response=await fetch(url,{headers,cache:"no-store"});
+      if(!response.ok) throw new Error("Books API returned "+response.status);
+      const data=await response.json();
+      books=(Array.isArray(data)?data:[]).map(b=>({
+        id:b.id,title:b.title,author:b.author||"Rahul Kumar Das",price:Number(b.price||0),
+        category:b.category||"General / Other",desc:b.description||"",samplePages:b.sample_pages||"",
+        amazon:b.amazon||"",buyLink:b.buy_link||"",cover:b.cover_url||"",pdf:b.pdf_path||null,
+        pdfName:b.pdf_name||"",status:b.status||"Published",new:!!b.is_new
+      }));
+    }catch(e){
+      console.warn("Direct cloud book catalogue load failed:",e);
+      if(window.rkdCloud) books=await rkdCloud.getBooks();
+    }
+    rkdBooksCache=books;
+    renderBooks();
+    document.dispatchEvent(new Event("rkdbooksloaded"));
+  }catch(e){
+    console.warn("Book loading failed:",e);
+    rkdBooksCache=[];
+    renderBooks();
+  }
 }
 function getBooks(){return rkdBooksCache}
 function bookCover(b){return b.cover?'<img src="'+b.cover+'" alt="'+b.title+'" style="width:100%;height:100%;object-fit:cover;border-radius:6px">':'<span>'+b.title+'</span>'}
 function renderBooks(){
  const grid=document.getElementById("bookGrid");
  if(!grid)return;
- const books=getBooks().filter(b=>(b.status||"Published")==="Published");
+ const books=getBooks();
  grid.innerHTML=books.map((b,i)=>{
    const short=(b.desc||"").trim();
    const excerpt=short.length>100?short.slice(0,100).trim()+"…":short;
    return `<article class="product-card">
-     <a href="book.html?i=${i}" aria-label="View ${b.title}"><div class="cover">${bookCover(b)}</div></a>
+     <a href="book.html?id=${encodeURIComponent(String(b.id))}" aria-label="View ${b.title}"><div class="cover">${bookCover(b)}</div></a>
      <div class="product-body">
-       <h3><a href="book.html?i=${i}" style="text-decoration:none;color:inherit">${b.title}</a></h3>
+       <h3><a href="book.html?id=${encodeURIComponent(String(b.id))}" style="text-decoration:none;color:inherit">${b.title}</a></h3>
        <p>${excerpt}</p>
-       <a class="text-link" href="book.html?i=${i}#description">Read More →</a>
+       <a class="text-link" href="book.html?id=${encodeURIComponent(String(b.id))}#description">Read More →</a>
        <span class="price">₹${b.price}</span>
        <div class="card-actions">
-         <a class="small-btn" href="book.html?i=${i}">View Book</a>
-         <a class="small-btn primary" href="${b.buyLink||("checkout.html?i="+i)}">Buy Ebook</a>
+         <a class="small-btn" href="book.html?id=${encodeURIComponent(String(b.id))}">View Book</a>
+         <a class="small-btn primary" href="${b.buyLink||("checkout.html?id="+encodeURIComponent(String(b.id)))}">Buy Ebook</a>
        </div>
      </div>
    </article>`;
