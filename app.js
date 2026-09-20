@@ -49,7 +49,7 @@ function renderBooks(){
  const books=getBooks().filter(b=>(b.status||"Published")==="Published");
  grid.innerHTML=books.map((b,i)=>{
    const short=(b.desc||"").trim();
-   const excerpt=short.length>170?short.slice(0,170).trim()+"…":short;
+   const excerpt=short.length>100?short.slice(0,100).trim()+"…":short;
    return `<article class="product-card">
      <a href="book.html?i=${i}" aria-label="View ${b.title}"><div class="cover">${bookCover(b)}</div></a>
      <div class="product-body">
