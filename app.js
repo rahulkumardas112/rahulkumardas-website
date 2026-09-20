@@ -40,7 +40,24 @@ const defaultBooks=[
  {title:"Prasanta Phukan: A Leader Beyond Position",author:"Rahul Kumar Das",desc:"A tribute to leadership, public service and work beyond formal position.",price:299,category:"Books",status:"Published",cover:"",amazon:"",buyLink:"",downloadLink:"",new:false}
 ];
 let rkdBooksCache=[];
-async function loadBooks(){try{if(window.rkdCloud){const a=await rkdCloud.getBooks();if(a.length){rkdBooksCache=a;renderBooks();document.dispatchEvent(new Event("rkdbooksloaded"));return}}const d=await new Promise((res,rej)=>{const q=indexedDB.open("rkd_books_v2",4);q.onupgradeneeded=()=>{const db=q.result;if(!db.objectStoreNames.contains("books"))db.createObjectStore("books",{keyPath:"id",autoIncrement:true});if(!db.objectStoreNames.contains("photos"))db.createObjectStore("photos",{keyPath:"id",autoIncrement:true});if(!db.objectStoreNames.contains("settings"))db.createObjectStore("settings",{keyPath:"key"})};q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)});const a=await new Promise((res,rej)=>{const q=d.transaction("books","readonly").objectStore("books").getAll();q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)});if(a.length){rkdBooksCache=a;renderBooks();document.dispatchEvent(new Event("rkdbooksloaded"))}}catch(e){console.warn(e)}}
+async function loadBooks(){
+ try{
+   let books=[];
+   if(window.rkdCloud){
+     try{books=await rkdCloud.getBooks()}catch(e){console.warn("Supabase book load failed:",e)}
+   }
+   if(!books.length && window.rkdSupabase){
+     try{
+       const {data,error}=await rkdSupabase.from("books").select("*").order("id",{ascending:true});
+       if(error)throw error;
+       books=(data||[]).map(b=>({id:b.id,title:b.title,author:b.author||"Rahul Kumar Das",price:Number(b.price||0),category:b.category||"General / Other",desc:b.description||"",samplePages:b.sample_pages||"",amazon:b.amazon||"",buyLink:b.buy_link||"",cover:b.cover_url||"",pdf:b.pdf_path||null,pdfName:b.pdf_name||"",status:b.status||"Published",new:!!b.is_new}));
+     }catch(e){console.warn("Direct Supabase book load failed:",e)}
+   }
+   rkdBooksCache=books;
+   renderBooks();
+   document.dispatchEvent(new Event("rkdbooksloaded"));
+ }catch(e){console.warn("Book loading failed:",e);rkdBooksCache=[];renderBooks()}
+}
 function getBooks(){return rkdBooksCache}
 function bookCover(b){return b.cover?'<img src="'+b.cover+'" alt="'+b.title+'" style="width:100%;height:100%;object-fit:cover;border-radius:6px">':'<span>'+b.title+'</span>'}
 function renderBooks(){
