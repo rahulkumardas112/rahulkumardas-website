@@ -43,6 +43,27 @@ let rkdBooksCache=defaultBooks;
 async function loadBooks(){try{const d=await new Promise((res,rej)=>{const q=indexedDB.open("rkd_books_v2",4);q.onupgradeneeded=()=>{const db=q.result;if(!db.objectStoreNames.contains("books"))db.createObjectStore("books",{keyPath:"id",autoIncrement:true});if(!db.objectStoreNames.contains("photos"))db.createObjectStore("photos",{keyPath:"id",autoIncrement:true});if(!db.objectStoreNames.contains("settings"))db.createObjectStore("settings",{keyPath:"key"})};q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)});const a=await new Promise((res,rej)=>{const q=d.transaction("books","readonly").objectStore("books").getAll();q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)});if(a.length){rkdBooksCache=[...a,...defaultBooks.filter(def=>!a.some(x=>x.title===def.title))];renderBooks();document.dispatchEvent(new Event("rkdbooksloaded"))}}catch(e){console.warn(e)}}
 function getBooks(){return rkdBooksCache}
 function bookCover(b){return b.cover?'<img src="'+b.cover+'" alt="'+b.title+'" style="width:100%;height:100%;object-fit:cover;border-radius:6px">':'<span>'+b.title+'</span>'}
-function renderBooks(){const grid=document.getElementById("bookGrid");if(!grid)return;grid.innerHTML=getBooks().filter(b=>(b.status||"Published")==="Published").map((b,i)=>'<article class="product-card"><div class="cover">'+bookCover(b)+'</div><div class="product-body"><h3>'+b.title+'</h3><p>'+b.desc+'</p><span class="price">₹'+b.price+'</span><div class="card-actions"><a class="small-btn" href="book.html?i='+i+'">View</a><a class="small-btn primary" href="'+(b.buyLink||("checkout.html?i="+i))+'">Buy Ebook</a></div></div></article>').join("")}
+function renderBooks(){
+ const grid=document.getElementById("bookGrid");
+ if(!grid)return;
+ const books=getBooks().filter(b=>(b.status||"Published")==="Published");
+ grid.innerHTML=books.map((b,i)=>{
+   const short=(b.desc||"").trim();
+   const excerpt=short.length>170?short.slice(0,170).trim()+"…":short;
+   return `<article class="product-card">
+     <a href="book.html?i=${i}" aria-label="View ${b.title}"><div class="cover">${bookCover(b)}</div></a>
+     <div class="product-body">
+       <h3><a href="book.html?i=${i}" style="text-decoration:none;color:inherit">${b.title}</a></h3>
+       <p>${excerpt}</p>
+       <a class="text-link" href="book.html?i=${i}#description">Read More →</a>
+       <span class="price">₹${b.price}</span>
+       <div class="card-actions">
+         <a class="small-btn" href="book.html?i=${i}">View Book</a>
+         <a class="small-btn primary" href="${b.buyLink||("checkout.html?i="+i)}">Buy Ebook</a>
+       </div>
+     </div>
+   </article>`;
+ }).join("");
+}
 function subscribe(e){e.preventDefault();const email=document.getElementById("email").value;let a=JSON.parse(localStorage.getItem("rkd_subscribers")||"[]");a.push(email);localStorage.setItem("rkd_subscribers",JSON.stringify([...new Set(a)]));alert("Thank you for subscribing.");e.target.reset()}
 document.addEventListener("DOMContentLoaded",()=>{renderBooks();loadBooks();const m=document.getElementById("menuBtn");if(m)m.onclick=()=>{document.getElementById("mainNav").style.display=document.getElementById("mainNav").style.display==="flex"?"none":"flex"}});
