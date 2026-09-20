@@ -19,11 +19,20 @@
 <label class="full">Ebook PDF<div class="coverbox"><input id="pdf" type="file" accept="application/pdf"><span id="pdfText">Choose PDF file</span></div></label>
 <div class="full btns"><button class="btn dark" type="submit" id="save">Add Book</button><button class="btn" type="button" id="cancel" style="display:none">Cancel Edit</button></div>
 </form></section>
-<section class="admin-card"><h2>Your Books <span id="count"></span></h2><div id="list" class="books-list"></div></section></main>
+<section class="admin-card"><h2>Your Books <span id="count"></span></h2><div id="list" class="books-list"></div></section>
+<section class="admin-card"><h2>Website Photos</h2><p>Upload photos that you want to display in your website gallery.</p>
+<form id="photoForm" class="form">
+<label>Photo Title<input id="photoTitle" placeholder="e.g. Book Launch"></label>
+<label>Photo Category<select id="photoCategory"><option>Profile</option><option>Author & Writing</option><option>Academic & Research</option><option>Events & Felicitations</option><option>Books & Publications</option><option>Other</option></select></label>
+<label class="full">Photo<input id="photoFile" type="file" accept="image/*" required></label>
+<div class="full btns"><button class="btn dark" type="submit" id="photoSave">Upload Photo</button></div>
+</form>
+<div id="photoList" class="books-list"></div></section></main>
 <script>
 const DB="rkd_books_v2", STORE="books"; let editingId=null, coverFile=null, pdfFile=null;
+const PHOTO_STORE="photos";
 const $=id=>document.getElementById(id);
-function db(){return new Promise((res,rej)=>{const q=indexedDB.open(DB,1);q.onupgradeneeded=()=>q.result.createObjectStore(STORE,{keyPath:"id",autoIncrement:true});q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)})}
+function db(){return new Promise((res,rej)=>{const q=indexedDB.open(DB,1);q.onupgradeneeded=()=>{const d=q.result;if(!d.objectStoreNames.contains(STORE))d.createObjectStore(STORE,{keyPath:"id",autoIncrement:true});if(!d.objectStoreNames.contains(PHOTO_STORE))d.createObjectStore(PHOTO_STORE,{keyPath:"id",autoIncrement:true})};q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)})}
 async function all(){const d=await db();return new Promise((res,rej)=>{const q=d.transaction(STORE,"readonly").objectStore(STORE).getAll();q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)})}
 async function saveBook(b){const d=await db();return new Promise((res,rej)=>{const s=d.transaction(STORE,"readwrite").objectStore(STORE);const q=editingId?s.put({...b,id:editingId}):s.add(b);q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)})}
 async function removeBook(id){const d=await db();return new Promise((res,rej)=>{const q=d.transaction(STORE,"readwrite").objectStore(STORE).delete(id);q.onsuccess=res;q.onerror=()=>rej(q.error)})}
@@ -36,5 +45,12 @@ async function editBook(id){const b=(await all()).find(x=>x.id===id);if(!b)retur
 async function deleteBook(id){if(!confirm("Delete this book?"))return;await removeBook(id);if(editingId===id)reset();await render()}
 function reset(){bookForm.reset();author.value="Rahul Kumar Das";editingId=null;coverFile=null;pdfFile=null;preview.style.display="none";preview.src="";coverText.textContent="Choose cover image";pdfText.textContent="Choose PDF file";heading.textContent="Add New Book";save.textContent="Add Book";cancel.style.display="none"}
 bookForm.onsubmit=async e=>{e.preventDefault();save.disabled=true;save.textContent="Saving...";try{const old=editingId?(await all()).find(x=>x.id===editingId):null;const b={title:title.value.trim(),author:author.value.trim()||"Rahul Kumar Das",price:Number(price.value),category:category.value,desc:desc.value.trim(),samplePages:samplePages.value.trim(),amazon:amazon.value.trim(),buyLink:buyLink.value.trim(),cover:coverFile?await readFile(coverFile):(old?.cover||""),pdf:pdfFile?await readFile(pdfFile):(old?.pdf||null),pdfName:pdfFile?pdfFile.name:(old?.pdfName||""),status:"Published"};await saveBook(b);reset();await render();alert("Book saved successfully.")}catch(err){console.error(err);alert("Could not save the book. Please try again.")}finally{save.disabled=false}};
-cancel.onclick=reset;render();
+cancel.onclick=reset;
+async function photos(){const d=await db();return new Promise((res,rej)=>{const q=d.transaction(PHOTO_STORE,"readonly").objectStore(PHOTO_STORE).getAll();q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)})}
+async function savePhoto(p){const d=await db();return new Promise((res,rej)=>{const q=d.transaction(PHOTO_STORE,"readwrite").objectStore(PHOTO_STORE).add(p);q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)})}
+async function removePhoto(id){const d=await db();return new Promise((res,rej)=>{const q=d.transaction(PHOTO_STORE,"readwrite").objectStore(PHOTO_STORE).delete(id);q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)})}
+async function renderPhotos(){const a=await photos();photoList.innerHTML=a.length?a.map(p=>'<div class="row"><img class="thumb" src="'+p.image+'"><div class="info"><b>'+escapeHtml(p.title||"Untitled Photo")+'</b><br><small>'+escapeHtml(p.category||"Other")+'</small></div><button onclick="deletePhoto('+p.id+')">Delete</button></div>').join(""):'<p>No photos uploaded yet.</p>'}
+photoForm.onsubmit=async e=>{e.preventDefault();const f=photoFile.files[0];if(!f)return;photoSave.disabled=true;photoSave.textContent="Uploading...";try{await savePhoto({title:photoTitle.value.trim(),category:photoCategory.value,image:await readFile(f),fileName:f.name,createdAt:Date.now()});photoForm.reset();await renderPhotos();alert("Photo uploaded successfully")}catch(err){console.error(err);alert("Could not upload the photo. Please try again.")}finally{photoSave.disabled=false;photoSave.textContent="Upload Photo"}};
+async function deletePhoto(id){if(!confirm("Delete this photo?"))return;await removePhoto(id);await renderPhotos()}
+render();renderPhotos();
 </script></body></html>
