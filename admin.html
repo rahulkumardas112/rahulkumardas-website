@@ -167,9 +167,10 @@ async function migrateLocalBooksToCloud(){
   return changed;
 }
 async function cloudLoadBooks(){
-  try{await migrateLocalBooksToCloud()}catch(e){console.warn("Book migration skipped:",e)}
+  // Supabase is now the single source of truth. Never merge stale browser IndexedDB data
+  // into the cloud catalogue automatically, because that can overwrite saved prices/covers.
   cloudBooks=await rkdCloud.getBooks();
-    return cloudBooks
+  return cloudBooks;
 }
 async function cloudRender(){const a=await cloudLoadBooks();count.textContent="("+a.length+")";list.innerHTML=a.length?a.map(b=>'<div class="row">'+(b.cover?'<img class="thumb" src="'+b.cover+'">':'<div class="thumb"></div>')+'<div class="info"><b>'+escapeHtml(b.title)+'</b><br><small>₹'+b.price+' · '+escapeHtml(b.category||"General / Other")+'</small></div><div><button type="button" onclick="cloudEditBook('+b.id+')">Edit</button><button type="button" onclick="cloudDeleteBook('+b.id+')">Delete</button></div></div>').join(""):'<p>No books added yet.</p>'}
 window.cloudEditBook=async id=>{const b=(await rkdCloud.getBooks()).find(x=>x.id===id);if(!b)return;editingId=id;title.value=b.title||"";author.value=b.author||"Rahul Kumar Das";price.value=b.price||0;category.value=b.category||"General / Other";desc.value=b.desc||"";samplePages.value=b.samplePages||"";amazon.value=b.amazon||"";buyLink.value=b.buyLink||"";coverFile=null;pdfFile=null;coverText.textContent=b.cover?"Current cover retained":"Choose cover image";pdfText.textContent=b.pdfName?"Current PDF: "+b.pdfName:"Choose PDF file";preview.src=b.cover||"";preview.style.display=b.cover?"block":"none";heading.textContent="Edit Book";save.textContent="Save Changes";cancel.style.display="inline-block";scrollTo({top:0,behavior:"smooth"})};
