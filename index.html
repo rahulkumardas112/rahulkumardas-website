@@ -172,15 +172,35 @@ load();
 </script>
 <script id="CLOUD_SETTINGS_OVERRIDE">
 window.addEventListener("load",async function(){
- try{
-  const s=await rkdCloud.getSettings();
-  if(!s.id)return;
-  const set=(id,v)=>{if(v)document.getElementById(id).textContent=v};
-  set("siteEyebrow",s.eyebrow);set("siteTitle",s.title);set("siteHeroCopy",s.heroCopy);set("siteName",s.name);set("siteRole",s.role);set("siteAbout",s.about);set("siteAboutShort",s.about);
-  if(s.aboutSecond)set("siteAboutSecond",s.aboutSecond);
-  if(s.profilePhoto){document.getElementById("profilePhotoBox").innerHTML="<img src=\""+s.profilePhoto+"\" alt=\""+(s.name||"Rahul Kumar Das")+"\">";document.getElementById("aboutHomePhoto").src=s.profilePhoto}
-  if(s.coverPhoto){document.getElementById("homeHero").style.backgroundImage='linear-gradient(135deg,rgba(244,240,232,.94),rgba(251,250,247,.96)),url("'+s.cover_photo_url+'")';document.getElementById("homeHero").style.backgroundSize="cover";document.getElementById("homeHero").style.backgroundPosition="center"}
- }catch(e){console.warn(e)}
+  try{
+    const s=await rkdCloud.getSettings();
+    if(!s.id)return;
+    const setText=(id,v)=>{const el=document.getElementById(id);if(el&&v)el.textContent=v};
+    setText("siteEyebrow",s.eyebrow);
+    setText("siteTitle",s.title);
+    setText("siteHeroCopy",s.heroCopy);
+    setText("siteName",s.name);
+    setText("siteRole",s.role);
+    setText("siteAbout",s.about);
+    setText("siteAboutShort",s.about);
+    setText("siteAboutSecond",s.aboutSecond);
+    const profile=s.profilePhoto||"";
+    const cover=s.coverPhoto||"";
+    if(profile){
+      const box=document.getElementById("profilePhotoBox");
+      const about=document.getElementById("aboutHomePhoto");
+      if(box){box.innerHTML="";const img=document.createElement("img");img.src=profile;img.alt=s.name||"Rahul Kumar Das";img.loading="eager";img.decoding="async";box.appendChild(img)}
+      if(about){about.src=profile;about.alt=s.name||"Rahul Kumar Das";about.loading="eager";about.decoding="async"}
+    }
+    if(cover){
+      const hero=document.getElementById("homeHero");
+      if(hero){
+        hero.style.backgroundImage='linear-gradient(135deg,rgba(244,240,232,.94),rgba(251,250,247,.96)),url("'+cover+'")';
+        hero.style.backgroundSize="cover";
+        hero.style.backgroundPosition="center";
+      }
+    }
+  }catch(e){console.warn("Cloud settings could not be loaded:",e)}
 });
 </script></body>
 </html>
