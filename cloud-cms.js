@@ -19,4 +19,99 @@ window.rkdCloud={
  async savePhoto(p){await this.requireUser();if(!p.image)throw new Error("Photo URL is missing.");const {data,error}=await sb.from("website_photos").insert({title:p.title||"",category:p.category||"Other",image_url:p.image,file_name:p.fileName||""}).select().single();if(error)throw error;return data},
  async deletePhoto(id){await this.requireUser();const {error}=await sb.from("website_photos").delete().eq("id",id);if(error)throw error}
 };
+
+// Book-wise sales and detailed order reporting for the Admin Analytics dashboard.
+(function(){
+  function money(n){return "₹"+Number(n||0).toLocaleString("en-IN");}
+  function esc(v){return window.escapeHtml?window.escapeHtml(v):String(v??"");}
+  function getRange(){
+    const p=document.getElementById("analyticsPeriod")?.value||"today";
+    const now=new Date(); let from=null,to=null;
+    const start=d=>{const x=new Date(d);x.setHours(0,0,0,0);return x};
+    const end=d=>{const x=new Date(d);x.setHours(23,59,59,999);return x};
+    if(p==="today"){from=start(now);to=end(now)}
+    else if(p==="yesterday"){const d=new Date(now);d.setDate(d.getDate()-1);from=start(d);to=end(d)}
+    else if(p==="week"){from=start(now);from.setDate(from.getDate()-((from.getDay()+6)%7));to=end(now)}
+    else if(p==="month"){from=new Date(now.getFullYear(),now.getMonth(),1);to=end(now)}
+    else if(p==="year"){from=new Date(now.getFullYear(),0,1);to=end(now)}
+    else if(p==="custom"){
+      const f=document.getElementById("analyticsFrom")?.value;
+      const t=document.getElementById("analyticsTo")?.value;
+      from=f?start(new Date(f+"T00:00:00")):null;to=t?end(new Date(t+"T00:00:00")):null;
+    }
+    return {from,to};
+  }
+  function inRange(v,r){const t=new Date(v||"").getTime();return Number.isFinite(t)&&(!r.from||t>=r.from.getTime())&&(!r.to||t<=r.to.getTime())}
+  function ensureReportUI(){
+    const analytics=document.getElementById("analytics");
+    if(!analytics||document.getElementById("bookSalesReport"))return;
+    const box=document.createElement("div");
+    box.className="admin-card";
+    box.id="bookSalesReport";
+    box.style.cssText="margin:20px 0 0;padding:18px";
+    box.innerHTML='<h3>Book-wise Sales Report</h3><p style="color:#666">Only confirmed <strong>PAID</strong> orders are included. PDF email delivery does not affect the sales figures.</p><div style="overflow:auto"><table class="analytics-table"><thead><tr><th>Book</th><th>Copies Sold</th><th>Revenue</th><th>Last Sale</th></tr></thead><tbody id="bookSalesBody"></tbody></table></div>';
+    const dateCard=analytics.querySelector(".analytics-table")?.closest(".admin-card");
+    if(dateCard&&dateCard.parentNode)dateCard.parentNode.insertBefore(box,dateCard.nextSibling);else analytics.appendChild(box);
+
+    const detail=document.createElement("div");
+    detail.className="admin-card";
+    detail.id="salesHistoryReport";
+    detail.style.cssText="margin:20px 0 0;padding:18px";
+    detail.innerHTML='<h3>Sales History</h3><p style="color:#666">Individual paid orders for the selected period.</p><div style="overflow:auto"><table class="analytics-table"><thead><tr><th>Order</th><th>Date</th><th>Book</th><th>Customer</th><th>Email</th><th>Amount</th><th>PDF</th></tr></thead><tbody id="salesHistoryBody"></tbody></table></div>';
+    box.parentNode.insertBefore(detail,box.nextSibling);
+  }
+  async function renderReports(orders){
+    ensureReportUI();
+    const r=getRange();
+    const filtered=(orders||[]).filter(o=>inRange(o.paid_at||o.created_at,r));
+    const grouped={};
+    filtered.forEach(o=>{
+      const key=String(o.book_title||"Untitled Book").trim()||"Untitled Book";
+      if(!grouped[key])grouped[key]={book:key,copies:0,revenue:0,last:null};
+      grouped[key].copies++;
+      grouped[key].revenue+=Number(o.amount||0);
+      const d=new Date(o.paid_at||o.created_at);if(!grouped[key].last||d>grouped[key].last)grouped[key].last=d;
+    });
+    const rows=Object.values(grouped).sort((a,b)=>b.revenue-a.revenue||a.book.localeCompare(b.book));
+    const body=document.getElementById("bookSalesBody");
+    if(body)body.innerHTML=rows.length?rows.map(x=>'<tr><td><strong>'+esc(x.book)+'</strong></td><td>'+x.copies+'</td><td>'+money(x.revenue)+'</td><td>'+x.last.toLocaleString("en-IN")+'</td></tr>').join(""):'<tr><td colspan="4">No paid book sales for this period.</td></tr>';
+    const hist=document.getElementById("salesHistoryBody");
+    if(hist)hist.innerHTML=filtered.length?filtered.slice().sort((a,b)=>new Date(b.paid_at||b.created_at)-new Date(a.paid_at||a.created_at)).map(o=>{
+      const d=new Date(o.paid_at||o.created_at);
+      return '<tr><td>#'+esc(o.id)+'</td><td>'+d.toLocaleString("en-IN")+'</td><td><strong>'+esc(o.book_title||"Untitled Book")+'</strong></td><td>'+esc(o.customer_name||"")+'</td><td>'+esc(o.customer_email||"")+'</td><td>'+money(o.amount)+'</td><td>'+(o.email_sent?"Sent":"Pending")+'</td></tr>';
+    }).join(""):'<tr><td colspan="7">No paid orders for this period.</td></tr>';
+  }
+  window.refreshAdminAnalytics=async function(){
+    try{
+      const q=await sb.from("orders").select("id,amount,status,created_at,paid_at,book_title,customer_name,customer_email,email_sent").eq("status","paid").order("paid_at",{ascending:true});
+      if(q.error)throw q.error;
+      const orders=q.data||[];
+      const r=getRange();
+      const filtered=orders.filter(o=>inRange(o.paid_at||o.created_at,r));
+      const revenue=filtered.reduce((n,o)=>n+Number(o.amount||0),0);
+      const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+      set("statBooks",String(filtered.length));
+      set("statOrders",String(filtered.length));
+      set("statRevenue",money(revenue));
+      const visits=(()=>{try{return JSON.parse(localStorage.getItem("rkd_visits")||"[]")}catch(e){return[]}})().filter(v=>inRange(v.date||v.createdAt,r));
+      set("statVisitors",String(visits.length));
+      const map={};const add=k=>map[k]||(map[k]={label:k,visitors:0,sales:0,revenue:0,orders:0});
+      visits.forEach(v=>{const d=new Date(v.date||v.createdAt);if(!Number.isNaN(d.getTime()))add(d.toISOString().slice(0,10)).visitors++});
+      filtered.forEach(o=>{const d=new Date(o.paid_at||o.created_at);if(!Number.isNaN(d.getTime())){const k=d.toISOString().slice(0,10);add(k).sales++;add(k).orders++;add(k).revenue+=Number(o.amount||0)}});
+      const rows=Object.keys(map).sort().map(k=>map[k]);
+      if(typeof window.drawBars==="function"){window.drawBars("revenueChart",rows,"revenue",money);window.drawBars("salesChart",rows,"sales",String);window.drawBars("visitorChart",rows,"visitors",String)}
+      else{
+        const draw=(id,key,fmt)=>{const el=document.getElementById(id);if(!el)return;if(!rows.length){el.innerHTML="<p style='color:#777'>No data for this period.</p>";return}const max=Math.max(...rows.map(x=>Number(x[key])||0),1);el.innerHTML=rows.map(x=>'<div class="bar-item"><span class="bar-value">'+fmt(x[key])+'</span><div class="bar" style="height:'+Math.max(2,((Number(x[key])||0)/max)*145)+'px"></div><span class="bar-label">'+x.label+'</span></div>').join("")};
+        draw("revenueChart","revenue",money);draw("salesChart","sales",String);draw("visitorChart","visitors",String);
+      }
+      const table=document.getElementById("analyticsTableBody");if(table)table.innerHTML=rows.length?rows.map(x=>'<tr><td>'+x.label+'</td><td>'+x.visitors+'</td><td>'+x.sales+'</td><td>'+x.orders+'</td><td>'+money(x.revenue)+'</td></tr>').join(""):'<tr><td colspan="5">No data for this period.</td></tr>';
+      await renderReports(orders);
+      const notice=document.getElementById("analyticsNotice");if(notice)notice.textContent="Live sales record: "+filtered.length+" paid order"+(filtered.length===1?"":"s")+" in this period. Book-wise sales and individual order history are shown below.";
+    }catch(e){
+      console.error(e);
+      const notice=document.getElementById("analyticsNotice");if(notice)notice.textContent="Could not load live sales data: "+(e.message||"Unknown error");
+    }
+  };
+  window.addEventListener("load",()=>setTimeout(()=>window.refreshAdminAnalytics(),150));
+})();
 })();
