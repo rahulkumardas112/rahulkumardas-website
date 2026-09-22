@@ -122,10 +122,10 @@
   <div class="about-home-copy">
     <p class="eyebrow">ABOUT RAHUL KUMAR DAS</p>
     <h2>Rahul Kumar Das</h2>
-    <p id="siteAbout">Rahul Kumar Das is an author, educator, researcher and Assistant Professor from Assam. His work brings together writing, education, academic research and a continuing interest in the human experience.</p>
-    <p id="siteAboutSecond">His academic and creative work reflects two connected interests: understanding how people, institutions and economies develop, and understanding the experiences that shape human lives. His books explore life, relationships, loss, self worth, human behaviour, consciousness, purpose and the questions we often understand only with time.</p>
+    <p id="siteAbout">Rahul Kumar Das is an author, educator, researcher and Assistant Professor in the Department of Accountancy at Lakhimpur Commerce College, Assam. He is currently based in Dibrugarh and is associated with academic research at Dibrugarh University.</p>
+    <p id="siteAboutSecond">Born in Tinsukia, Assam, his work brings together teaching, academic research, writing and publishing. His books explore human experiences, relationships, emotions, behaviour, purpose and the questions that shape our lives.</p>
     <div class="about-home-meta"><span>Author</span><span>Assistant Professor</span><span>Researcher</span><span>Educator</span></div>
-    <a class="btn dark" href="about.html">Read Full Profile</a>
+    <a class="btn dark" href="about.html">Meet Rahul Kumar Das</a>
   </div>
 </div>
 </section>
@@ -170,9 +170,8 @@ window.addEventListener("load",async function(){
     setText("siteHeroCopy",s.heroCopy);
     setText("siteName",s.name);
     setText("siteRole",s.role);
-    setText("siteAbout",s.about);
-    setText("siteAboutShort",s.about);
-    setText("siteAboutSecond",s.aboutSecond);
+    // Keep the homepage About section concise. The complete biography remains on about.html.
+    setText("siteAboutShort","Rahul Kumar Das is an author, educator, researcher and Assistant Professor in the Department of Accountancy at Lakhimpur Commerce College, Assam. He is currently based in Dibrugarh and is associated with academic research at Dibrugarh University.");
     const profile=s.profilePhoto||"";
     const cover=s.coverPhoto||"";
     if(profile){
