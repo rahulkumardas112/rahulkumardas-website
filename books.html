@@ -22,10 +22,11 @@ const FALLBACK_BOOKS=[
 ].map((x,i)=>({id:i+1,title:x[0],author:"Rahul Kumar Das",price:x[1],category:"General / Other",description:"",cover_url:"",buy_link:""}));
 
 function esc(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
-function filterBooks(q){q=(q||"").toLowerCase();document.querySelectorAll("#allBooks .product-card").forEach(x=>x.style.display=x.innerText.toLowerCase().includes(q)?"":"none");}
+let currentBookQuery="";
+function filterBooks(q){currentBookQuery=(q||"").trim().toLowerCase();render();}
 function render(){
  const selected=document.getElementById("categoryFilter").value;
- const list=allCloudBooks.filter(b=>selected==="All Categories"||b.category===selected);
+ const list=allCloudBooks.filter(b=>{const categoryMatch=selected==="All Categories"||b.category===selected;const text=[b.title,b.author,b.category,b.description].join(" ").toLowerCase();return categoryMatch&&(!currentBookQuery||text.includes(currentBookQuery));});
  document.getElementById("bookCount").textContent=list.length+" books available";
  document.getElementById("allBooks").innerHTML=list.map(b=>{
    const id=encodeURIComponent(String(b.id)), title=esc(b.title||"Untitled");
