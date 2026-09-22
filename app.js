@@ -30,7 +30,7 @@ function renderBooks(){
      const id=encodeURIComponent(String(b.id)), title=String(b.title||"Untitled Book");
      const excerpt=(b.desc||"").trim().length>100?(b.desc||"").trim().slice(0,100).trim()+"…":(b.desc||"").trim();
      const usd=(Number(b.price||0)*2*0.0108).toFixed(2);
-     const amazonLink=b.amazon?'<a class="small-btn amazon-btn" href="'+b.amazon+'" target="_blank" rel="noopener noreferrer">Buy Hardcopy on Amazon</a>':"";
+     const amazonLink=b.amazon?'<a class="small-btn amazon-btn" href="'+b.amazon+'" target="_blank" rel="noopener noreferrer">Buy Hardcopy</a>':"";
      const cover=b.cover?'<img src="'+b.cover+'" alt="'+title+'" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:6px">':'<span>'+title+'</span>';
      return '<article class="product-card"><a href="book.html?id='+id+'"><div class="cover">'+cover+'</div></a><div class="product-body"><h3><a href="book.html?id='+id+'" style="text-decoration:none;color:inherit">'+title+'</a></h3><p>'+excerpt+'</p><a class="text-link" href="book.html?id='+id+'#description">Read More →</a><span class="price">₹'+Number(b.price||0)+' <small class="intl-price"> · $'+usd+'</small></span><div class="card-actions"><a class="small-btn" href="book.html?id='+id+'">View Book</a><a class="small-btn primary" href="'+(b.buyLink||("checkout.html?id="+id))+'">Buy Ebook</a>'+amazonLink+'</div></div></article>';
    }).join("");
