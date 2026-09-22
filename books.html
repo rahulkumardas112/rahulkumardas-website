@@ -23,7 +23,7 @@ const FALLBACK_BOOKS=[
 
 function esc(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 let currentBookQuery="";
-function filterBooks(q){currentBookQuery=(q||"").trim().toLowerCase();render();}
+function updateIntlPrices(){document.querySelectorAll(".intl-price").forEach(el=>{const inr=Number(el.dataset.inr||0);el.textContent=" · $"+(inr*0.0108).toFixed(2);});}\nfunction filterBooks(q){currentBookQuery=(q||"").trim().toLowerCase();render();}
 function render(){
  const selected=document.getElementById("categoryFilter").value;
  const list=allCloudBooks.filter(b=>{const categoryMatch=selected==="All Categories"||b.category===selected;const text=[b.title,b.author,b.category,b.description].join(" ").toLowerCase();return categoryMatch&&(!currentBookQuery||text.includes(currentBookQuery));});
@@ -33,8 +33,8 @@ function render(){
    const desc=esc((b.description||"").length>150?b.description.slice(0,150).trim()+"…":(b.description||""));
    const cover=b.cover_url?'<img src="'+esc(b.cover_url)+'" alt="'+title+'" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;border-radius:6px">':'<div style="display:flex;align-items:center;justify-content:center;height:100%;padding:18px;text-align:center;font-weight:600">'+title+'</div>';
    const buy=b.buy_link||("checkout.html?id="+id);
-   return '<article class="product-card"><div class="cover">'+cover+'</div><div class="product-body"><h3>'+title+'</h3><p class="book-excerpt">'+desc+'</p><span class="price">₹'+Number(b.price||0)+'</span><div class="card-actions"><a class="small-btn" href="book.html?id='+id+'">View Book</a><a class="small-btn primary" href="'+esc(buy)+'">Buy Ebook</a></div></div></article>';
- }).join("");
+   return '<article class="product-card"><div class="cover">'+cover+'</div><div class="product-body"><h3>'+title+'</h3><p class="book-excerpt">'+desc+'</p><span class="price">₹'+Number(b.price||0)+' <small class="intl-price" data-inr="'+Number(b.price||0)*2+'"> · $0.00</small></span><div class="card-actions"><a class="small-btn" href="book.html?id='+id+'">View Book</a><a class="small-btn primary" href="'+esc(buy)+'">Buy Ebook</a></div></div></article>';
+ }).join("");\n updateIntlPrices();
 }
 async function loadAllBooks(){
  const count=document.getElementById("bookCount"); count.textContent="Loading all 45 books…";
