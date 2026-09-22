@@ -136,3 +136,27 @@ button,input,select,textarea{font:inherit}
   .product-body h3{font-size:17px}
   .stats{grid-template-columns:1fr}
 }
+
+/* Consistent professional accent system */
+:root{
+  --accent:#1f5b61;
+  --accent-dark:#17464b;
+  --accent-soft:#e8f0ef;
+  --accent-line:#b9cfcd;
+  --accent-muted:#5b7779;
+}
+.eyebrow{color:var(--accent)!important}
+.hero h1 em,.section h2 em,.split h2 em,.page-title em{color:var(--accent)!important}
+nav a:hover,.text-link:hover,.footer-grid a:hover{color:var(--accent)!important}
+.text-link{border-color:var(--accent-line)}
+.btn.light:hover{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.dark:hover,.nav-cta:hover,.small-btn.primary:hover{background:var(--accent-dark);border-color:var(--accent-dark)}
+.price{color:var(--accent-dark)}
+.accent-word,.highlight-word{color:var(--accent);font-weight:700}
+.accent-label{display:inline-block;color:var(--accent);background:var(--accent-soft);border:1px solid var(--accent-line);padding:4px 9px;border-radius:999px;font-weight:700}
+.academic-tile span{color:var(--accent-line)!important}
+.inverse .eyebrow{color:#9ec5c5!important}
+.hero-card-caption span{color:var(--accent-muted)}
+.feature-list b{color:var(--accent-dark)}
+.small-btn:not(.primary):hover{border-color:var(--accent);color:var(--accent)}
+.toolbar input:focus,.toolbar select:focus,.form-grid input:focus,.form-grid textarea:focus,.newsletter input:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px rgba(31,91,97,.12)}
