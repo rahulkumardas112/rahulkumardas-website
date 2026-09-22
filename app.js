@@ -97,4 +97,51 @@ function renderBooks(){
 }
 function recordRkdVisit(){try{const key="rkd_visit_session";if(sessionStorage.getItem(key))return;sessionStorage.setItem(key,"1");const a=JSON.parse(localStorage.getItem("rkd_visits")||"[]");a.push({date:new Date().toISOString(),path:location.pathname,title:document.title});localStorage.setItem("rkd_visits",JSON.stringify(a))}catch(e){console.warn(e)}}
 function subscribe(e){e.preventDefault();const email=document.getElementById("email").value;let a=JSON.parse(localStorage.getItem("rkd_subscribers")||"[]");a.push(email);localStorage.setItem("rkd_subscribers",JSON.stringify([...new Set(a)]));alert("Thank you for subscribing.");e.target.reset()}
-document.addEventListener("DOMContentLoaded",()=>{renderBooks();loadBooks();const search=document.getElementById("homeBookSearch");const searchButton=document.getElementById("searchHomeBookButton");if(search)search.addEventListener("input",renderBooks);if(searchButton)searchButton.addEventListener("click",()=>{renderBooks();if(search)search.focus()});if(search)search.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();renderBooks()}});const m=document.getElementById("menuBtn");if(m)m.onclick=()=>{document.getElementById("mainNav").style.display=document.getElementById("mainNav").style.display==="flex"?"none":"flex"}});
+async function submitContactQuery(e){
+  e.preventDefault();
+  const form=e.target;
+  const button=document.getElementById("contactSubmitButton");
+  const status=document.getElementById("contactQueryStatus");
+  const payload={
+    name:document.getElementById("contactName")?.value.trim()||"",
+    email:document.getElementById("contactEmail")?.value.trim()||"",
+    subject:document.getElementById("contactSubject")?.value.trim()||"",
+    message:document.getElementById("contactMessage")?.value.trim()||""
+  };
+  if(!payload.name||!payload.email||!payload.subject||!payload.message){
+    if(status){status.textContent="Please fill in all fields.";status.className="contact-query-status error"}
+    return;
+  }
+  if(button){button.disabled=true;button.textContent="Sending..."}
+  if(status){status.textContent="";status.className="contact-query-status"}
+  try{
+    const response=await fetch("https://ucehhsythixyvhrzwlth.supabase.co/functions/v1/submit-contact-query",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","apikey":"sb_publishable_bK03-qntjRlai8Q7yybHzw_JYn3FQrC"},
+      body:JSON.stringify(payload)
+    });
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok||!data.success) throw new Error(data.error||"Could not send your query.");
+    if(status){status.textContent="Thank you. Your query has been sent successfully.";status.className="contact-query-status success"}
+    form.reset();
+  }catch(err){
+    console.error("Contact query error:",err);
+    if(status){status.textContent=err.message||"Could not send your query. Please try again.";status.className="contact-query-status error"}
+  }finally{
+    if(button){button.disabled=false;button.textContent="Send Query"}
+  }
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+  renderBooks();
+  loadBooks();
+  const search=document.getElementById("homeBookSearch");
+  const searchButton=document.getElementById("searchHomeBookButton");
+  if(search)search.addEventListener("input",renderBooks);
+  if(searchButton)searchButton.addEventListener("click",()=>{renderBooks();if(search)search.focus()});
+  if(search)search.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();renderBooks()}});
+  const contactForm=document.getElementById("contactQueryForm");
+  if(contactForm)contactForm.addEventListener("submit",submitContactQuery);
+  const m=document.getElementById("menuBtn");
+  if(m)m.onclick=()=>{document.getElementById("mainNav").style.display=document.getElementById("mainNav").style.display==="flex"?"none":"flex"};
+});
