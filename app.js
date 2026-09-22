@@ -80,13 +80,14 @@ function renderBooks(){
  grid.innerHTML=books.map((b,i)=>{
    const short=(b.desc||"").trim();
    const excerpt=short.length>100?short.slice(0,100).trim()+"…":short;
+   const usd=(Number(b.price||0)*2*0.0108).toFixed(2);
    return `<article class="product-card">
      <a href="book.html?id=${encodeURIComponent(String(b.id))}" aria-label="View ${b.title}"><div class="cover">${bookCover(b)}</div></a>
      <div class="product-body">
        <h3><a href="book.html?id=${encodeURIComponent(String(b.id))}" style="text-decoration:none;color:inherit">${b.title}</a></h3>
        <p>${excerpt}</p>
        <a class="text-link" href="book.html?id=${encodeURIComponent(String(b.id))}#description">Read More →</a>
-       <span class="price">₹${b.price}</span>
+       <span class="price">₹${b.price} <small class="intl-price"> · $${usd}</small></span>
        <div class="card-actions">
          <a class="small-btn" href="book.html?id=${encodeURIComponent(String(b.id))}">View Book</a>
          <a class="small-btn primary" href="${b.buyLink||("checkout.html?id="+encodeURIComponent(String(b.id)))}">Buy Ebook</a>
