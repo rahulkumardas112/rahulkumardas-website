@@ -21,7 +21,19 @@
 .about-home-meta span{padding:8px 12px;border:1px solid #d5cec3;background:#fbfaf7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
 @media(max-width:700px){.about-home-grid{grid-template-columns:1fr;gap:35px}.about-home-photo{width:220px;height:270px}.about-home-copy{text-align:center}.about-home-meta{justify-content:center}}
 .home-book-search{margin:28px 0 30px;padding:22px;background:#f7f4ee;border:1px solid #e3ddd3;border-radius:10px}.home-book-search label{display:block;margin-bottom:9px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#625d56}.home-book-search-row{display:flex;gap:10px}.home-book-search input{flex:1;min-width:0;padding:14px 16px;border:1px solid #d5cec3;border-radius:6px;background:#fff;font:inherit;outline:none}.home-book-search input:focus{border-color:#8d8579;box-shadow:0 0 0 3px rgba(141,133,121,.12)}.home-book-search button{padding:0 18px;border:0;border-radius:6px;background:#24211d;color:#fff;font:inherit;font-weight:600;cursor:pointer}.home-book-search-status{margin:9px 0 0;font-size:13px;color:#6c665e}@media(max-width:600px){.home-book-search-row{flex-direction:column}.home-book-search button{padding:12px}}\n</style>
-</head>
+<style>
+.contact-section{background:#fbfaf7}.contact-intro{max-width:520px;color:#625d56;margin:0}
+.contact-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:60px;align-items:start}
+.contact-details{display:grid;gap:18px}.contact-detail{padding:22px;border:1px solid #e1dbd1;background:#f7f4ee;border-radius:8px}
+.contact-detail span{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#777067;margin-bottom:7px}
+.contact-detail strong,.contact-detail a{font-size:18px;color:#24211d;text-decoration:none;word-break:break-word}
+.contact-form{padding:30px;border:1px solid #e1dbd1;background:#fff;border-radius:10px;box-shadow:0 12px 30px rgba(28,27,25,.06)}
+.form-row{display:grid;gap:8px;margin-bottom:18px}.form-row label{font-size:12px;font-weight:700;letter-spacing:.04em;color:#625d56}
+.form-row input,.form-row textarea{width:100%;box-sizing:border-box;padding:13px 14px;border:1px solid #d5cec3;border-radius:6px;background:#fff;outline:none;resize:vertical}
+.form-row input:focus,.form-row textarea:focus{border-color:#8d8579;box-shadow:0 0 0 3px rgba(141,133,121,.12)}
+.contact-query-status{min-height:20px;margin:14px 0 0;font-size:13px;color:#625d56}.contact-query-status.success{color:#2f6b45}.contact-query-status.error{color:#9a3d32}
+@media(max-width:800px){.contact-grid{grid-template-columns:1fr;gap:30px}.contact-intro{margin-top:0}.contact-form{padding:22px}}
+</style></head>
 <body>
 <header class="site-header">
   <div class="container nav-wrap">
@@ -123,7 +135,28 @@
 </section>
 </main>
 
-<footer id="contact"><div class="container footer-grid"><div><h3>Rahul Kumar Das</h3><p>Books, Ideas, Research and Learning.</p></div><div><b>Explore</b><a href="#books">Books</a><a href="#academic">Academic Store</a><a href="#articles">Articles</a><a href="#research">Research</a></div><div><b>Account</b><a href="account.html">Create Account / Login</a><a href="library.html">My Library</a><a href="admin.html">Admin</a></div><div><b>Policies</b><a href="#">Privacy Policy</a><a href="#">Terms</a><a href="#">Refund Policy</a><a href="#">Digital Product Policy</a></div></div><div class="container footer-bottom">© 2026 Rahul Kumar Das. All rights reserved.</div></footer>
+<section class="section contact-section" id="contact">
+<div class="container">
+  <div class="section-head"><div><p class="eyebrow">CONTACT</p><h2>Get in touch with Rahul Kumar Das.</h2></div><p class="contact-intro">For books, academic resources, research, collaborations or any other query, you can contact me directly or send a message using the form.</p></div>
+  <div class="contact-grid">
+    <div class="contact-details">
+      <div class="contact-detail"><span>Name</span><strong>Rahul Kumar Das</strong></div>
+      <div class="contact-detail"><span>Contact</span><a href="tel:+919101885778">+91 9101885778</a></div>
+      <div class="contact-detail"><span>Email</span><a href="mailto:rahulkumardas112@gmail.com">rahulkumardas112@gmail.com</a></div>
+    </div>
+    <form class="contact-form" id="contactQueryForm">
+      <div class="form-row"><label for="contactName">Your Name</label><input id="contactName" name="name" type="text" maxlength="100" required></div>
+      <div class="form-row"><label for="contactEmail">Your Email</label><input id="contactEmail" name="email" type="email" maxlength="160" required></div>
+      <div class="form-row"><label for="contactSubject">Subject</label><input id="contactSubject" name="subject" type="text" maxlength="200" required></div>
+      <div class="form-row"><label for="contactMessage">Description</label><textarea id="contactMessage" name="message" rows="7" maxlength="5000" required></textarea></div>
+      <button class="btn dark" type="submit" id="contactSubmitButton">Send Query</button>
+      <p id="contactQueryStatus" class="contact-query-status" role="status"></p>
+    </form>
+  </div>
+</div>
+</section>
+
+<footer><div class="container footer-grid"><div><h3>Rahul Kumar Das</h3><p>Books, Ideas, Research and Learning.</p><p><a href="#contact">Contact Rahul Kumar Das</a></p></div><div><b>Explore</b><a href="#books">Books</a><a href="#academic">Academic Store</a><a href="#articles">Articles</a><a href="#research">Research</a></div><div><b>Account</b><a href="account.html">Create Account / Login</a><a href="library.html">My Library</a><a href="admin.html">Admin</a></div><div><b>Policies</b><a href="#">Privacy Policy</a><a href="#">Terms</a><a href="#">Refund Policy</a><a href="#">Digital Product Policy</a></div></div><div class="container footer-bottom">© 2026 Rahul Kumar Das. All rights reserved.</div></footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="cloud-cms.js"></script><script src="app.js"></script>
 <script id="CLOUD_SETTINGS_OVERRIDE">
