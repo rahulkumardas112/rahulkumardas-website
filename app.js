@@ -73,7 +73,10 @@ function bookCover(b){return b.cover?'<img src="'+b.cover+'" alt="'+b.title+'" s
 function renderBooks(){
  const grid=document.getElementById("bookGrid");
  if(!grid)return;
- const books=getBooks();
+ const query=(document.getElementById("homeBookSearch")?.value||"").trim().toLowerCase();
+ const books=getBooks().filter(b=>!query||[b.title,b.author,b.category,b.desc].some(v=>String(v||"").toLowerCase().includes(query)));
+ const status=document.getElementById("homeBookSearchStatus");
+ if(status) status.textContent=query ? (books.length+" book"+(books.length===1?"":"s")+" found") : "Search by title, author, category or keyword";
  grid.innerHTML=books.map((b,i)=>{
    const short=(b.desc||"").trim();
    const excerpt=short.length>100?short.slice(0,100).trim()+"…":short;
@@ -94,4 +97,4 @@ function renderBooks(){
 }
 function recordRkdVisit(){try{const key="rkd_visit_session";if(sessionStorage.getItem(key))return;sessionStorage.setItem(key,"1");const a=JSON.parse(localStorage.getItem("rkd_visits")||"[]");a.push({date:new Date().toISOString(),path:location.pathname,title:document.title});localStorage.setItem("rkd_visits",JSON.stringify(a))}catch(e){console.warn(e)}}
 function subscribe(e){e.preventDefault();const email=document.getElementById("email").value;let a=JSON.parse(localStorage.getItem("rkd_subscribers")||"[]");a.push(email);localStorage.setItem("rkd_subscribers",JSON.stringify([...new Set(a)]));alert("Thank you for subscribing.");e.target.reset()}
-document.addEventListener("DOMContentLoaded",()=>{renderBooks();loadBooks();const m=document.getElementById("menuBtn");if(m)m.onclick=()=>{document.getElementById("mainNav").style.display=document.getElementById("mainNav").style.display==="flex"?"none":"flex"}});
+document.addEventListener("DOMContentLoaded",()=>{renderBooks();loadBooks();const search=document.getElementById("homeBookSearch");const clear=document.getElementById("clearHomeBookSearch");if(search)search.addEventListener("input",renderBooks);if(clear)clear.addEventListener("click",()=>{if(search){search.value="";search.focus();renderBooks()}});const m=document.getElementById("menuBtn");if(m)m.onclick=()=>{document.getElementById("mainNav").style.display=document.getElementById("mainNav").style.display==="flex"?"none":"flex"}});
