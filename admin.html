@@ -120,7 +120,7 @@ seedDefaultBooks().then(()=>{render();renderPhotos();loadSettings()}).catch(e=>{
 </script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="cloud-cms.js"></script><script>
 (function(){
 let cloudBooks=[];
-async function guard(){const u=await rkdCloud.user();if(!u){location.href="login.html";return null}const {data,error}=await rkdSupabase.from("admin_users").select("id").eq("id",u.id).maybeSingle();if(error||!data){alert("This account is not authorized to access the Admin panel.");location.href="index.html";return null}return u}
+window.guard=async function guard(){const u=await rkdCloud.user();if(!u){location.href="login.html";return null}const {data,error}=await rkdSupabase.from("admin_users").select("id").eq("id",u.id).maybeSingle();if(error||!data){alert("This account is not authorized to access the Admin panel.");location.href="index.html";return null}return u}
 async function getLocalBooksForMigration(){
   try{
     const d=await db();
