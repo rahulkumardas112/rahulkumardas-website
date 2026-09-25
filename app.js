@@ -3,16 +3,32 @@ let rkdBooksCache=[];
 async function loadBooks(){
   try{
     let books=[];
-    const url="https://ucehhsythixyvhrzwlth.supabase.co/rest/v1/books?select=*&order=id.asc";
+    const url="https://ucehhsythixyvhrzwlth.supabase.co/rest/v1/books?select=*&order=id.desc";
     const headers={"apikey":"sb_publishable_bK03-qntjRlai8Q7yybHzw_JYn3FQrC","Authorization":"Bearer sb_publishable_bK03-qntjRlai8Q7yybHzw_JYn3FQrC"};
     try{
       const response=await fetch(url,{headers,cache:"no-store"});
       if(!response.ok) throw new Error("Books API returned "+response.status);
       const data=await response.json();
-      books=(Array.isArray(data)?data:[]).map(b=>({id:b.id,title:b.title,author:b.author||"Rahul Kumar Das",price:Number(b.price||0),category:b.category||"General / Other",desc:b.description||"",samplePages:b.sample_pages||"",amazon:b.amazon||"",buyLink:b.buy_link||"",cover:b.cover_url||"",pdf:b.pdf_path||null,pdfName:b.pdf_name||"",status:b.status||"Published",new:!!b.is_new}));
+      books=(Array.isArray(data)?data:[]).map(b=>({id:b.id,title:b.title,author:b.author||"Rahul Kumar Das",price:Number(b.price||0),category:b.category||"General / Other",desc:b.description||"",samplePages:b.sample_pages||"",amazon:b.amazon||"",buyLink:b.buy_link||"",cover:b.cover_url||"",pdf:b.pdf_path||null,pdfName:b.pdf_name||"",status:b.status||"Published",new:!!b.is_new,createdAt:b.created_at||b.createdAt||null}));
     }catch(e){console.warn("Direct cloud book catalogue load failed:",e);if(window.rkdCloud) books=await rkdCloud.getBooks();}
-    rkdBooksCache=books;renderBooks();renderHomeNotes();document.dispatchEvent(new Event("rkdbooksloaded"));
-  }catch(e){console.warn("Book loading failed:",e);rkdBooksCache=[];renderBooks();}
+    rkdBooksCache=books;renderNewlyPublishedBooks();renderBooks();renderHomeNotes();document.dispatchEvent(new Event("rkdbooksloaded"));
+  }catch(e){console.warn("Book loading failed:",e);rkdBooksCache=[];renderNewlyPublishedBooks();renderBooks();}
+}
+function renderNewlyPublishedBooks(){
+ const grid=document.getElementById("newlyPublishedBooks");if(!grid)return;
+ const books=getBooks().filter(b=>String(b.status||"Published").toLowerCase()!=="draft").slice().sort((a,b)=>{
+   const da=a.createdAt?new Date(a.createdAt).getTime():0, db=b.createdAt?new Date(b.createdAt).getTime():0;
+   return (db-da)||(Number(b.id||0)-Number(a.id||0));
+ }).slice(0,4);
+ if(!books.length){grid.innerHTML='<p style="grid-column:1/-1;color:#6c665e">Newly published books will appear here automatically when they are added from the Admin panel.</p>';return;}
+ grid.innerHTML=books.map(b=>{
+   const id=encodeURIComponent(String(b.id)),title=String(b.title||"Untitled Book");
+   const excerpt=(b.desc||"").trim().length>105?(b.desc||"").trim().slice(0,105).trim()+"…":(b.desc||"").trim();
+   const usd=(Number(b.price||0)*2*0.0108).toFixed(2);
+   const cover=b.cover?'<img src="'+b.cover+'" alt="'+title+'" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:6px">':'<span>'+title+'</span>';
+   const amazonLink=b.amazon?'<a class="small-btn amazon-btn" href="'+b.amazon+'" target="_blank" rel="noopener noreferrer">Buy Hardcopy</a>':"";
+   return '<article class="product-card newly-published-card"><div class="new-release-badge">NEW RELEASE</div><a href="book.html?id='+id+'"><div class="cover">'+cover+'</div></a><div class="product-body"><div class="newly-published-label">Recently Published</div><h3><a href="book.html?id='+id+'" style="text-decoration:none;color:inherit">'+title+'</a></h3><p>'+excerpt+'</p><a class="text-link" href="book.html?id='+id+'#description">Read More →</a><span class="price">₹'+Number(b.price||0)+' <small class="intl-price"> · $'+usd+'</small></span><div class="card-actions"><a class="small-btn" href="book.html?id='+id+'">View Book</a><a class="small-btn primary" href="'+(b.buyLink||("checkout.html?id="+id))+'">Buy Ebook</a>'+amazonLink+'</div></div></article>';
+ }).join("");
 }
 function getBooks(){return rkdBooksCache}
 function bookCover(b){return b.cover?'<img src="'+b.cover+'" alt="'+b.title+'" style="width:100%;height:100%;object-fit:cover;border-radius:6px">':'<span>'+b.title+'</span>'}
