@@ -14,6 +14,7 @@
 .photo-lightbox{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;padding:25px;z-index:100}.photo-lightbox.open{display:flex}.photo-lightbox img{max-width:94vw;max-height:86vh;object-fit:contain}.photo-lightbox-close{position:absolute;top:18px;right:24px;background:transparent;color:#fff;border:0;font-size:34px;cursor:pointer}.photo-lightbox-caption{position:absolute;left:25px;right:25px;bottom:18px;text-align:center;color:#fff;font-size:14px}
 @media(max-width:800px){.photo-grid{grid-template-columns:repeat(2,1fr)}.photo-card img{height:270px}.photo-intro h1{font-size:42px}}@media(max-width:560px){.photo-grid{grid-template-columns:1fr}.photo-card img{height:330px}.photo-page{padding:52px 0}.photo-intro h1{font-size:36px}}
 </style>
+<script type="application/ld+json" id="photoImageStructuredData">[]</script>
 <script type="application/ld+json" id="profileStructuredData">
 {
  "@context":"https://schema.org",
@@ -59,18 +60,35 @@ function renderFilters(){
 function renderPhotos(){
  const grid=document.getElementById("photoGrid");
  const list=selectedCategory==="All"?allPhotos:allPhotos.filter(p=>String(p.category||"Other").trim()===selectedCategory);
- if(!list.length){grid.innerHTML='<div class="photo-empty">No photographs are available in this category yet.</div>';return}
+ if(!list.length){grid.innerHTML='<div class="photo-empty">No photographs are available in this category yet.</div>';updatePhotoStructuredData([]);return}
  grid.innerHTML=list.map((p,i)=>{
-   const title=esc(p.title||"Rahul Kumar Das");
-   const desc=esc(p.description||"");
+   const title=esc(p.title||"Photograph of Rahul Kumar Das");
+   const alt=esc(p.alt_text||((p.title||"Photograph of Rahul Kumar Das")+", Rahul Kumar Das"));
+   const desc=esc(p.description||p.seo_description||"");
    const meta=[p.location,p.photo_date].filter(Boolean).map(esc).join(" · ");
-   return '<article class="photo-card" tabindex="0" data-index="'+i+'"><img src="'+esc(p.image_url)+'" alt="'+title+', Rahul Kumar Das" loading="lazy" decoding="async"><div class="photo-card-body"><h2>'+title+'</h2>'+(desc?'<p>'+desc+'</p>':'')+(meta?'<div class="photo-meta">'+meta+'</div>':'')+'</div></article>'
+   return '<article class="photo-card" tabindex="0" data-index="'+i+'" itemscope itemtype="https://schema.org/ImageObject"><img itemprop="contentUrl" src="'+esc(p.image_url)+'" alt="'+alt+'" loading="lazy" decoding="async"><div class="photo-card-body"><h2 itemprop="name">'+title+'</h2>'+(desc?'<p itemprop="description">'+desc+'</p>':'')+(meta?'<div class="photo-meta">'+meta+'</div>':'')+'<meta itemprop="creditText" content="'+esc(p.credit_text||"Rahul Kumar Das")+'"><meta itemprop="copyrightNotice" content="'+esc(p.copyright_notice||"© 2026 Rahul Kumar Das")+'"></div></article>'
  }).join("");
+ updatePhotoStructuredData(list);
  grid.querySelectorAll(".photo-card").forEach((card,i)=>{
    const open=()=>openLightbox(list[i]);
    card.addEventListener("click",open);
    card.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();open()}});
  });
+}
+function updatePhotoStructuredData(list){
+ const items=(list||[]).filter(p=>p.image_url).map(p=>({
+   "@context":"https://schema.org",
+   "@type":"ImageObject",
+   "name":p.seo_title||p.title||"Photograph of Rahul Kumar Das",
+   "description":p.seo_description||p.description||"Photograph of Rahul Kumar Das",
+   "contentUrl":p.image_url,
+   ...(p.photo_date?{"dateCreated":p.photo_date}:{}),
+   ...(p.location?{"contentLocation":{"@type":"Place","name":p.location}}:{}),
+   "creditText":p.credit_text||"Rahul Kumar Das",
+   "copyrightNotice":p.copyright_notice||"© 2026 Rahul Kumar Das"
+ }));
+ const data=document.getElementById("photoImageStructuredData");
+ if(data)data.textContent=JSON.stringify(items);
 }
 function openLightbox(p){
  document.getElementById("photoLightboxImage").src=p.image_url;
