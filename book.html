@@ -12,7 +12,7 @@
 <body>
 <header class="site-header"><div class="container nav-wrap"><a class="brand" href="index.html"><span>Rahul Kumar Das</span><small>Author · Academic · Educator · Researcher</small></a><nav style="display:flex"><a href="books.html">Books</a><a href="library.html">My Library</a></nav></div></header>
 <main class="inner-page"><div class="container">
-<div class="split"><div class="cover" id="cover" style="max-width:430px"></div><div><p class="eyebrow">RAHUL KUMAR DAS</p><h1 class="page-title" id="title"></h1><p id="desc"></p><section id="description" style="margin-top:28px"><h2>About the Book</h2><p id="fullDescription" style="line-height:1.9;white-space:pre-line"></p></section><p>Explore the book and read a free sample before deciding to purchase it.</p><p class="price" id="price"></p><div class="actions"><a class="btn dark" id="buy">Buy Ebook</a><a class="btn light" href="#sample">Read Sample</a></div></div></div>
+<div class="split"><div class="cover" id="cover" style="max-width:430px"></div><div><p class="eyebrow">RAHUL KUMAR DAS</p><h1 class="page-title" id="title"></h1><p id="desc"></p><section id="description" style="margin-top:28px"><h2>About the Book</h2><p id="fullDescription" style="line-height:1.9;white-space:pre-line"></p></section><p>Explore the book and read a free sample before deciding to purchase it.</p><p class="price" id="price"></p><div class="actions"><a class="btn dark" id="buy">Buy Ebook</a><a class="btn light" href="#sample">Read Sample</a><button class="btn light" type="button" id="shareBookButton">Share Book</button></div></div></div>
 <section class="sample" id="sample"><p class="eyebrow">FREE PREVIEW</p><h2 id="sampleTitle">Read a Sample</h2><p class="sample-note">Read selected pages from this book before purchasing the complete edition.</p><div id="sampleContent"></div></section>
 </div></main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="cloud-cms.js"></script><script src="app.js"></script>
@@ -48,6 +48,8 @@ function renderBook(b){
  if(hasPdf){ buy.href=b.buyLink||b.buy_link||("checkout.html?id="+encodeURIComponent(String(b.id))); buy.textContent="Buy Ebook"; buy.style.pointerEvents="auto"; buy.style.opacity="1"; buy.removeAttribute("aria-disabled"); }
  else{ buy.removeAttribute("href"); buy.textContent="Ebook PDF Coming Soon"; buy.style.pointerEvents="none"; buy.style.opacity=".55"; buy.setAttribute("aria-disabled","true"); }
  document.getElementById("sampleTitle").textContent=b.sampleTitle||"Read a Sample";
+ const shareButton=document.getElementById("shareBookButton");
+ if(shareButton)shareButton.onclick=()=>shareBook(b.id,title);
  const raw=(b.samplePages||b.sample_pages||"").trim();
  const parts=raw?raw.split(/\n\s*\n/).filter(Boolean):[];
  document.getElementById("sampleContent").innerHTML=parts.length?parts.map((p,n)=>'<article class="sample-page"><h3>Sample Page '+(n+1)+'</h3><p>'+p.replace(/\n/g,"<br>")+'</p></article>').join(""):'<div class="sample-page"><p>A free sample has not been added for this book yet.</p></div>';
