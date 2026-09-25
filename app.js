@@ -30,6 +30,15 @@ function renderNewlyPublishedBooks(){
    return '<article class="product-card newly-published-card"><div class="new-release-badge">NEW RELEASE</div><a href="book.html?id='+id+'"><div class="cover">'+cover+'</div></a><div class="product-body"><div class="newly-published-label">Recently Published</div><h3><a href="book.html?id='+id+'" style="text-decoration:none;color:inherit">'+title+'</a></h3><p>'+excerpt+'</p><a class="text-link" href="book.html?id='+id+'#description">Read More →</a><span class="price">₹'+Number(b.price||0)+' <small class="intl-price"> · $'+usd+'</small></span><div class="card-actions"><a class="small-btn" href="book.html?id='+id+'">View Book</a><a class="small-btn primary" href="'+(b.buyLink||("checkout.html?id="+id))+'">Buy Ebook</a>'+amazonLink+'</div></div></article>';
  }).join("");
 }
+async function shareBook(id,title){
+  const url=new URL("book.html?id="+encodeURIComponent(String(id)),location.href).href;
+  const data={title:title||"Book by Rahul Kumar Das",text:"Read and buy this book by Rahul Kumar Das",url:url};
+  try{
+    if(navigator.share){await navigator.share(data);return;}
+    if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(url);alert("Book link copied. You can now share it anywhere.");return;}
+    const input=document.createElement("input");input.value=url;document.body.appendChild(input);input.select();document.execCommand("copy");input.remove();alert("Book link copied. You can now share it anywhere.");
+  }catch(e){if(e&&e.name==="AbortError")return;alert("Book link: "+url);}
+}
 function getBooks(){return rkdBooksCache}
 function bookCover(b){return b.cover?'<img src="'+b.cover+'" alt="'+b.title+'" style="width:100%;height:100%;object-fit:cover;border-radius:6px">':'<span>'+b.title+'</span>'}
 function renderBooks(){
