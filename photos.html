@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="Photos of Rahul Kumar Das, author, academic, educator and researcher. Explore professional, academic, research, book and event photographs.">
+<title>Photos of Rahul Kumar Das | Official Website</title>
+<link rel="canonical" href="https://rahulkumardas.in/photos.html">
+<link rel="stylesheet" href="styles.css?v=20260926-1">
+<style>
+.photo-page{padding:75px 0}.photo-intro{max-width:760px;margin:0 auto 38px;text-align:center}.photo-intro h1{font:600 52px/1.1 "Playfair Display",serif;margin:0 0 15px}.photo-intro p{color:#625d56}
+.photo-filters{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin:0 0 35px}.photo-filter{border:1px solid #d5cec3;background:#fff;padding:10px 15px;border-radius:3px;cursor:pointer;font-weight:600;font-size:12px}.photo-filter.active{background:#1f5b61;color:#fff;border-color:#1f5b61}
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}.photo-card{background:#fff;border:1px solid #e4ded5;overflow:hidden;cursor:pointer}.photo-card img{display:block;width:100%;height:330px;object-fit:cover}.photo-card-body{padding:18px}.photo-card h2{font:600 22px/1.2 "Playfair Display",serif;margin:0 0 7px}.photo-card p{font-size:13px;color:#625d56;margin:0 0 8px}.photo-meta{font-size:11px;color:#777067}.photo-empty{text-align:center;padding:50px;border:1px dashed #d4cdc2;color:#625d56;grid-column:1/-1}
+.photo-lightbox{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;padding:25px;z-index:100}.photo-lightbox.open{display:flex}.photo-lightbox img{max-width:94vw;max-height:86vh;object-fit:contain}.photo-lightbox-close{position:absolute;top:18px;right:24px;background:transparent;color:#fff;border:0;font-size:34px;cursor:pointer}.photo-lightbox-caption{position:absolute;left:25px;right:25px;bottom:18px;text-align:center;color:#fff;font-size:14px}
+@media(max-width:800px){.photo-grid{grid-template-columns:repeat(2,1fr)}.photo-card img{height:270px}.photo-intro h1{font-size:42px}}@media(max-width:560px){.photo-grid{grid-template-columns:1fr}.photo-card img{height:330px}.photo-page{padding:52px 0}.photo-intro h1{font-size:36px}}
+</style>
+<script type="application/ld+json" id="profileStructuredData">
+{
+ "@context":"https://schema.org",
+ "@type":"ProfilePage",
+ "url":"https://rahulkumardas.in/photos.html",
+ "mainEntity":{
+   "@type":"Person",
+   "@id":"https://rahulkumardas.in/#rahul-kumar-das",
+   "name":"Rahul Kumar Das",
+   "url":"https://rahulkumardas.in/about.html",
+   "description":"Rahul Kumar Das is an author, academic, educator, researcher and Assistant Professor in the Department of Accountancy at Lakhimpur Commerce College, Assam."
+ }
+}
+</script>
+</head>
+<body>
+<header class="site-header"><div class="container nav-wrap">
+<a class="brand" href="index.html"><span>Rahul Kumar Das</span><small>Author · Academic · Educator · Researcher</small></a>
+<button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
+<nav id="mainNav"><a href="index.html#books">Books</a><a href="index.html#music">Music</a><a href="index.html#academic">Academic Store</a><a href="index.html#notes">Notes</a><a href="index.html#research">Research</a><a href="index.html#articles">Articles</a><a href="index.html#news">News</a><a href="photos.html">Photos</a><a href="index.html#about">About</a><a href="index.html#contact">Contact</a><a class="nav-login" href="account.html">Login</a><a class="nav-cta" href="library.html">My Library</a></nav>
+</div></header>
+<main class="photo-page">
+<div class="container">
+<div class="photo-intro"><p class="eyebrow">PHOTOS</p><h1>Photos of Rahul Kumar Das</h1><p>A collection of professional, academic, research, literary and event photographs of Rahul Kumar Das. These photographs are published on his official website.</p></div>
+<div id="photoFilters" class="photo-filters"></div>
+<div id="photoGrid" class="photo-grid"><div class="photo-empty">Loading photos...</div></div>
+</div>
+</main>
+<div id="photoLightbox" class="photo-lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer"><button class="photo-lightbox-close" id="photoLightboxClose" aria-label="Close photo viewer">×</button><img id="photoLightboxImage" src="" alt=""><div id="photoLightboxCaption" class="photo-lightbox-caption"></div></div>
+<footer><div class="container footer-grid"><div><h3>Rahul Kumar Das</h3><p>Books, Ideas, Research and Learning.</p><p><a href="index.html#contact">Contact Rahul Kumar Das</a></p></div><div><b>Explore</b><a href="index.html#books">Books</a><a href="index.html#research">Research</a><a href="index.html#articles">Articles</a><a href="photos.html">Photos</a></div><div><b>Account</b><a href="account.html">Create Account / Login</a><a href="library.html">My Library</a></div><div><b>Policies</b><a href="#">Privacy Policy</a><a href="#">Terms</a><a href="#">Refund Policy</a></div></div><div class="container footer-bottom">© 2026 Rahul Kumar Das. All rights reserved.</div></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="cloud-cms.js?v=20260926-1"></script>
+<script>
+let allPhotos=[];
+let selectedCategory="All";
+function esc(v){return window.escapeHtml?window.escapeHtml(v):String(v||"")}
+function renderFilters(){
+ const box=document.getElementById("photoFilters");
+ const cats=["All",...new Set(allPhotos.map(p=>String(p.category||"Other").trim()).filter(Boolean))];
+ box.innerHTML=cats.map(c=>'<button type="button" class="photo-filter '+(c===selectedCategory?'active':'')+'" data-category="'+esc(c)+'">'+esc(c)+'</button>').join("");
+ box.querySelectorAll(".photo-filter").forEach(b=>b.addEventListener("click",()=>{selectedCategory=b.dataset.category;renderFilters();renderPhotos()}));
+}
+function renderPhotos(){
+ const grid=document.getElementById("photoGrid");
+ const list=selectedCategory==="All"?allPhotos:allPhotos.filter(p=>String(p.category||"Other").trim()===selectedCategory);
+ if(!list.length){grid.innerHTML='<div class="photo-empty">No photographs are available in this category yet.</div>';return}
+ grid.innerHTML=list.map((p,i)=>{
+   const title=esc(p.title||"Rahul Kumar Das");
+   const desc=esc(p.description||"");
+   const meta=[p.location,p.photo_date].filter(Boolean).map(esc).join(" · ");
+   return '<article class="photo-card" tabindex="0" data-index="'+i+'"><img src="'+esc(p.image_url)+'" alt="'+title+', Rahul Kumar Das" loading="lazy" decoding="async"><div class="photo-card-body"><h2>'+title+'</h2>'+(desc?'<p>'+desc+'</p>':'')+(meta?'<div class="photo-meta">'+meta+'</div>':'')+'</div></article>'
+ }).join("");
+ grid.querySelectorAll(".photo-card").forEach((card,i)=>{
+   const open=()=>openLightbox(list[i]);
+   card.addEventListener("click",open);
+   card.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();open()}});
+ });
+}
+function openLightbox(p){
+ document.getElementById("photoLightboxImage").src=p.image_url;
+ document.getElementById("photoLightboxImage").alt=(p.title||"Rahul Kumar Das")+", Rahul Kumar Das";
+ document.getElementById("photoLightboxCaption").textContent=[p.title,p.description,p.location].filter(Boolean).join(" · ");
+ document.getElementById("photoLightbox").classList.add("open");
+}
+function closeLightbox(){document.getElementById("photoLightbox").classList.remove("open");document.getElementById("photoLightboxImage").src=""}
+document.getElementById("photoLightboxClose").onclick=closeLightbox;
+document.getElementById("photoLightbox").addEventListener("click",e=>{if(e.target.id==="photoLightbox")closeLightbox()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeLightbox()});
+document.getElementById("menuBtn")?.addEventListener("click",()=>{const n=document.getElementById("mainNav");n.style.display=n.style.display==="flex"?"none":"flex"});
+window.addEventListener("load",async()=>{
+ try{
+   allPhotos=await rkdCloud.getPhotos();
+   renderFilters();renderPhotos();
+   const images=allPhotos.slice(0,12).map(p=>p.image_url).filter(Boolean);
+   if(images.length){
+     const data=document.getElementById("profileStructuredData");
+     const obj=JSON.parse(data.textContent);
+     obj.mainEntity.image=images;
+     data.textContent=JSON.stringify(obj);
+   }
+ }catch(e){
+   console.error(e);
+   document.getElementById("photoGrid").innerHTML='<div class="photo-empty">Photos are temporarily unavailable.</div>';
+ }
+});
+</script>
+</body>
+</html>
