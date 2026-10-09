@@ -14,7 +14,7 @@
 </select></div>
 <div id="bookCount" style="margin:18px 0;font-size:13px;color:#6c665e"></div><div class="product-grid" id="allBooks"></div></div></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const BOOKS_REST_URL="https://ucehhsythixyvhrzwlth.supabase.co/rest/v1/books?select=*&order=id.asc";
+const BOOKS_REST_URL="https://ucehhsythixyvhrzwlth.supabase.co/rest/v1/books?select=*&order=created_at.desc.nullslast,id.desc";
 const BOOKS_REST_KEY="sb_publishable_bK03-qntjRlai8Q7yybHzw_JYn3FQrC";
 let allCloudBooks=[];
 const FALLBACK_BOOKS=[
