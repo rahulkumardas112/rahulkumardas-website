@@ -63,7 +63,7 @@ function dateValue(v){const n=v?new Date(v).getTime():0;return Number.isFinite(n
 async function renderRecentlyAdded(){
  const grid=document.getElementById("recentlyAddedGrid");if(!grid)return;
  const items=[];
- (window.rkdBooksCache||[]).filter(b=>String(b.status||"Published").toLowerCase()!=="draft").forEach(b=>items.push({kind:"Book",title:b.title||"Untitled Book",description:b.desc||b.description||"Explore this book by Rahul Kumar Das.",date:dateValue(b.createdAt||b.created_at),fallback:Number(b.id||0),image:b.cover||b.cover_url||"",url:"book.html?id="+encodeURIComponent(String(b.id)),label:"View book"}));
+ ((typeof getBooks==="function"?getBooks():window.rkdBooksCache)||[]).filter(b=>String(b.status||"Published").toLowerCase()!=="draft").forEach(b=>items.push({kind:"Book",title:b.title||"Untitled Book",description:b.desc||b.description||"Explore this book by Rahul Kumar Das.",date:dateValue(b.createdAt||b.created_at),fallback:Number(b.id||0),image:b.cover||b.cover_url||"",url:"book.html?id="+encodeURIComponent(String(b.id)),label:"View book"}));
  try{
   const settings=await window.rkdCloud.getSettings();
   (Array.isArray(settings.videos)?settings.videos:[]).forEach((v,i)=>{const id=recentVideoId(v.youtube);if(!id)return;items.push({kind:v.type==="short"?"YouTube Short":"Chapter Video",title:v.title||"Chapter video",description:v.description||"Watch a video by Rahul Kumar Das.",date:dateValue(v.addedAt||v.createdAt),fallback:i,image:"https://i.ytimg.com/vi/"+id+"/mqdefault.jpg",url:"videos.html",label:"Watch video"})});
