@@ -130,7 +130,7 @@ async function renderPhotos(){const a=await photos();photoList.innerHTML=a.lengt
 photoForm.onsubmit=async e=>{e.preventDefault();const f=photoFile.files[0];if(!f)return;photoSave.disabled=true;photoSave.textContent="Uploading...";try{await savePhoto({title:photoTitle.value.trim(),category:photoCategory.value,image:await readFile(f),fileName:f.name,createdAt:Date.now()});photoForm.reset();await renderPhotos();alert("Photo uploaded successfully")}catch(err){console.error(err);alert("Could not upload the photo. Please try again.")}finally{photoSave.disabled=false;photoSave.textContent="Upload Photo"}};
 async function deletePhoto(id){if(!confirm("Delete this photo?"))return;await removePhoto(id);await renderPhotos()}
 seedDefaultBooks().then(()=>{render();renderPhotos();loadSettings()}).catch(e=>{console.error(e);render();renderPhotos();loadSettings()});
-</script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="cloud-cms.js"></script><script>
+</script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="cloud-cms.js?v=20261009-1"></script><script>
 (function(){
 let cloudBooks=[];
 window.guard=async function guard(){const u=await rkdCloud.user();if(!u){location.href="login.html";return null}const {data,error}=await rkdSupabase.from("admin_users").select("id").eq("id",u.id).maybeSingle();if(error||!data){alert("This account is not authorized to access the Admin panel.");location.href="index.html";return null}return u}
