@@ -19,7 +19,7 @@
 <form onsubmit="placeOrder(event)"><div class="form-grid"><label>Full Name<input id="customerName" required></label><label>Email<input id="customerEmail" type="email" required></label><label class="full" id="referenceLabel">UPI Transaction / UTR Number<input id="utr" required placeholder="Enter the transaction reference number"></label><div class="full"><button id="submitBtn" class="btn dark">Submit Order</button></div></div></form></div></div><div id="thankyou" class="admin-panel thankyou"><h1>Order Submitted</h1><p id="thankMessage">Your payment details have been submitted successfully.</p><p>After the payment is verified, you will receive a secure reading link. Sign in using the same email address used for this purchase to access the ebook in My Library.</p><a class="btn dark" href="books.html">Continue Exploring Books</a></div></div></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
 const SB_URL="https://ucehhsythixyvhrzwlth.supabase.co",SB_KEY="sb_publishable_bK03-qntjRlai8Q7yybHzw_JYn3FQrC",sb=window.supabase.createClient(SB_URL,SB_KEY);
 const id=new URLSearchParams(location.search).get("id")||new URLSearchParams(location.search).get("i");
-let book=null, baseInternationalInr=0, rates={USD:0.0108,GBP:0.0080,EUR:0.0092,CAD:0.0147,AUD:0.0164,AED:0.0397,SGD:0.0140,NZD:0.0182,JPY:1.56,MYR:0.046,THB:0.390,ZAR:0.192,CHF:0.0091};
+let book=null, baseInternationalInr=0, internationalUsdPrice=5.50, rates={USD:0.0108,GBP:0.0080,EUR:0.0092,CAD:0.0147,AUD:0.0164,AED:0.0397,SGD:0.0140,NZD:0.0182,JPY:1.56,MYR:0.046,THB:0.390,ZAR:0.192,CHF:0.0091};
 const currencySymbols={USD:"$",GBP:"£",EUR:"€",CAD:"C$",AUD:"A$",AED:"AED ",SGD:"S$",NZD:"NZ$",JPY:"¥",MYR:"RM ",THB:"฿",ZAR:"R ",CHF:"CHF "};
 async function init(){
  try{
@@ -27,7 +27,7 @@ async function init(){
   const {data,error}=id?await q.eq("id",Number(id)).single():await q.order("id",{ascending:true}).limit(1).single();
   if(error)throw error; book=data;
   if(!book.pdf_path)throw new Error("This ebook is not available for digital delivery yet. Please choose another ebook.");
-  const indianPrice=Number(book.price||0); baseInternationalInr=indianPrice*2;
+  const indianPrice=Number(book.price||0); baseInternationalInr=internationalUsdPrice/(rates.USD||0.0108);
   product.textContent=book.title; amount.textContent="Indian price: ₹"+indianPrice.toFixed(0);
   const {data:s}=await sb.from("site_settings").select("data").eq("id","site").maybeSingle();
   const p=s?.data?.payment||JSON.parse(localStorage.getItem("rkd_payment")||"{}");
@@ -46,14 +46,14 @@ async function updateInternationalPrice(){
  const selected=country.options[country.selectedIndex]; const preferred=selected?.dataset?.currency;
  if(preferred && preferred!=="INR" && currency.value!==preferred)currency.value=preferred;
  if(isIndia){amount.textContent="Indian price: ₹"+Number(book?.price||0).toFixed(0);return;}
- const cur=currency.value; const value=baseInternationalInr*(rates[cur]||rates.USD);
+ const cur=currency.value; const value=cur==="USD"?internationalUsdPrice:baseInternationalInr*(rates[cur]||rates.USD);
  paypalPrice.textContent=(currencySymbols[cur]||"")+value.toFixed(cur==="JPY"?0:2)+" "+cur;
 }
 function copyPaypalEmail(){navigator.clipboard?.writeText("rahulkumardas112@gmail.com").then(()=>alert("PayPal ID copied."));}
 async function placeOrder(e){
  e.preventDefault(); if(!book)return; submitBtn.disabled=true; submitBtn.textContent="Submitting…";
  try{
-  const isIndia=country.value==="IN"; const amountToRecord=isIndia?Number(book.price||0):baseInternationalInr;
+  const isIndia=country.value==="IN"; const amountToRecord=isIndia?Number(book.price||0):internationalUsdPrice;
   const payload={book_id:book.id,book_title:book.title,amount:amountToRecord,customer_name:customerName.value.trim(),customer_email:customerEmail.value.trim(),utr:utr.value.trim(),status:"pending"};
   const {error}=await sb.from("orders").insert(payload); if(error)throw error;
   checkoutBox.style.display="none";thankyou.style.display="block";
