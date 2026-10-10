@@ -22,7 +22,7 @@
 <header class="site-header"><div class="container nav-wrap"><a class="brand" href="index.html"><span>Rahul Kumar Das</span><small>Author · Academic · Educator · Researcher</small></a><nav style="display:flex"><a href="books.html">Books</a><a href="library.html">My Library</a></nav></div></header>
 <main class="inner-page"><div class="container">
 <div class="split"><div class="cover" id="cover" style="max-width:430px"></div><div><p class="eyebrow">RAHUL KUMAR DAS</p><h1 class="page-title" id="title"></h1><p id="desc"></p><section id="description" style="margin-top:28px"><h2>About the Book</h2><p id="fullDescription" style="line-height:1.9;white-space:pre-line"></p></section><p>Explore the book and read a free sample before deciding to purchase it.</p><p class="price" id="price"></p><div class="actions"><a class="btn dark" id="buy">Buy Ebook</a><a class="btn light" href="#sample">Read Sample</a><button class="btn light" type="button" id="shareBookButton">Share Book</button></div></div></div>
-<section class="sample" id="sample"><p class="eyebrow">FREE PREVIEW</p><h2 id="sampleTitle">Read a Sample</h2><p class="sample-note">Read the first five pages of this book online before purchasing the complete edition.</p><div id="sampleContent"><div class="pdf-sample-status">Loading sample…</div></div></section>
+<section class="sample" id="sample"><p class="eyebrow">FREE PREVIEW</p><h2 id="sampleTitle">Read a Sample</h2><p class="sample-note">Read the first ten pages of this book online before purchasing the complete edition.</p><div id="sampleContent"><div class="pdf-sample-status">Loading sample…</div></div></section>
 </div></main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="cloud-cms.js"></script><script src="app.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
@@ -53,7 +53,7 @@ async function showPdfSample(pdfUrl){
  try{
    const pdf=await pdfjsLib.getDocument({url:pdfUrl}).promise;
    if(taskId!==samplePdfTask)return;
-   const total=Math.min(5,pdf.numPages);
+   const total=Math.min(10,pdf.numPages);
    if(!total){target.innerHTML='<div class="sample-page"><p>No preview pages are available for this book.</p></div>';return;}
    target.innerHTML='<div class="pdf-sample-shell"><div class="pdf-sample-status" id="pdfSampleStatus" role="status">Loading page 1 of '+total+'…</div><div class="pdf-sample-page"><canvas id="pdfSampleCanvas" aria-label="Book sample page"></canvas></div><div class="pdf-sample-nav"><button type="button" id="pdfSamplePrev" disabled>← Previous</button><span class="pdf-sample-count" id="pdfSampleCount">Page 1 of '+total+'</span><button type="button" id="pdfSampleNext" '+(total===1?'disabled':'')+'>Next →</button></div><p class="sample-note" style="text-align:center">Online preview limited to the first '+total+' page'+(total===1?'':'s')+'.</p></div>';
    let current=1, busy=false;
