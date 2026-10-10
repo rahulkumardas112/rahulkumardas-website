@@ -3,6 +3,7 @@ Allow: /
 
 Disallow: /admin.html
 Disallow: /admin-reviews.html
+Disallow: /analytics-admin.html
 Disallow: /checkout.html
 Disallow: /account.html
 Disallow: /library.html
