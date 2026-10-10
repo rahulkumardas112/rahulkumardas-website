@@ -10,7 +10,7 @@
 <script>
 (function(){
 const sb=window.rkdSupabase;const list=document.getElementById('adminProjects');const msg=document.getElementById('adminMessage');
-const labels={editing:'Manuscript editing',cover_design:'Book cover design',interior_formatting:'Interior formatting',publishing_assistance:'Publishing assistance',complete_package:'Complete book package'};
+const labels={editing:'Manuscript editing',cover_design:'Book cover design',interior_formatting:'Interior formatting',publishing_assistance:'Book Publishing Service',complete_package:'Share Your Ideas — Complete Book Creation (₹9,999)'};
 function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function show(text,ok=true){msg.className='admin-message '+(ok?'ok':'bad');msg.textContent=text}
 async function getAdmin(){const {data:{user},error}=await sb.auth.getUser();if(error)throw error;if(!user)return null;const {data,error:adminError}=await sb.from('admin_users').select('id').eq('id',user.id).maybeSingle();if(adminError)throw adminError;return data?user:null}
