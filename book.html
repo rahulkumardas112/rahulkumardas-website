@@ -88,6 +88,14 @@ async function showPdfSample(pdfUrl){
 function renderBook(b){
  const title=b.title||"Book";
  document.title=title+" | Rahul Kumar Das";
+ const metaDesc=(b.desc||b.description||"Explore this book by Rahul Kumar Das. Read the description and available sample before purchasing.").replace(/\\s+/g," ").slice(0,300);
+ let descriptionMeta=document.querySelector('meta[name="description"]');if(!descriptionMeta){descriptionMeta=document.createElement("meta");descriptionMeta.name="description";document.head.appendChild(descriptionMeta)}descriptionMeta.content=metaDesc;
+ let ogTitle=document.querySelector('meta[property="og:title"]');if(!ogTitle){ogTitle=document.createElement("meta");ogTitle.setAttribute("property","og:title");document.head.appendChild(ogTitle)}ogTitle.content=document.title;
+ let ogDesc=document.querySelector('meta[property="og:description"]');if(!ogDesc){ogDesc=document.createElement("meta");ogDesc.setAttribute("property","og:description");document.head.appendChild(ogDesc)}ogDesc.content=metaDesc;
+ let canonical=document.querySelector('link[rel="canonical"]');if(!canonical){canonical=document.createElement("link");canonical.rel="canonical";document.head.appendChild(canonical)}canonical.href=location.origin+location.pathname+"?id="+encodeURIComponent(String(b.id||bookId||""));
+ let bookLd=document.getElementById("bookStructuredData");if(!bookLd){bookLd=document.createElement("script");bookLd.id="bookStructuredData";bookLd.type="application/ld+json";document.head.appendChild(bookLd)}
+ bookLd.textContent=JSON.stringify({"@context":"https://schema.org","@type":"Product","name":title,"description":metaDesc,"image":cover||undefined,"brand":{"@type":"Person","name":"Rahul Kumar Das"},"offers":{"@type":"Offer","price":Number(b.price||0),"priceCurrency":"INR","availability":b.pdf||b.pdf_path?"https://schema.org/InStock":"https://schema.org/PreOrder","url":location.href}});
+
  document.getElementById("title").textContent=title;
  document.getElementById("desc").textContent=b.desc||b.description||"";
  document.getElementById("fullDescription").textContent=b.desc||b.description||"Complete description will be added here.";
