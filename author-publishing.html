@@ -107,8 +107,9 @@ form.addEventListener('submit',async e=>{
   const service=document.getElementById('service').value;
   const words=document.getElementById('words').value;
   const row={author_id:user.id,author_name:document.getElementById('authorName').value.trim(),author_email:user.email||document.getElementById('authorEmail').value.trim(),book_title:document.getElementById('bookTitle').value.trim(),genre:document.getElementById('genre').value,manuscript_language:document.getElementById('language').value,approximate_words:words?Number(words):null,service_type:service,package_name:serviceLabels[service],quoted_amount:service==='complete_package'?9999:null,brief:document.getElementById('brief').value.trim(),manuscript_path:manuscriptPath,manuscript_filename:manuscriptFilename};
-  const {error:insertError}=await sb.from('author_service_projects').insert(row);
+  const {data:insertedProject,error:insertError}=await sb.from('author_service_projects').insert(row).select('id').single();
   if(insertError){if(manuscriptPath)await sb.storage.from('author-manuscripts').remove([manuscriptPath]);throw insertError}
+  try{const {error:notificationError}=await sb.functions.invoke('notify-publishing-event',{body:{type:'project_submitted',projectId:insertedProject.id}});if(notificationError)console.warn('Project saved, but admin email notification failed:',notificationError)}catch(notificationError){console.warn('Project saved, but admin email notification failed:',notificationError)}
   form.reset();document.getElementById('authorEmail').value=user.email||'';document.getElementById('authorName').value=user.user_metadata?.full_name||user.user_metadata?.name||'';
   notify('Your project request has been submitted. We will review the details and confirm the scope, quote and next steps before payment.',true);
   await refreshProjects(user);
