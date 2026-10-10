@@ -33,7 +33,7 @@ function render(){
    const desc=esc((b.description||"").length>150?b.description.slice(0,150).trim()+"…":(b.description||""));
    const cover=b.cover_url?'<img src="'+esc(b.cover_url)+'" alt="'+title+'" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;border-radius:6px">':'<div style="display:flex;align-items:center;justify-content:center;height:100%;padding:18px;text-align:center;font-weight:600">'+title+'</div>';
    const buy=b.buy_link||("checkout.html?id="+id);
-   return '<article class="product-card"><div class="cover">'+cover+'</div><div class="product-body"><h3>'+title+'</h3><p class="book-excerpt">'+desc+'</p><span class="price">₹'+Number(b.price||0)+' <small class="intl-price" data-inr="'+Number(b.price||0)*2+'"> · $5.50</small></span><div class="card-actions"><a class="small-btn" href="book.html?id='+id+'">View Book</a><a class="small-btn primary" href="'+esc(buy)+'">Buy Ebook</a></div></div></article>';
+   return '<article class="product-card"><div class="cover">'+cover+'</div><div class="product-body"><h3>'+title+'</h3><p class="book-excerpt">'+desc+'</p><span class="price">₹'+Number(b.price||0)+' <small class="intl-price" data-inr="'+Number(b.price||0)*2+'"> · $5.50</small></span><div class="card-actions"><a class="small-btn" href="book.html?id='+id+'">View Book</a><a class="small-btn" href="book.html?id='+id+'#sample">Read Sample</a><a class="small-btn primary" href="'+esc(buy)+'">Buy Ebook</a></div></div></article>';
  }).join("");\n updateIntlPrices();
 }
 async function loadAllBooks(){
