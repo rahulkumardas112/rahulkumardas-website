@@ -54,7 +54,7 @@ async function placeOrder(e){
  e.preventDefault(); if(!book)return; submitBtn.disabled=true; submitBtn.textContent="Submitting…";
  try{
   const isIndia=country.value==="IN"; const amountToRecord=isIndia?Number(book.price||0):internationalUsdPrice;
-  const payload={book_id:book.id,book_title:book.title,amount:amountToRecord,customer_name:customerName.value.trim(),customer_email:customerEmail.value.trim(),utr:utr.value.trim(),status:"pending"};
+  const payload={book_id:book.id,book_title:book.title,amount:amountToRecord,currency:isIndia?"INR":currency.value,country_code:country.value,customer_name:customerName.value.trim(),customer_email:customerEmail.value.trim(),utr:utr.value.trim(),status:"pending"};
   const {error}=await sb.from("orders").insert(payload); if(error)throw error;
   checkoutBox.style.display="none";thankyou.style.display="block";
   thankMessage.textContent=isIndia?"Your order has been received. Your ebook will be released after payment verification.":"Your international payment details have been received. Your ebook will be released after PayPal payment verification.";
