@@ -1,4 +1,10 @@
 User-agent: *
 Allow: /
 
+Disallow: /admin.html
+Disallow: /admin-reviews.html
+Disallow: /checkout.html
+Disallow: /account.html
+Disallow: /library.html
+
 Sitemap: https://rahulkumardas.in/sitemap.xml
