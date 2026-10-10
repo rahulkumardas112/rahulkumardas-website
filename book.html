@@ -3,19 +3,28 @@
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Book | Rahul Kumar Das</title><link rel="stylesheet" href="styles.css?v=20260922">
 <style>
-.sample{margin-top:45px;max-width:820px;margin-left:auto;margin-right:auto}
+.sample{margin-top:45px;max-width:900px;margin-left:auto;margin-right:auto}
 .sample-page{background:#fffdf8;border:1px solid #e6e0d5;padding:30px 34px;margin:18px 0;border-radius:8px;line-height:1.85;box-shadow:0 3px 14px rgba(0,0,0,.04)}
 .sample-page h3{margin-top:0}
-.sample-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.sample-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center;margin:16px 0}
 .sample-note{color:#777;font-size:14px}
+.pdf-sample-shell{background:#eeeae2;border:1px solid #e1dbd1;border-radius:10px;padding:16px;margin-top:18px}
+.pdf-sample-page{background:#fff;max-width:780px;margin:0 auto 16px;box-shadow:0 3px 14px rgba(0,0,0,.12);min-height:240px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.pdf-sample-page canvas{display:block;width:100%;height:auto}
+.pdf-sample-status{text-align:center;color:#625d56;padding:18px;font-size:14px}
+.pdf-sample-nav{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin:16px 0}
+.pdf-sample-nav button{border:0;border-radius:6px;background:#24211d;color:#fff;padding:11px 17px;font:inherit;cursor:pointer}
+.pdf-sample-nav button:disabled{opacity:.4;cursor:not-allowed}
+.pdf-sample-count{font-size:13px;color:#625d56;min-width:115px;text-align:center}
+@media(max-width:600px){.pdf-sample-shell{padding:7px}.sample-page{padding:22px 18px}}
 </style></head>
 <body>
 <header class="site-header"><div class="container nav-wrap"><a class="brand" href="index.html"><span>Rahul Kumar Das</span><small>Author · Academic · Educator · Researcher</small></a><nav style="display:flex"><a href="books.html">Books</a><a href="library.html">My Library</a></nav></div></header>
 <main class="inner-page"><div class="container">
 <div class="split"><div class="cover" id="cover" style="max-width:430px"></div><div><p class="eyebrow">RAHUL KUMAR DAS</p><h1 class="page-title" id="title"></h1><p id="desc"></p><section id="description" style="margin-top:28px"><h2>About the Book</h2><p id="fullDescription" style="line-height:1.9;white-space:pre-line"></p></section><p>Explore the book and read a free sample before deciding to purchase it.</p><p class="price" id="price"></p><div class="actions"><a class="btn dark" id="buy">Buy Ebook</a><a class="btn light" href="#sample">Read Sample</a><button class="btn light" type="button" id="shareBookButton">Share Book</button></div></div></div>
-<section class="sample" id="sample"><p class="eyebrow">FREE PREVIEW</p><h2 id="sampleTitle">Read a Sample</h2><p class="sample-note">Read selected pages from this book before purchasing the complete edition.</p><div id="sampleContent"></div></section>
+<section class="sample" id="sample"><p class="eyebrow">FREE PREVIEW</p><h2 id="sampleTitle">Read a Sample</h2><p class="sample-note">Read the first five pages of this book online before purchasing the complete edition.</p><div id="sampleContent"><div class="pdf-sample-status">Loading sample…</div></div></section>
 </div></main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="cloud-cms.js"></script><script src="app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="cloud-cms.js"></script><script src="app.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
 const params=new URLSearchParams(location.search);
 const bookId=params.get("id");
@@ -34,6 +43,48 @@ async function renderBookPage(){
    if(b) renderBook(b);
  }catch(e){console.error("Book page load failed:",e);}
 }
+let samplePdfTask=0;
+async function showPdfSample(pdfUrl){
+ const target=document.getElementById("sampleContent");
+ const taskId=++samplePdfTask;
+ target.innerHTML='<div class="pdf-sample-status" role="status">Preparing the five-page sample…</div>';
+ if(!window.pdfjsLib){target.innerHTML='<div class="sample-page"><p>The sample reader could not load. Please refresh and try again.</p></div>';return;}
+ pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+ try{
+   const pdf=await pdfjsLib.getDocument({url:pdfUrl}).promise;
+   if(taskId!==samplePdfTask)return;
+   const total=Math.min(5,pdf.numPages);
+   if(!total){target.innerHTML='<div class="sample-page"><p>No preview pages are available for this book.</p></div>';return;}
+   target.innerHTML='<div class="pdf-sample-shell"><div class="pdf-sample-status" id="pdfSampleStatus" role="status">Loading page 1 of '+total+'…</div><div class="pdf-sample-page"><canvas id="pdfSampleCanvas" aria-label="Book sample page"></canvas></div><div class="pdf-sample-nav"><button type="button" id="pdfSamplePrev" disabled>← Previous</button><span class="pdf-sample-count" id="pdfSampleCount">Page 1 of '+total+'</span><button type="button" id="pdfSampleNext" '+(total===1?'disabled':'')+'>Next →</button></div><p class="sample-note" style="text-align:center">Online preview limited to the first '+total+' page'+(total===1?'':'s')+'.</p></div>';
+   let current=1, busy=false;
+   const canvas=document.getElementById("pdfSampleCanvas"), prev=document.getElementById("pdfSamplePrev"), next=document.getElementById("pdfSampleNext"), count=document.getElementById("pdfSampleCount"), status=document.getElementById("pdfSampleStatus");
+   async function drawPage(number){
+     if(busy||taskId!==samplePdfTask)return;
+     busy=true;prev.disabled=true;next.disabled=true;status.textContent="Loading page "+number+" of "+total+"…";
+     try{
+       const page=await pdf.getPage(number);
+       const base=page.getViewport({scale:1});
+       const maxWidth=Math.min(780,Math.max(280,target.clientWidth-36));
+       const viewport=page.getViewport({scale:maxWidth/base.width});
+       const ratio=Math.min(window.devicePixelRatio||1,2);
+       const ctx=canvas.getContext("2d");
+       canvas.width=Math.floor(viewport.width*ratio);canvas.height=Math.floor(viewport.height*ratio);
+       canvas.style.width=Math.floor(viewport.width)+"px";canvas.style.height=Math.floor(viewport.height)+"px";
+       await page.render({canvasContext:ctx,viewport,transform:ratio===1?null:[ratio,0,0,ratio,0,0]}).promise;
+       current=number;count.textContent="Page "+current+" of "+total;status.textContent="Sample page "+current;
+       prev.disabled=current<=1;next.disabled=current>=total;
+     }catch(err){status.textContent="This page could not be displayed. Please refresh and try again.";}
+     finally{busy=false;}
+   }
+   prev.onclick=()=>{if(current>1)drawPage(current-1)};
+   next.onclick=()=>{if(current<total)drawPage(current+1)};
+   await drawPage(1);
+ }catch(err){
+   if(taskId!==samplePdfTask)return;
+   console.error("PDF sample could not be opened:",err);
+   target.innerHTML='<div class="sample-page"><p>The sample could not be loaded right now. Please try again later.</p></div>';
+ }
+}
 function renderBook(b){
  const title=b.title||"Book";
  document.title=title+" | Rahul Kumar Das";
@@ -43,15 +94,17 @@ function renderBook(b){
  document.getElementById("price").textContent="₹"+(b.price||0);
  const cover=b.cover||b.cover_url||"";
  document.getElementById("cover").innerHTML=cover?'<img src="'+cover+'" alt="'+title.replace(/"/g,"&quot;")+'" style="width:100%;height:100%;object-fit:cover;border-radius:6px">':"<span>"+title+"</span>";
- const hasPdf=!!(b.pdf||b.pdf_path);
+ const pdfUrl=b.pdf||b.pdf_path||"";
+ const hasPdf=!!pdfUrl;
  const buy=document.getElementById("buy");
  if(hasPdf){ buy.href=b.buyLink||b.buy_link||("checkout.html?id="+encodeURIComponent(String(b.id))); buy.textContent="Buy Ebook"; buy.style.pointerEvents="auto"; buy.style.opacity="1"; buy.removeAttribute("aria-disabled"); }
  else{ buy.removeAttribute("href"); buy.textContent="Ebook PDF Coming Soon"; buy.style.pointerEvents="none"; buy.style.opacity=".55"; buy.setAttribute("aria-disabled","true"); }
  document.getElementById("sampleTitle").textContent=b.sampleTitle||"Read a Sample";
  const shareButton=document.getElementById("shareBookButton");
  if(shareButton)shareButton.onclick=()=>shareBook(b.id,title);
+ if(pdfUrl){showPdfSample(pdfUrl);return;}
  const raw=(b.samplePages||b.sample_pages||"").trim();
- const parts=raw?raw.split(/\n\s*\n/).filter(Boolean):[];
+ const parts=raw?raw.split(/\n\s*\n/).filter(Boolean).slice(0,5):[];
  document.getElementById("sampleContent").innerHTML=parts.length?parts.map((p,n)=>'<article class="sample-page"><h3>Sample Page '+(n+1)+'</h3><p>'+p.replace(/\n/g,"<br>")+'</p></article>').join(""):'<div class="sample-page"><p>A free sample has not been added for this book yet.</p></div>';
 }
 document.addEventListener("DOMContentLoaded",renderBookPage);
