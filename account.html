@@ -16,4 +16,5 @@ document.getElementById("loginForm").addEventListener("submit",async e=>{e.preve
 document.getElementById("savePrefs").addEventListener("click",async()=>{try{const {data:{user}}=await rkdSupabase.auth.getUser();if(!user)throw new Error("Please log in first.");await saveSubscriber(user,user.user_metadata?.full_name||"");show("Your notification preferences have been saved.")}catch(e){show(e.message||"Could not save preferences.",false)}});
 document.getElementById("logout").addEventListener("click",async()=>{await rkdSupabase.auth.signOut();location.reload()});
 loadAccount();
-</script></body></html>
+</script><script src="analytics.js" defer></script>
+</body></html>
