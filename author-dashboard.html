@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Author Dashboard | Rahul Kumar Das Publishing</title>
+<meta name="description" content="Private author workspace to track book publication, sales, royalties, payments and manuscript projects.">
+<link rel="stylesheet" href="styles.css?v=20261010">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="cloud-cms.js?v=20261010"></script>
+<style>
+:root{--ad-ink:#242720;--ad-muted:#73766e;--ad-line:#e4e6df;--ad-paper:#f7f8f4;--ad-green:#234b3d}
+body{background:var(--ad-paper)}.ad-wrap{max-width:1180px;margin:auto;padding:38px 22px 70px}.ad-top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:28px}.ad-brand{font:600 27px/1.1 "Playfair Display",serif;color:var(--ad-ink)}.ad-sub{color:var(--ad-muted);font-size:13px;margin-top:6px}.ad-actions{display:flex;gap:10px;flex-wrap:wrap}.ad-btn{border:1px solid var(--ad-line);background:white;color:var(--ad-ink);border-radius:8px;padding:11px 15px;font:600 13px inherit;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}.ad-btn.primary{background:var(--ad-green);color:white;border-color:var(--ad-green)}.ad-welcome{background:#203f34;color:white;padding:28px;border-radius:15px;display:flex;justify-content:space-between;gap:20px;align-items:center;flex-wrap:wrap}.ad-welcome h1{font:600 clamp(28px,4vw,40px)/1.12 "Playfair Display",serif;margin:0 0 9px}.ad-welcome p{color:#dce6df;margin:0;max-width:650px}.ad-eyebrow{text-transform:uppercase;letter-spacing:.15em;font-size:10px;font-weight:700;color:#a9c2b2;margin-bottom:12px}.ad-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:18px 0 30px}.ad-stat,.ad-card{background:white;border:1px solid var(--ad-line);border-radius:12px;padding:20px}.ad-stat-label{font-size:12px;color:var(--ad-muted)}.ad-stat-value{font:600 29px "Playfair Display",serif;margin-top:8px;overflow-wrap:anywhere}.ad-stat-note{font-size:11px;color:var(--ad-muted);margin-top:5px}.ad-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(280px,.8fr);gap:18px;align-items:start}.ad-card{margin-bottom:18px}.ad-card h2{font:600 24px "Playfair Display",serif;margin:0 0 7px}.ad-desc{font-size:13px;color:var(--ad-muted);line-height:1.6;margin:0 0 17px}.ad-book{display:grid;grid-template-columns:68px minmax(0,1fr);gap:14px;padding:16px 0;border-top:1px solid var(--ad-line)}.ad-cover{width:68px;height:96px;object-fit:cover;background:#eeeee8;border-radius:5px}.ad-cover-placeholder{width:68px;height:96px;background:#e8ece6;border-radius:5px;display:flex;align-items:center;justify-content:center;color:#65766b;font-size:11px;text-align:center;padding:5px}.ad-book h3{font-size:16px;margin:0 0 5px}.ad-meta{font-size:12px;color:var(--ad-muted);line-height:1.8}.ad-pill{display:inline-block;border-radius:30px;background:#eef2ed;padding:5px 9px;font-size:10px;text-transform:capitalize;color:#315344}.ad-table-wrap{overflow:auto}.ad-table{width:100%;border-collapse:collapse;font-size:12px}.ad-table th,.ad-table td{text-align:left;padding:11px 8px;border-bottom:1px solid var(--ad-line);white-space:nowrap}.ad-table th{color:var(--ad-muted);font-weight:600}.ad-empty{padding:22px 0;color:var(--ad-muted);font-size:13px;line-height:1.6}.ad-message{display:none;padding:12px;border-radius:8px;margin:12px 0;font-size:13px}.ad-message.ok{display:block;background:#e8f4ea;color:#245c36}.ad-message.bad{display:block;background:#fff0ed;color:#8d2f24}.ad-form{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}.ad-field{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600}.ad-field.full{grid-column:1/-1}.ad-field input,.ad-field select,.ad-field textarea{width:100%;box-sizing:border-box;border:1px solid #d9ddd4;border-radius:7px;background:white;padding:11px;font:inherit;color:var(--ad-ink)}.ad-field textarea{min-height:78px;resize:vertical}.ad-note{font-size:11px;color:var(--ad-muted);line-height:1.6}.ad-admin{border:1px solid #d7e0d8;background:#f3f7f2}.ad-hidden{display:none!important}.ad-auth{max-width:480px;margin:70px auto;background:white;padding:28px;border:1px solid var(--ad-line);border-radius:12px}.ad-auth h1{font:600 30px "Playfair Display",serif}.ad-foot{color:var(--ad-muted);font-size:11px;text-align:center;margin-top:22px}
+@media(max-width:850px){.ad-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.ad-grid{grid-template-columns:1fr}}
+@media(max-width:520px){.ad-wrap{padding:24px 14px 50px}.ad-stats{gap:8px}.ad-stat{padding:14px}.ad-stat-value{font-size:23px}.ad-form{grid-template-columns:1fr}.ad-field.full{grid-column:auto}.ad-welcome{padding:22px}}
+</style></head>
+<body>
+<main class="ad-wrap">
+<section id="authPanel" class="ad-auth">
+<a href="index.html" class="ad-btn">Home</a><h1>Author Dashboard</h1><p class="ad-desc">Log in to access your books, publication progress, sales and royalty statements. If you are new, create an account first.</p>
+<div id="authMessage" class="ad-message"></div>
+<form id="loginForm" class="ad-form"><label class="ad-field full">Email address<input id="loginEmail" type="email" required autocomplete="email"></label><label class="ad-field full">Password<input id="loginPassword" type="password" required autocomplete="current-password"></label><div class="ad-field full"><button class="ad-btn primary" type="submit">Log in to dashboard</button></div></form>
+<p class="ad-note">New author? <a href="account.html">Create an account</a>, then submit your manuscript through our <a href="author-publishing.html#submit-project">publishing services page</a>.</p>
+</section>
+<section id="dashboard" class="ad-hidden">
+<header class="ad-top"><div><div class="ad-brand">Author Workspace</div><div class="ad-sub">Your books, publishing progress and royalty records in one place</div></div><div class="ad-actions"><a class="ad-btn" href="author-publishing.html#submit-project">Submit a manuscript</a><a class="ad-btn" href="books.html">Browse books</a><button id="logoutBtn" class="ad-btn">Log out</button></div></header>
+<section class="ad-welcome"><div><div class="ad-eyebrow">Private author dashboard</div><h1>Welcome, <span id="authorName">Author</span></h1><p>Track your published books, sales figures and royalty updates. Royalty and sales information is updated by the publishing team when verified figures are available.</p></div><div><div class="ad-eyebrow">Account email</div><div id="authorEmail"></div></div></section>
+<div class="ad-stats">
+<div class="ad-stat"><div class="ad-stat-label">My Books</div><div class="ad-stat-value" id="statBooks">0</div><div class="ad-stat-note">Books linked to your account</div></div>
+<div class="ad-stat"><div class="ad-stat-label">Copies Sold</div><div class="ad-stat-value" id="statSold">0</div><div class="ad-stat-note">As recorded by the publisher</div></div>
+<div class="ad-stat"><div class="ad-stat-label">Total Royalty Earned</div><div class="ad-stat-value" id="statEarned">₹0</div><div class="ad-stat-note">Cumulative recorded royalty</div></div>
+<div class="ad-stat"><div class="ad-stat-label">Royalty Paid</div><div class="ad-stat-value" id="statPaid">₹0</div><div class="ad-stat-note">Payments marked as paid</div></div>
+</div>
+<div class="ad-grid"><div>
+<section class="ad-card"><h2>My Books</h2><p class="ad-desc">Publication status, book details and the sales and royalty records attached to each title.</p><div id="bookList"><div class="ad-empty">Loading your book records…</div></div></section>
+<section class="ad-card"><h2>Royalty Statements</h2><p class="ad-desc">A transparent history of the sales figures and royalty updates entered by the publishing team.</p><div class="ad-table-wrap"><table class="ad-table"><thead><tr><th>Period</th><th>Book</th><th>Copies sold</th><th>Royalty earned</th><th>Paid</th><th>Status</th></tr></thead><tbody id="royaltyRows"><tr><td colspan="6">Loading statements…</td></tr></tbody></table></div><button id="downloadStatement" class="ad-btn" style="margin-top:14px">Download statement CSV</button></section>
+<section class="ad-card"><h2>My Publishing Projects</h2><p class="ad-desc">Track manuscript editing, cover design, formatting and publishing assistance requested through this website.</p><div id="projectList" class="ad-empty">Loading project details…</div></section>
+</div><aside>
+<section class="ad-card"><h2>Account and support</h2><p class="ad-desc">Need to change book details, ask about a royalty entry or check your manuscript progress? Contact the publishing team.</p><p class="ad-meta"><strong>Next step</strong><br>Submit your manuscript or project brief securely through your account.</p><a class="ad-btn primary" href="author-publishing.html#submit-project">Start a publishing project</a><p class="ad-note" style="margin-top:15px">Royalty figures are entered by the publisher. Amounts shown here reflect records currently available in your account and are not live marketplace analytics.</p></section>
+<section id="adminPanel" class="ad-card ad-admin ad-hidden"><h2>Publisher controls</h2><p class="ad-desc">This section is visible only to authorised website administrators. Add a title to an author's dashboard or record a verified sales and royalty update.</p><div id="adminMessage" class="ad-message"></div>
+<form id="publicationForm" class="ad-form">
+<label class="ad-field full">Author account<select id="pubAuthor" required><option value="">Choose author</option></select></label>
+<label class="ad-field full">Book title<input id="pubTitle" required maxlength="180" placeholder="Book title"></label>
+<label class="ad-field">Publication status<select id="pubStatus"><option value="submitted">Submitted</option><option value="in_progress">In progress</option><option value="awaiting_author">Awaiting author</option><option value="published">Published</option><option value="on_hold">On hold</option></select></label>
+<label class="ad-field">Publication date<input id="pubDate" type="date"></label>
+<label class="ad-field">ISBN<input id="pubIsbn" maxlength="30"></label>
+<label class="ad-field">Cover image URL<input id="pubCover" type="url" placeholder="https://…"></label>
+<label class="ad-field full">Purchase link<input id="pubLink" type="url" placeholder="Website or marketplace link"></label>
+<label class="ad-field full">Royalty terms or notes<textarea id="pubTerms" maxlength="2000"></textarea></label>
+<div class="ad-field full"><button class="ad-btn primary" type="submit">Add book to author dashboard</button></div>
+</form>
+<hr style="border:0;border-top:1px solid #d7e0d8;margin:22px 0">
+<form id="royaltyForm" class="ad-form">
+<label class="ad-field full">Author's book<select id="royaltyBook" required><option value="">Choose a book</option></select></label>
+<label class="ad-field">Reporting period<input id="royaltyPeriod" required placeholder="e.g. September 2026"></label>
+<label class="ad-field">Copies sold in this update<input id="royaltyCopies" type="number" min="0" step="1" value="0" required></label>
+<label class="ad-field">Gross sales amount (₹)<input id="royaltyGross" type="number" min="0" step="0.01" value="0" required></label>
+<label class="ad-field">Royalty earned (₹)<input id="royaltyEarned" type="number" min="0" step="0.01" value="0" required></label>
+<label class="ad-field">Royalty paid in this update (₹)<input id="royaltyPaid" type="number" min="0" step="0.01" value="0" required></label>
+<label class="ad-field">Payment date<input id="royaltyDate" type="date"></label>
+<label class="ad-field">Payment reference<input id="royaltyReference" maxlength="120" placeholder="Optional reference"></label>
+<label class="ad-field">Record status<select id="royaltyStatus"><option value="recorded">Recorded</option><option value="approved">Approved</option><option value="paid">Paid</option><option value="adjusted">Adjusted</option></select></label>
+<label class="ad-field full">Notes<textarea id="royaltyNotes" maxlength="2000" placeholder="Optional details about this update"></textarea></label>
+<div class="ad-field full"><button class="ad-btn primary" type="submit">Save sales and royalty update</button></div>
+</form><p class="ad-note">Enter only the additional copies and royalty for this reporting update, not the lifetime totals, so dashboard totals do not double count.</p>
+</section>
+</aside></div>
+<div class="ad-foot">Private author information is protected by account based database permissions. © 2026 Rahul Kumar Das</div>
+</section></main>
+<script>
+(function(){
+const sb=window.rkdSupabase;const $=id=>document.getElementById(id);let user=null;let publications=[];let royaltyEntries=[];
+const money=n=>'₹'+Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:0,maximumFractionDigits:2});
+const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function notice(id,msg,ok){const el=$(id);el.className='ad-message '+(ok?'ok':'bad');el.textContent=msg;el.style.display='block'}
+function showDashboard(u){user=u;$('authPanel').classList.add('ad-hidden');$('dashboard').classList.remove('ad-hidden');$('authorName').textContent=u.user_metadata?.full_name||u.user_metadata?.name||u.email.split('@')[0];$('authorEmail').textContent=u.email||''}
+async function isAdmin(){const {data,error}=await sb.from('admin_users').select('id').eq('id',user.id).maybeSingle();if(error)throw error;return !!data}
+async function loadAll(){
+ const [pubRes,royRes,projRes]=await Promise.all([
+  sb.from('author_publications').select('*').eq('author_id',user.id).order('created_at',{ascending:false}),
+  sb.from('author_royalty_entries').select('*').eq('author_id',user.id).order('created_at',{ascending:false}),
+  sb.from('author_service_projects').select('id,book_title,service_type,project_status,payment_status,quoted_amount,created_at,deliverable_paths').eq('author_id',user.id).order('created_at',{ascending:false}).limit(30)
+ ]);
+ if(pubRes.error)throw pubRes.error;if(royRes.error)throw royRes.error;if(projRes.error)throw projRes.error;
+ publications=pubRes.data||[];royaltyEntries=royRes.data||[];
+ const copies=royaltyEntries.reduce((s,r)=>s+Number(r.copies_sold||0),0),earned=royaltyEntries.reduce((s,r)=>s+Number(r.royalty_earned||0),0),paid=royaltyEntries.reduce((s,r)=>s+Number(r.royalty_paid||0),0);
+ $('statBooks').textContent=publications.length;$('statSold').textContent=copies.toLocaleString('en-IN');$('statEarned').textContent=money(earned);$('statPaid').textContent=money(paid);
+ const byPub={};royaltyEntries.forEach(r=>{byPub[r.publication_id]??={copies:0,earned:0,paid:0};byPub[r.publication_id].copies+=Number(r.copies_sold||0);byPub[r.publication_id].earned+=Number(r.royalty_earned||0);byPub[r.publication_id].paid+=Number(r.royalty_paid||0)});
+ $('bookList').innerHTML=publications.length?publications.map(p=>{const s=byPub[p.id]||{copies:0,earned:0,paid:0};const img=p.cover_url?'<img class="ad-cover" src="'+esc(p.cover_url)+'" alt="Book cover">':'<div class="ad-cover-placeholder">BOOK</div>';return '<article class="ad-book">'+img+'<div><h3>'+esc(p.title)+'</h3><span class="ad-pill">'+esc((p.publication_status||'submitted').replaceAll('_',' '))+'</span><div class="ad-meta">ISBN: '+esc(p.isbn||'Not added')+'<br>Published: '+esc(p.published_at||'Not yet published')+'<br>Copies sold: <strong>'+s.copies+'</strong><br>Royalty earned: <strong>'+money(s.earned)+'</strong> · Paid: '+money(s.paid)+'</div>'+(p.website_url?'<a href="'+esc(p.website_url)+'" target="_blank" rel="noopener">View book</a>':'')+(p.royalty_terms?'<div class="ad-meta">Royalty terms: '+esc(p.royalty_terms)+'</div>':'')+'</div></article>'}).join(''):'<div class="ad-empty">No books have been linked to your account yet. Submit a manuscript and our team will update this section as your book progresses.</div>';
+ $('royaltyRows').innerHTML=royaltyEntries.length?royaltyEntries.map(r=>{const p=publications.find(x=>x.id===r.publication_id);return '<tr><td>'+esc(r.reporting_period||'Not specified')+'</td><td>'+esc(p?.title||'Book')+'</td><td>'+Number(r.copies_sold||0)+'</td><td>'+money(r.royalty_earned)+'</td><td>'+money(r.royalty_paid)+'</td><td><span class="ad-pill">'+esc(r.status||'recorded')+'</span>'+(r.payment_date?'<br>'+esc(r.payment_date):'')+'</td></tr>'}).join(''):'<tr><td colspan="6" class="ad-empty">Your royalty statements will appear here after the publisher records sales and royalty updates.</td></tr>';
+ $('projectList').innerHTML=projRes.data?.length?projRes.data.map(p=>'<article class="ad-book" style="grid-template-columns:1fr"><div><h3>'+esc(p.book_title)+'</h3><span class="ad-pill">'+esc((p.project_status||'submitted').replaceAll('_',' '))+'</span><div class="ad-meta">Service: '+esc(p.service_type||'Publishing')+'<br>Submitted: '+esc(new Date(p.created_at).toLocaleDateString('en-IN'))+'<br>Payment: '+esc(p.payment_status||'not requested')+'</div></div></article>').join(''):'No publishing projects submitted yet. Use “Submit a manuscript” to get started.';
+}
+async function loadAdmin(){
+ const ok=await isAdmin();if(!ok)return;$('adminPanel').classList.remove('ad-hidden');
+ const {data,error}=await sb.from('subscribers').select('id,email,full_name').order('full_name');if(error)throw error;
+ $('pubAuthor').innerHTML='<option value="">Choose author</option>'+(data||[]).map(a=>'<option value="'+esc(a.id)+'">'+esc(a.full_name||a.email)+' · '+esc(a.email)+'</option>').join('');
+ const {data:allPub,error:pubErr}=await sb.from('author_publications').select('id,title,author_id').order('title');if(pubErr)throw pubErr;
+ $('royaltyBook').innerHTML='<option value="">Choose a book</option>'+(allPub||[]).map(p=>'<option value="'+esc(p.id)+'">'+esc(p.title)+'</option>').join('');
+}
+$('loginForm').addEventListener('submit',async e=>{e.preventDefault();try{const {data,error}=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPassword').value});if(error)throw error;showDashboard(data.user);await loadAll();await loadAdmin()}catch(err){notice('authMessage',err.message||'Unable to log in.',false)}});
+$('logoutBtn').addEventListener('click',async()=>{await sb.auth.signOut();location.reload()});
+$('publicationForm').addEventListener('submit',async e=>{e.preventDefault();try{const authorId=$('pubAuthor').value;if(!authorId)throw new Error('Choose an author account.');const row={author_id:authorId,title:$('pubTitle').value.trim(),publication_status:$('pubStatus').value,published_at:$('pubDate').value||null,isbn:$('pubIsbn').value.trim(),cover_url:$('pubCover').value.trim(),website_url:$('pubLink').value.trim(),royalty_terms:$('pubTerms').value.trim()};const {error}=await sb.from('author_publications').insert(row);if(error)throw error;notice('adminMessage','Book added to the selected author dashboard.',true);e.target.reset();await loadAdmin();if(authorId===user.id)await loadAll()}catch(err){notice('adminMessage',err.message||'Could not save book.',false)}});
+$('royaltyForm').addEventListener('submit',async e=>{e.preventDefault();try{const publicationId=$('royaltyBook').value;const pub=publications.find(p=>p.id===publicationId);let authorId=pub?.author_id;if(!authorId){const {data,error}=await sb.from('author_publications').select('author_id').eq('id',publicationId).single();if(error)throw error;authorId=data.author_id}const row={publication_id:publicationId,author_id:authorId,reporting_period:$('royaltyPeriod').value.trim(),copies_sold:Number($('royaltyCopies').value),gross_sales:Number($('royaltyGross').value),royalty_earned:Number($('royaltyEarned').value),royalty_paid:Number($('royaltyPaid').value),payment_date:$('royaltyDate').value||null,payment_reference:$('royaltyReference').value.trim(),status:$('royaltyStatus').value,notes:$('royaltyNotes').value.trim()};const {error}=await sb.from('author_royalty_entries').insert(row);if(error)throw error;notice('adminMessage','Sales and royalty update saved.',true);e.target.reset();$('royaltyCopies').value='0';$('royaltyGross').value='0';$('royaltyEarned').value='0';$('royaltyPaid').value='0';await loadAdmin();if(authorId===user.id)await loadAll()}catch(err){notice('adminMessage',err.message||'Could not save royalty update.',false)}});
+$('downloadStatement').addEventListener('click',()=>{const rows=[['Reporting period','Book','Copies sold','Gross sales','Royalty earned','Royalty paid','Payment date','Reference','Status','Notes'],...royaltyEntries.map(r=>[r.reporting_period,publications.find(p=>p.id===r.publication_id)?.title||'',r.copies_sold,r.gross_sales,r.royalty_earned,r.royalty_paid,r.payment_date,r.payment_reference,r.status,r.notes])];const csv=rows.map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));const a=document.createElement('a');a.href=url;a.download='author-royalty-statement.csv';a.click();URL.revokeObjectURL(url)});
+(async()=>{try{const {data:{user:u},error}=await sb.auth.getUser();if(error)throw error;if(u){showDashboard(u);await loadAll();await loadAdmin()}}catch(err){notice('authMessage',err.message||'Could not load account.',false)}})();
+})();
+</script>
+</body></html>
