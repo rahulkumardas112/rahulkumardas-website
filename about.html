@@ -15,4 +15,5 @@
 <script>
 const DB="rkd_books_v2";const defaults={profilePhoto:"",name:"Rahul Kumar Das",role:"Author · Academic · Educator · Researcher",about:"Rahul Kumar Das is an author, academic and educator from Tinsukia, Assam. He serves as Assistant Professor in the Department of Accountancy at Lakhimpur Commerce College and is associated with academic research at Dibrugarh University."};
 async function loadAboutSettings(){try{const d=await new Promise((res,rej)=>{const q=indexedDB.open(DB,4);q.onupgradeneeded=()=>{const db=q.result;if(!db.objectStoreNames.contains("settings"))db.createObjectStore("settings",{keyPath:"key"})};q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)});const s=await new Promise((res,rej)=>{const q=d.transaction("settings","readonly").objectStore("settings").get("site");q.onsuccess=()=>res({...defaults,...(q.result?.value||{})});q.onerror=()=>rej(q.error)});if(s.profilePhoto){aboutProfilePhoto.src=s.profilePhoto;aboutProfilePhoto.style.display="block";aboutPhotoFallback.style.display="none"}}catch(e){console.warn(e)}}loadAboutSettings();
-</script></body></html>
+</script><script src="analytics.js" defer></script>
+</body></html>
