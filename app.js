@@ -1,4 +1,6 @@
 const defaultBooks=[];
+const escHtml=value=>String(value==null?"":value).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/\x27/g,"&#39;");
+const safeUrl=value=>{try{const u=new URL(String(value||""),location.href);return ["https:","http:"].includes(u.protocol)?u.href:""}catch(_){return ""}};
 let rkdBooksCache=[];
 async function loadBooks(){
   try{
@@ -22,12 +24,14 @@ function renderNewlyPublishedBooks(){
  }).slice(0,4);
  if(!books.length){grid.innerHTML='<p style="grid-column:1/-1;color:#6c665e">Newly published books will appear here automatically when they are added from the Admin panel.</p>';return;}
  grid.innerHTML=books.map(b=>{
-   const id=encodeURIComponent(String(b.id)),title=String(b.title||"Untitled Book");
-   const excerpt=(b.desc||"").trim().length>105?(b.desc||"").trim().slice(0,105).trim()+"…":(b.desc||"").trim();
+   const id=encodeURIComponent(String(b.id)),title=escHtml(String(b.title||"Untitled Book"));
+   const excerpt=escHtml((b.desc||"").trim().length>105?(b.desc||"").trim().slice(0,105).trim()+"…":(b.desc||"").trim());
    const usd="5.50";
-   const cover=b.cover?'<img src="'+b.cover+'" alt="'+title+'" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:6px">':'<span>'+title+'</span>';
-   const amazonLink=b.amazon?'<a class="small-btn amazon-btn" href="'+b.amazon+'" target="_blank" rel="noopener noreferrer">Buy Hardcopy</a>':"";
-   return '<article class="product-card newly-published-card"><div class="new-release-badge">NEW RELEASE</div><a href="book.html?id='+id+'"><div class="cover">'+cover+'</div></a><div class="product-body"><div class="newly-published-label">Recently Published</div><h3><a href="book.html?id='+id+'" style="text-decoration:none;color:inherit">'+title+'</a></h3><p>'+excerpt+'</p><a class="text-link" href="book.html?id='+id+'#description">Read More →</a><span class="price">₹'+Number(b.price||0)+' <small class="intl-price"> · $'+usd+'</small></span><div class="card-actions"><a class="small-btn" href="book.html?id='+id+'">View Book</a><a class="small-btn" href="book.html?id='+id+'#sample">Read Sample</a><a class="small-btn primary" href="'+(b.buyLink||("checkout.html?id="+id))+'">Buy Ebook</a>'+amazonLink+'</div></div></article>';
+   const coverUrl=safeUrl(b.cover);
+   const cover=coverUrl?'<img src="'+escHtml(coverUrl)+'" alt="'+title+'" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:6px">':'<span>'+title+'</span>';
+   const amazonUrl=safeUrl(b.amazon);
+   const amazonLink=amazonUrl?'<a class="small-btn amazon-btn" href="'+escHtml(amazonUrl)+'" target="_blank" rel="noopener noreferrer">Buy Hardcopy</a>':"";
+   return '<article class="product-card newly-published-card"><div class="new-release-badge">NEW RELEASE</div><a href="book.html?id='+id+'"><div class="cover">'+cover+'</div></a><div class="product-body"><div class="newly-published-label">Recently Published</div><h3><a href="book.html?id='+id+'" style="text-decoration:none;color:inherit">'+title+'</a></h3><p>'+excerpt+'</p><a class="text-link" href="book.html?id='+id+'#description">Read More →</a><span class="price">₹'+Number(b.price||0)+' <small class="intl-price"> · $'+usd+'</small></span><div class="card-actions"><a class="small-btn" href="book.html?id='+id+'">View Book</a><a class="small-btn" href="book.html?id='+id+'#sample">Read Sample</a><a class="small-btn primary" href="'+(safeUrl(b.buyLink)||("checkout.html?id="+id))+'">Buy Ebook</a>'+amazonLink+'</div></div></article>';
  }).join("");
 }
 async function shareBook(id,title){
@@ -49,15 +53,17 @@ function renderBooks(){
  if(status)status.textContent=query?(books.length+" book"+(books.length===1?"":"s")+" found"):"All books are shown below, organised by category";
  if(!books.length){grid.innerHTML='<p style="color:#6c665e">No books found.</p>';return;}
  const groups={};
- books.forEach(b=>{const cat=String(b.category||"General / Other").trim()||"General / Other";(groups[cat]||(groups[cat]=[])).push(b)});
+ books.forEach(b=>{const cat=escHtml(String(b.category||"General / Other").trim()||"General / Other");(groups[cat]||(groups[cat]=[])).push(b)});
  grid.innerHTML=Object.entries(groups).map(([cat,list])=>{
    const cards=list.map(b=>{
-     const id=encodeURIComponent(String(b.id)), title=String(b.title||"Untitled Book");
-     const excerpt=(b.desc||"").trim().length>100?(b.desc||"").trim().slice(0,100).trim()+"…":(b.desc||"").trim();
+     const id=encodeURIComponent(String(b.id)), title=escHtml(String(b.title||"Untitled Book"));
+     const excerpt=escHtml((b.desc||"").trim().length>100?(b.desc||"").trim().slice(0,100).trim()+"…":(b.desc||"").trim());
      const usd="5.50";
-     const amazonLink=b.amazon?'<a class="small-btn amazon-btn" href="'+b.amazon+'" target="_blank" rel="noopener noreferrer">Buy Hardcopy</a>':"";
-     const cover=b.cover?'<img src="'+b.cover+'" alt="'+title+'" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:6px">':'<span>'+title+'</span>';
-     return '<article class="product-card"><a href="book.html?id='+id+'"><div class="cover">'+cover+'</div></a><div class="product-body"><h3><a href="book.html?id='+id+'" style="text-decoration:none;color:inherit">'+title+'</a></h3><p>'+excerpt+'</p><a class="text-link" href="book.html?id='+id+'#description">Read More →</a><span class="price">₹'+Number(b.price||0)+' <small class="intl-price"> · $'+usd+'</small></span><div class="card-actions"><a class="small-btn" href="book.html?id='+id+'">View Book</a><a class="small-btn" href="book.html?id='+id+'#sample">Read Sample</a><a class="small-btn primary" href="'+(b.buyLink||("checkout.html?id="+id))+'">Buy Ebook</a>'+amazonLink+'</div></div></article>';
+     const amazonUrl=safeUrl(b.amazon);
+   const amazonLink=amazonUrl?'<a class="small-btn amazon-btn" href="'+escHtml(amazonUrl)+'" target="_blank" rel="noopener noreferrer">Buy Hardcopy</a>':"";
+     const coverUrl=safeUrl(b.cover);
+   const cover=coverUrl?'<img src="'+escHtml(coverUrl)+'" alt="'+title+'" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:6px">':'<span>'+title+'</span>';
+     return '<article class="product-card"><a href="book.html?id='+id+'"><div class="cover">'+cover+'</div></a><div class="product-body"><h3><a href="book.html?id='+id+'" style="text-decoration:none;color:inherit">'+title+'</a></h3><p>'+excerpt+'</p><a class="text-link" href="book.html?id='+id+'#description">Read More →</a><span class="price">₹'+Number(b.price||0)+' <small class="intl-price"> · $'+usd+'</small></span><div class="card-actions"><a class="small-btn" href="book.html?id='+id+'">View Book</a><a class="small-btn" href="book.html?id='+id+'#sample">Read Sample</a><a class="small-btn primary" href="'+(safeUrl(b.buyLink)||("checkout.html?id="+id))+'">Buy Ebook</a>'+amazonLink+'</div></div></article>';
    }).join("");
    return '<section class="home-book-category"><div class="section-head"><div><p class="eyebrow">COLLECTION</p><h3 class="home-book-category-title">'+cat+'</h3></div><a class="text-link" href="books.html">View all books →</a></div><div class="product-grid">'+cards+'</div></section>';
  }).join("");
@@ -72,12 +78,13 @@ function renderHomeNotes(){
  }
  grid.innerHTML=notes.map(b=>{
    const id=encodeURIComponent(String(b.id));
-   const title=String(b.title||"Untitled Note");
+   const title=escHtml(String(b.title||"Untitled Note"));
    const desc=(b.desc||"").trim();
-   const excerpt=desc.length>120?desc.slice(0,120).trim()+"…":desc;
-   const cover=b.cover?'<img src="'+b.cover+'" alt="'+title+'" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:6px">':'<span>'+title+'</span>';
+   const excerpt=escHtml(desc.length>120?desc.slice(0,120).trim()+"…":desc);
+   const coverUrl=safeUrl(b.cover);
+   const cover=coverUrl?'<img src="'+escHtml(coverUrl)+'" alt="'+title+'" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:6px">':'<span>'+title+'</span>';
    const usd="5.50";
-   return '<article class="product-card"><a href="book.html?id='+id+'"><div class="cover">'+cover+'</div></a><div class="product-body"><h3><a href="book.html?id='+id+'" style="text-decoration:none;color:inherit">'+title+'</a></h3><p>'+excerpt+'</p><span class="price">₹'+Number(b.price||0)+' <small class="intl-price"> · $'+usd+'</small></span><div class="card-actions"><a class="small-btn" href="book.html?id='+id+'">View</a><a class="small-btn" href="book.html?id='+id+'#sample">Read Sample</a><a class="small-btn primary" href="'+(b.buyLink||("checkout.html?id="+id))+'">Buy</a></div></div></article>';
+   return '<article class="product-card"><a href="book.html?id='+id+'"><div class="cover">'+cover+'</div></a><div class="product-body"><h3><a href="book.html?id='+id+'" style="text-decoration:none;color:inherit">'+title+'</a></h3><p>'+excerpt+'</p><span class="price">₹'+Number(b.price||0)+' <small class="intl-price"> · $'+usd+'</small></span><div class="card-actions"><a class="small-btn" href="book.html?id='+id+'">View</a><a class="small-btn" href="book.html?id='+id+'#sample">Read Sample</a><a class="small-btn primary" href="'+(safeUrl(b.buyLink)||("checkout.html?id="+id))+'">Buy</a></div></div></article>';
  }).join("");
 }
 function recordRkdVisit(){try{const key="rkd_visit_session";if(sessionStorage.getItem(key))return;sessionStorage.setItem(key,"1");const a=JSON.parse(localStorage.getItem("rkd_visits")||"[]");a.push({date:new Date().toISOString(),path:location.pathname,title:document.title});localStorage.setItem("rkd_visits",JSON.stringify(a))}catch(e){console.warn(e)}}
