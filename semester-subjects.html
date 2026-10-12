@@ -18,8 +18,8 @@
 <header class="site-header"><div class="container nav-wrap"><a class="brand" href="index.html"><span>Rahul Kumar Das</span><small>Student Learning Hub</small></a><button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button><nav id="mainNav"><a href="index.html">Home</a><a href="student-hub.html">Students Hub</a><a href="books.html">Books</a><a href="academic.html">Academic Store</a></nav></div></header>
 <section class="sem-hero"><div class="container"><a class="back-link" href="student-hub.html#study-resources">← Back to Students Hub</a><p class="eyebrow" id="universityLabel">UNIVERSITY LEARNING</p><h1 id="pageTitle">Semester Subjects</h1><p id="pageSubtitle">Choose a subject, then select a unit to open its notes.</p></div></section>
 <main class="sem-main"><div class="container">
-<section class="sem-panel"><h2>Subjects</h2><p>Choose one of the seven subject buttons for this semester. Subject names can be changed by the administrator.</p><div id="subjectButtons" class="subject-grid"></div></section>
-<section class="sem-panel"><h2 id="unitHeading">Units</h2><p>Choose a unit to view the notes uploaded for that topic.</p><div id="unitButtons" class="unit-grid"></div><div id="noteArea"><div class="note-card muted">Select a subject and unit to see available notes.</div></div></section>
+<section class="sem-panel"><h2>Choose resource type</h2><p>Switch between unit-wise notes and previous-year question papers. These sections are managed separately.</p><div class="unit-grid"><button type="button" id="showNotes" class="unit-button">Unit-wise Notes</button><button type="button" id="showQuestionPapers" class="unit-button">Question Papers</button></div></section><section class="sem-panel"><h2>Subjects</h2><p id="subjectHelp">Choose a subject. Subject names can be changed by the administrator.</p><div id="subjectButtons" class="subject-grid"></div></section>
+<section class="sem-panel"><h2 id="unitHeading">Units</h2><p id="unitHelp">Choose a unit to view the notes uploaded for that topic.</p><div id="unitButtons" class="unit-grid"></div><div id="noteArea"><div class="note-card muted">Select a subject and unit to see available notes.</div></div></section>
 <p id="loadStatus" class="status" aria-live="polite">Loading subjects and notes…</p>
 </div></main>
 <footer><div class="container footer-bottom">© 2026 Rahul Kumar Das. All rights reserved. <a href="privacy.html">Privacy Policy</a></div></footer>
@@ -35,20 +35,26 @@ const schoolStream=params.get("stream")||"";
 const university=board||params.get("university")||"Dibrugarh University";
 const course=board?schoolStream:(params.get("course")||"B.Com");
 const semester=board?schoolClass:(params.get("semester")||"1st Semester");
-const key=board?[board,schoolClass,schoolStream].join("|"):[university,course,semester].join("|");
+const baseKey=board?[board,schoolClass,schoolStream].join("|"):[university,course,semester].join("|");
+ const resourceType=params.get("type")==="question-papers"?"question_papers":"notes";
+ const key=resourceType==="question_papers"?baseKey+"|Question Papers":baseKey;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 let structure=null,subjectIndex=0,unitIndex=0;
-const defaults=()=>({subjects:Array.from({length:7},(_,i)=>({name:"Subject "+(i+1),units:Array.from({length:5},(_,j)=>({name:"Unit "+(j+1),url:"",previewUrl:"",fileName:"",materialId:null}))}))});
+ function setResourceType(type){const target=new URL(location.href);if(type==="question_papers")target.searchParams.set("type","question-papers");else target.searchParams.delete("type");location.href=target.toString()}
+ $("showNotes").classList.toggle("active",resourceType==="notes");$("showQuestionPapers").classList.toggle("active",resourceType==="question_papers");$("showNotes").addEventListener("click",()=>setResourceType("notes"));$("showQuestionPapers").addEventListener("click",()=>setResourceType("question_papers"));
+const defaults=()=>({subjects:Array.from({length:7},(_,i)=>({name:"Subject "+(i+1),units:Array.from({length:5},(_,j)=>({name:resourceType==="question_papers"?"Question Paper "+(2025-j):"Unit "+(j+1),url:"",previewUrl:"",fileName:"",materialId:null}))}))});
 $("universityLabel").textContent=university.toUpperCase();
-$("pageTitle").textContent=board?board+" · "+schoolClass+" · "+schoolStream:course+" "+semester;
-$("pageSubtitle").textContent=board?"Choose a subject, then select a unit to read a free three-page sample or purchase the complete notes.":university+" · Choose a subject, then select a unit to open its notes.";
-function currentSubjects(){const raw=structure?.subjects||defaults().subjects;return Array.from({length:7},(_,i)=>({name:raw[i]?.name||"Subject "+(i+1),units:Array.from({length:5},(_,j)=>({name:raw[i]?.units?.[j]?.name||"Unit "+(j+1),url:raw[i]?.units?.[j]?.url||"",previewUrl:raw[i]?.units?.[j]?.previewUrl||raw[i]?.units?.[j]?.url||"",fileName:raw[i]?.units?.[j]?.fileName||"",materialId:raw[i]?.units?.[j]?.materialId||null,price:Number(raw[i]?.units?.[j]?.price??49)}))}))}
+$("pageTitle").textContent=(board?board+" · "+schoolClass+" · "+schoolStream:course+" "+semester)+(resourceType==="question_papers"?" · Question Papers":" · Unit-wise Notes");
+$("pageSubtitle").textContent=resourceType==="question_papers"?"Browse question papers by subject and year. Open a free sample or purchase the complete paper.":board?"Choose a subject, then select a unit to read a free three-page sample or purchase the complete notes.":university+" · Choose a subject, then select a unit to open its notes.";
+function currentSubjects(){const raw=structure?.subjects||defaults().subjects;return raw.map((s,i)=>({name:s?.name||"Subject "+(i+1),units:(s?.units?.length?s.units:(defaults().subjects[i]?.units||[])).map((u,j)=>({name:u?.name||(resourceType==="question_papers"?"Question Paper "+(2025-j):"Unit "+(j+1)),url:u?.url||"",previewUrl:u?.previewUrl||u?.url||"",fileName:u?.fileName||"",materialId:u?.materialId||null,price:Number(u?.price??49)}))}))}
 function draw(){
  const subjects=currentSubjects(),sub=subjects[subjectIndex],unit=sub.units[unitIndex];
  $("subjectButtons").innerHTML=subjects.map((s,i)=>'<button type="button" class="subject-button '+(i===subjectIndex?"active":"")+'" data-sub="'+i+'">'+esc(s.name)+'</button>').join("");
  $("subjectButtons").querySelectorAll("[data-sub]").forEach(b=>b.addEventListener("click",()=>{subjectIndex=Number(b.dataset.sub);unitIndex=0;draw()}));
- $("unitHeading").textContent="Units for "+sub.name;
+ $("unitHeading").textContent=(resourceType==="question_papers"?"Question papers for ":"Units for ")+sub.name;
+  $("subjectHelp").textContent=resourceType==="question_papers"?"Choose a subject to browse its question papers.":"Choose a subject. Subject names can be changed by the administrator.";
+  $("unitHelp").textContent=resourceType==="question_papers"?"Choose a paper by year to view its sample or purchase the complete paper.":"Choose a unit to view the notes uploaded for that topic.";
  $("unitButtons").innerHTML=sub.units.map((u,i)=>'<button type="button" class="unit-button '+(i===unitIndex?"active":"")+'" data-unit="'+i+'">'+esc(u.name)+'</button>').join("");
  $("unitButtons").querySelectorAll("[data-unit]").forEach(b=>b.addEventListener("click",()=>{unitIndex=Number(b.dataset.unit);draw()}));
  const sample=unit.previewUrl||unit.url;let actions="";if(unit.materialId){actions='<p><strong>Free sample:</strong> Read the first three pages below. The complete PDF costs ₹'+Number(unit.price??49).toLocaleString("en-IN")+' .</p><iframe class="sample-frame" src="'+esc(sample)+'#toolbar=1&navpanes=0" title="Three-page sample for '+esc(unit.name)+'"></iframe><a href="'+esc(sample)+'" target="_blank" rel="noopener">Open three-page sample</a><a href="study-material-checkout.html?id='+encodeURIComponent(unit.materialId)+'">Download Full Notes · ₹'+Number(unit.price??49).toLocaleString("en-IN")+'</a>';}else if(unit.fileName||unit.url){actions='<div class="sample-warning">This unit was uploaded before protected samples were enabled. The administrator needs to re-upload the original PDF to create a three-page sample and secure paid download.</div>';}else{actions='<p>Notes for this unit have not been uploaded yet.</p>';} $("noteArea").innerHTML='<div class="note-card"><strong>'+esc(sub.name)+' · '+esc(unit.name)+'</strong><p>'+(unit.fileName?"Uploaded notes: "+esc(unit.fileName):"Unit-wise study notes")+'</p>'+actions+'</div>';
