@@ -84,8 +84,10 @@ function drawChoices(container,items,selected,onPick){$(container).innerHTML=ite
  });
  $("courseArea").hidden=!selectedUniversity;
  if(selectedUniversity){
-  drawChoices("courseChoices",courseNames.map(v=>({value:v,label:v,note:universityBrowseType==="question-papers"?"Browse question papers by semester":"View all semesters"})),selectedCourse,v=>{
-   selectedCourse=v;selectedSemester="";$("semesterArea").hidden=false;drawBrowse();render();
+  drawChoices("courseChoices",courseNames.map(v=>({value:v,label:v,note:universityBrowseType==="question-papers"?"Open course question papers":"Open course semesters, subjects and units"})),selectedCourse,v=>{
+   selectedCourse=v;selectedSemester="";
+   const target="university-course-hub.html?"+new URLSearchParams({university:selectedUniversity,course:selectedCourse,...(universityBrowseType==="question-papers"?{type:"question-papers"}:{})}).toString();
+   window.location.href=target;
   });
  }
  $("semesterArea").hidden=!(selectedUniversity&&selectedCourse);
