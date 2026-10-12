@@ -29,17 +29,20 @@
 (async()=>{
 const sb=window.supabase.createClient("https://ucehhsythixyvhrzwlth.supabase.co","sb_publishable_bK03-qntjRlai8Q7yybHzw_JYn3FQrC");
 const params=new URLSearchParams(location.search);
-const university=params.get("university")||"Dibrugarh University";
-const course=params.get("course")||"B.Com";
-const semester=params.get("semester")||"1st Semester";
-const key=[university,course,semester].join("|");
+const board=params.get("board")||"";
+const schoolClass=params.get("class")||"";
+const schoolStream=params.get("stream")||"";
+const university=board||params.get("university")||"Dibrugarh University";
+const course=board?schoolStream:(params.get("course")||"B.Com");
+const semester=board?schoolClass:(params.get("semester")||"1st Semester");
+const key=board?[board,schoolClass,schoolStream].join("|"):[university,course,semester].join("|");
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 let structure=null,subjectIndex=0,unitIndex=0;
 const defaults=()=>({subjects:Array.from({length:7},(_,i)=>({name:"Subject "+(i+1),units:Array.from({length:5},(_,j)=>({name:"Unit "+(j+1),url:"",previewUrl:"",fileName:"",materialId:null}))}))});
 $("universityLabel").textContent=university.toUpperCase();
-$("pageTitle").textContent=course+" "+semester;
-$("pageSubtitle").textContent=university+" · Choose a subject, then select a unit to open its notes.";
+$("pageTitle").textContent=board?board+" · "+schoolClass+" · "+schoolStream:course+" "+semester;
+$("pageSubtitle").textContent=board?"Choose a subject, then select a unit to read a free three-page sample or purchase the complete notes.":university+" · Choose a subject, then select a unit to open its notes.";
 function currentSubjects(){const raw=structure?.subjects||defaults().subjects;return Array.from({length:7},(_,i)=>({name:raw[i]?.name||"Subject "+(i+1),units:Array.from({length:5},(_,j)=>({name:raw[i]?.units?.[j]?.name||"Unit "+(j+1),url:raw[i]?.units?.[j]?.url||"",previewUrl:raw[i]?.units?.[j]?.previewUrl||raw[i]?.units?.[j]?.url||"",fileName:raw[i]?.units?.[j]?.fileName||"",materialId:raw[i]?.units?.[j]?.materialId||null,price:Number(raw[i]?.units?.[j]?.price??49)}))}))}
 function draw(){
  const subjects=currentSubjects(),sub=subjects[subjectIndex],unit=sub.units[unitIndex];
@@ -48,7 +51,7 @@ function draw(){
  $("unitHeading").textContent="Units for "+sub.name;
  $("unitButtons").innerHTML=sub.units.map((u,i)=>'<button type="button" class="unit-button '+(i===unitIndex?"active":"")+'" data-unit="'+i+'">'+esc(u.name)+'</button>').join("");
  $("unitButtons").querySelectorAll("[data-unit]").forEach(b=>b.addEventListener("click",()=>{unitIndex=Number(b.dataset.unit);draw()}));
- const sample=unit.previewUrl||unit.url;let actions="";if(unit.materialId){actions='<p><strong>Free sample:</strong> Read the first three pages below. The complete PDF costs ₹'+Number(unit.price??49).toLocaleString("en-IN")+' .</p><iframe class="sample-frame" src="'+esc(sample)+'#toolbar=1&navpanes=0" title="Three-page sample for '+esc(unit.name)+'"></iframe><a href="'+esc(sample)+'" target="_blank" rel="noopener">Open three-page sample</a><a href="study-material-checkout.html?id='+encodeURIComponent(unit.materialId)+'">Download Full Notes · ₹'+Number(unit.price??49).toLocaleString("en-IN")+'</a>';}else if(unit.fileName||unit.url){actions='<div class="sample-warning">This unit was uploaded before protected samples were enabled. The administrator needs to re-upload the original PDF to create a three-page sample and secure ₹49 download.</div>';}else{actions='<p>Notes for this unit have not been uploaded yet.</p>';} $("noteArea").innerHTML='<div class="note-card"><strong>'+esc(sub.name)+' · '+esc(unit.name)+'</strong><p>'+(unit.fileName?"Uploaded notes: "+esc(unit.fileName):"Unit-wise study notes")+'</p>'+actions+'</div>';
+ const sample=unit.previewUrl||unit.url;let actions="";if(unit.materialId){actions='<p><strong>Free sample:</strong> Read the first three pages below. The complete PDF costs ₹'+Number(unit.price??49).toLocaleString("en-IN")+' .</p><iframe class="sample-frame" src="'+esc(sample)+'#toolbar=1&navpanes=0" title="Three-page sample for '+esc(unit.name)+'"></iframe><a href="'+esc(sample)+'" target="_blank" rel="noopener">Open three-page sample</a><a href="study-material-checkout.html?id='+encodeURIComponent(unit.materialId)+'">Download Full Notes · ₹'+Number(unit.price??49).toLocaleString("en-IN")+'</a>';}else if(unit.fileName||unit.url){actions='<div class="sample-warning">This unit was uploaded before protected samples were enabled. The administrator needs to re-upload the original PDF to create a three-page sample and secure paid download.</div>';}else{actions='<p>Notes for this unit have not been uploaded yet.</p>';} $("noteArea").innerHTML='<div class="note-card"><strong>'+esc(sub.name)+' · '+esc(unit.name)+'</strong><p>'+(unit.fileName?"Uploaded notes: "+esc(unit.fileName):"Unit-wise study notes")+'</p>'+actions+'</div>';
 }
 try{
  const {data,error}=await sb.from("site_settings").select("data").eq("id","site").maybeSingle();
