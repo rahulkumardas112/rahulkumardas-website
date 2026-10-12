@@ -63,6 +63,14 @@ try{
  const {data,error}=await sb.from("site_settings").select("data").eq("id","site").maybeSingle();
  if(error)throw error;
  structure=data?.data?.studentsHubStructure?.[key]||null;
+ const requestedSubject=params.get("subject")||"";
+ const requestedUnit=params.get("unit")||"";
+ const available=currentSubjects();
+ const matchSubject=available.findIndex(s=>s.name===requestedSubject);
+ if(matchSubject>=0)subjectIndex=matchSubject;
+ const availableUnits=available[subjectIndex]?.units||[];
+ const matchUnit=availableUnits.findIndex(u=>u.name===requestedUnit);
+ if(matchUnit>=0)unitIndex=matchUnit;
  draw();
  $("loadStatus").textContent=structure?"Subjects and unit notes loaded.":"This semester is ready. Notes will appear as the administrator adds subject names and uploads PDFs.";
 }catch(e){
