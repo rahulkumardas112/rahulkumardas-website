@@ -39,7 +39,7 @@ const baseKey=board?[board,schoolClass,schoolStream].join("|"):[university,cours
  const resourceType=params.get("type")==="question-papers"?"question_papers":"notes";
  const key=resourceType==="question_papers"?baseKey+"|Question Papers":baseKey;
 const $=id=>document.getElementById(id);
-const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const pdfViewUrl=s=>{s=String(s||"");return s+(s.includes("#")?"&":"#")+"toolbar=0&navpanes=0";};const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 let structure=null,subjectIndex=0,unitIndex=0;
  function setResourceType(type){const target=new URL(location.href);if(type==="question_papers")target.searchParams.set("type","question-papers");else target.searchParams.delete("type");location.href=target.toString()}
  $("showNotes").classList.toggle("active",resourceType==="notes");$("showQuestionPapers").classList.toggle("active",resourceType==="question_papers");$("showNotes").addEventListener("click",()=>setResourceType("notes"));$("showQuestionPapers").addEventListener("click",()=>setResourceType("question_papers"));
