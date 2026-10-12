@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Semester Subjects and Unit Notes | Rahul Kumar Das</title>
+<meta name="description" content="Browse semester subjects and unit-wise study notes for university courses in Assam.">
+<link rel="canonical" href="https://rahulkumardas.in/semester-subjects.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=20261012">
+<style>
+.sem-hero{background:#f4f0e8;padding:42px 0}.sem-hero h1{font:600 clamp(30px,4vw,48px)/1.12 "Playfair Display",serif;margin:8px 0}.sem-hero p{color:#625d56}.sem-main{padding:30px 0 60px;background:#f8f7f3;min-height:55vh}.sem-panel{background:#fff;border:1px solid #e4ded4;border-radius:13px;padding:22px;margin-bottom:18px}.sem-panel h2{font:600 25px "Playfair Display",serif;margin:0 0 8px}.sem-panel p{color:#625d56}.subject-grid,.unit-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:16px}.subject-button,.unit-button{border:1px solid #d9d1c5;border-radius:9px;background:#fff;padding:14px;text-align:left;font:inherit;font-weight:700;cursor:pointer;color:#24211d}.subject-button:hover,.subject-button.active,.unit-button:hover,.unit-button.active{background:#211f1b;color:#fff;border-color:#211f1b}.unit-button{font-weight:600}.note-card{border:1px solid #e5dfd6;border-radius:10px;padding:18px;background:#fcfbf9;margin-top:14px}.note-card a{display:inline-block;margin-top:10px;padding:11px 15px;background:#211f1b;color:#fff;text-decoration:none;border-radius:7px;font-weight:700}.muted{color:#625d56}.back-link{display:inline-block;margin-bottom:12px;text-decoration:underline;text-underline-offset:4px;font-weight:700}.status{font-size:14px;color:#625d56}@media(max-width:650px){.sem-panel{padding:16px}.subject-grid,.unit-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<header class="site-header"><div class="container nav-wrap"><a class="brand" href="index.html"><span>Rahul Kumar Das</span><small>Student Learning Hub</small></a><button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button><nav id="mainNav"><a href="index.html">Home</a><a href="student-hub.html">Students Hub</a><a href="books.html">Books</a><a href="academic.html">Academic Store</a></nav></div></header>
+<section class="sem-hero"><div class="container"><a class="back-link" href="student-hub.html#study-resources">← Back to Students Hub</a><p class="eyebrow" id="universityLabel">UNIVERSITY LEARNING</p><h1 id="pageTitle">Semester Subjects</h1><p id="pageSubtitle">Choose a subject, then select a unit to open its notes.</p></div></section>
+<main class="sem-main"><div class="container">
+<section class="sem-panel"><h2>Subjects</h2><p>Choose one of the seven subject buttons for this semester. Subject names can be changed by the administrator.</p><div id="subjectButtons" class="subject-grid"></div></section>
+<section class="sem-panel"><h2 id="unitHeading">Units</h2><p>Choose a unit to view the notes uploaded for that topic.</p><div id="unitButtons" class="unit-grid"></div><div id="noteArea"><div class="note-card muted">Select a subject and unit to see available notes.</div></div></section>
+<p id="loadStatus" class="status" aria-live="polite">Loading subjects and notes…</p>
+</div></main>
+<footer><div class="container footer-bottom">© 2026 Rahul Kumar Das. All rights reserved. <a href="privacy.html">Privacy Policy</a></div></footer>
+<script>document.getElementById("menuBtn")?.addEventListener("click",()=>{const n=document.getElementById("mainNav");n.style.display=n.style.display==="flex"?"none":"flex"});</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(async()=>{
+const sb=window.supabase.createClient("https://ucehhsythixyvhrzwlth.supabase.co","sb_publishable_bK03-qntjRlai8Q7yybHzw_JYn3FQrC");
+const params=new URLSearchParams(location.search);
+const university=params.get("university")||"Dibrugarh University";
+const course=params.get("course")||"B.Com";
+const semester=params.get("semester")||"1st Semester";
+const key=[university,course,semester].join("|");
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let structure=null,subjectIndex=0,unitIndex=0;
+const defaults=()=>({subjects:Array.from({length:7},(_,i)=>({name:"Subject "+(i+1),units:Array.from({length:5},(_,j)=>({name:"Unit "+(j+1),url:"",fileName:""}))}))});
+$("universityLabel").textContent=university.toUpperCase();
+$("pageTitle").textContent=course+" "+semester;
+$("pageSubtitle").textContent=university+" · Choose a subject, then select a unit to open its notes.";
+function currentSubjects(){const raw=structure?.subjects||defaults().subjects;return Array.from({length:7},(_,i)=>({name:raw[i]?.name||"Subject "+(i+1),units:Array.from({length:5},(_,j)=>({name:raw[i]?.units?.[j]?.name||"Unit "+(j+1),url:raw[i]?.units?.[j]?.url||"",fileName:raw[i]?.units?.[j]?.fileName||""}))}))}
+function draw(){
+ const subjects=currentSubjects(),sub=subjects[subjectIndex],unit=sub.units[unitIndex];
+ $("subjectButtons").innerHTML=subjects.map((s,i)=>'<button type="button" class="subject-button '+(i===subjectIndex?"active":"")+'" data-sub="'+i+'">'+esc(s.name)+'</button>').join("");
+ $("subjectButtons").querySelectorAll("[data-sub]").forEach(b=>b.addEventListener("click",()=>{subjectIndex=Number(b.dataset.sub);unitIndex=0;draw()}));
+ $("unitHeading").textContent="Units for "+sub.name;
+ $("unitButtons").innerHTML=sub.units.map((u,i)=>'<button type="button" class="unit-button '+(i===unitIndex?"active":"")+'" data-unit="'+i+'">'+esc(u.name)+'</button>').join("");
+ $("unitButtons").querySelectorAll("[data-unit]").forEach(b=>b.addEventListener("click",()=>{unitIndex=Number(b.dataset.unit);draw()}));
+ $("noteArea").innerHTML='<div class="note-card"><strong>'+esc(sub.name)+' · '+esc(unit.name)+'</strong><p>'+(unit.fileName?"Uploaded notes: "+esc(unit.fileName):"Notes for this unit have not been uploaded yet.")+'</p>'+(unit.url?'<a href="'+esc(unit.url)+'" target="_blank" rel="noopener">Open unit notes</a>':"")+'</div>';
+}
+try{
+ const {data,error}=await sb.from("site_settings").select("data").eq("id","site").maybeSingle();
+ if(error)throw error;
+ structure=data?.data?.studentsHubStructure?.[key]||null;
+ draw();
+ $("loadStatus").textContent=structure?"Subjects and unit notes loaded.":"This semester is ready. Notes will appear as the administrator adds subject names and uploads PDFs.";
+}catch(e){
+ draw();
+ $("loadStatus").textContent="The page is showing the default subject and unit buttons, but saved settings could not be loaded.";
+ console.error(e);
+}
+})();
+</script>
+</body></html>
