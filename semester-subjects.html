@@ -55,64 +55,7 @@ function draw(){
  $("unitHeading").textContent=(resourceType==="question_papers"?"Question papers for ":"Units for ")+sub.name;
  $("subjectHelp").textContent=resourceType==="question_papers"?"Choose a subject to browse its question papers.":"Choose a subject. Subject names can be changed by the administrator.";
  $("unitHelp").textContent=resourceType==="question_papers"?"Choose a paper by year to view its sample or purchase the complete paper.":"Choose a unit to view the notes uploaded for that topic.";
- $("unitButtons").innerHTML=units.map((u,i)=>{const paid=u.accessType==="paid"&&u.materialId;const price=Number(u.price||49).toLocaleString("en-IN");return '<div class="unit-option"><button type="button" class="unit-button '+(i===unitIndex?"active":"")+'" data-unit="'+i+'">'+esc(u.name)+'</button>'+(paid?'<a class="unit-buy" href="study-material-checkout.html?id='+encodeURIComponent(u.materialId)+'">Buy for ₹'+price+'</a>':'')+'</div>'}).join("");html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Semester Subjects and Unit Notes | Rahul Kumar Das</title>
-<meta name="description" content="Browse semester subjects and unit-wise study notes for university courses in Assam.">
-<link rel="canonical" href="https://rahulkumardas.in/semester-subjects.html">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=20261012">
-<style>
-.sem-hero{background:#f4f0e8;padding:42px 0}.sem-hero h1{font:600 clamp(30px,4vw,48px)/1.12 "Playfair Display",serif;margin:8px 0}.sem-hero p{color:#625d56}.sem-main{padding:30px 0 60px;background:#f8f7f3;min-height:55vh}.sem-panel{background:#fff;border:1px solid #e4ded4;border-radius:13px;padding:22px;margin-bottom:18px}.sem-panel h2{font:600 25px "Playfair Display",serif;margin:0 0 8px}.sem-panel p{color:#625d56}.subject-grid,.unit-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:16px}.subject-button,.unit-button{border:1px solid #d9d1c5;border-radius:9px;background:#fff;padding:14px;text-align:left;font:inherit;font-weight:700;cursor:pointer;color:#24211d}.subject-button:hover,.subject-button.active,.unit-button:hover,.unit-button.active{background:#211f1b;color:#fff;border-color:#211f1b}.unit-button{font-weight:600}.unit-option{display:flex;flex-direction:column;gap:7px;min-width:0}.unit-option .unit-button{width:100%;height:100%}.unit-buy{display:block;text-align:center;padding:10px 8px;border-radius:7px;background:#e0c59d;color:#211f1b;text-decoration:none;font-weight:800;font-size:14px}.note-card{border:1px solid #e5dfd6;border-radius:10px;padding:18px;background:#fcfbf9;margin-top:14px}.note-card a{display:inline-block;margin:10px 8px 0 0;padding:11px 15px;background:#211f1b;color:#fff;text-decoration:none;border-radius:7px;font-weight:700}.sample-frame{display:block;width:100%;height:520px;border:1px solid #ddd;border-radius:8px;margin-top:14px;background:#fff}.sample-warning{padding:12px;background:#fff4df;border-radius:8px;color:#70511b;margin-top:12px}.muted{color:#625d56}.back-link{display:inline-block;margin-bottom:12px;text-decoration:underline;text-underline-offset:4px;font-weight:700}.status{font-size:14px;color:#625d56}@media(max-width:650px){.sem-panel{padding:16px}.subject-grid,.unit-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-</style>
-</head>
-<body>
-<header class="site-header"><div class="container nav-wrap"><a class="brand" href="index.html"><span>Rahul Kumar Das</span><small>Student Learning Hub</small></a><button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button><nav id="mainNav"><a href="index.html">Home</a><a href="student-hub.html">Students Hub</a><a href="books.html">Books</a><a href="academic.html">Academic Store</a></nav></div></header>
-<section class="sem-hero"><div class="container"><a class="back-link" href="student-hub.html#study-resources">← Back to Students Hub</a><p class="eyebrow" id="universityLabel">UNIVERSITY LEARNING</p><h1 id="pageTitle">Semester Subjects</h1><p id="pageSubtitle">Choose a subject, then select a unit to open its notes.</p></div></section>
-<main class="sem-main"><div class="container">
-<section class="sem-panel"><h2>Choose resource type</h2><p>Switch between unit-wise notes and previous-year question papers. These sections are managed separately.</p><div class="unit-grid"><button type="button" id="showNotes" class="unit-button">Unit-wise Notes</button><button type="button" id="showQuestionPapers" class="unit-button">Question Papers</button></div></section><section class="sem-panel"><h2>Subjects</h2><p id="subjectHelp">Choose a subject. Subject names can be changed by the administrator.</p><div id="subjectButtons" class="subject-grid"></div></section>
-<section class="sem-panel"><h2 id="unitHeading">Units</h2><p id="unitHelp">Choose a unit to view the notes uploaded for that topic.</p><div id="unitButtons" class="unit-grid"></div><div id="noteArea"><div class="note-card muted">Select a subject and unit to see available notes.</div></div></section>
-<p id="loadStatus" class="status" aria-live="polite">Loading subjects and notes…</p>
-</div></main>
-<footer><div class="container footer-bottom">© 2026 Rahul Kumar Das. All rights reserved. <a href="privacy.html">Privacy Policy</a></div></footer>
-<script>document.getElementById("menuBtn")?.addEventListener("click",()=>{const n=document.getElementById("mainNav");n.style.display=n.style.display==="flex"?"none":"flex"});</script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-(async()=>{
-const sb=window.supabase.createClient("https://ucehhsythixyvhrzwlth.supabase.co","sb_publishable_bK03-qntjRlai8Q7yybHzw_JYn3FQrC");
-const params=new URLSearchParams(location.search);
-const board=params.get("board")||"";
-const schoolClass=params.get("class")||"";
-const schoolStream=params.get("stream")||"";
-const university=board||params.get("university")||"Dibrugarh University";
-const course=board?schoolStream:(params.get("course")||"B.Com");
-const semester=board?schoolClass:(params.get("semester")||"1st Semester");
-const baseKey=board?[board,schoolClass,schoolStream].join("|"):[university,course,semester].join("|");
- const resourceType=params.get("type")==="question-papers"?"question_papers":"notes";
- const key=resourceType==="question_papers"?baseKey+"|Question Papers":baseKey;
-const $=id=>document.getElementById(id);
-const pdfViewUrl=s=>{s=String(s||"");return s+(s.includes("#")?"&":"#")+"toolbar=0&navpanes=0";};const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-let structure=null,subjectIndex=0,unitIndex=0;
- function setResourceType(type){const target=new URL(location.href);if(type==="question_papers")target.searchParams.set("type","question-papers");else target.searchParams.delete("type");location.href=target.toString()}
- $("showNotes").classList.toggle("active",resourceType==="notes");$("showQuestionPapers").classList.toggle("active",resourceType==="question_papers");$("showNotes").addEventListener("click",()=>setResourceType("notes"));$("showQuestionPapers").addEventListener("click",()=>setResourceType("question_papers"));
-const defaults=()=>({subjects:Array.from({length:7},(_,i)=>({name:"Subject "+(i+1),units:Array.from({length:5},(_,j)=>({name:resourceType==="question_papers"?"Question Paper "+(2025-j):"Unit "+(j+1),url:"",previewUrl:"",fileName:"",materialId:null}))}))});
-$("universityLabel").textContent=university.toUpperCase();
-$("pageTitle").textContent=(board?board+" · "+schoolClass+" · "+schoolStream:course+" "+semester)+(resourceType==="question_papers"?" · Question Papers":" · Unit-wise Notes");
-$("pageSubtitle").textContent=resourceType==="question_papers"?"Browse question papers by subject and year. Open a free sample or purchase the complete paper.":board?"Choose a subject, then select a unit to read a free three-page sample or purchase the complete notes.":university+" · Choose a subject, then select a unit to open its notes.";
-function yearOf(item){const m=String(item?.name||"").match(/\b(?:19|20)\d{2}\b/);return m?Number(m[0]):0;}function orderedUnits(units){return [...(units||[])].sort((a,b)=>{const ya=yearOf(a),yb=yearOf(b);if(ya&&yb)return yb-ya;if(ya)return -1;if(yb)return 1;return 0;});}function currentSubjects(){const raw=structure?.subjects||defaults().subjects;return raw.map((s,i)=>({name:s?.name||"Subject "+(i+1),units:(()=>{const list=(s?.units?.length?s.units:(defaults().subjects[i]?.units||[])).map((u,j)=>({name:u?.name||(resourceType==="question_papers"?"Question Paper "+(2025-j):"Unit "+(j+1)),url:u?.url||"",previewUrl:u?.previewUrl||u?.url||"",fileName:u?.fileName||"",materialId:u?.materialId||null,price:Number(u?.price??49),accessType:u?.accessType||"paid",resourceType:u?.resourceType||"notes"}));return resourceType==="question_papers"?orderedUnits(list):list;})()}))}
-function draw(){
- const subjects=currentSubjects(),sub=subjects[subjectIndex]||{name:"Subject",units:[]};subjectIndex=Math.min(subjectIndex,Math.max(0,subjects.length-1));const units=sub.units||[],unit=units[unitIndex];
- $("subjectButtons").innerHTML=subjects.map((s,i)=>'<button type="button" class="subject-button '+(i===subjectIndex?"active":"")'" data-sub="'+i+'">'+esc(s.name)+'</button>').join("");
- $("subjectButtons").querySelectorAll("[data-sub]").forEach(b=>b.addEventListener("click",()=>{subjectIndex=Number(b.dataset.sub);unitIndex=0;draw()}));
- $("unitHeading").textContent=(resourceType==="question_papers"?"Question papers for ":"Units for ")+sub.name;
- $("subjectHelp").textContent=resourceType==="question_papers"?"Choose a subject to browse its question papers.":"Choose a subject. Subject names can be changed by the administrator.";
- $("unitHelp").textContent=resourceType==="question_papers"?"Choose a paper by year to view its sample or purchase the complete paper.":"Choose a unit to view the notes uploaded for that topic.";
- $("unitButtons").innerHTML=units.map((u,i)=>'<button type="button" class="unit-button '+(i===unitIndex?"active":"")'" data-unit="'+i+'">'+esc(u.name)+(u.accessType==="paid"&&u.materialId?' · ₹'+Number(u.price||49).toLocaleString("en-IN"):"")+'</button>').join("");
+ $("unitButtons").innerHTML=units.map((u,i)=>{const paid=u.accessType==="paid"&&u.materialId;const price=Number(u.price||49).toLocaleString("en-IN");return '<div class="unit-option"><button type="button" class="unit-button '+(i===unitIndex?"active":"")+'" data-unit="'+i+'">'+esc(u.name)+'</button>'+(paid?'<a class="unit-buy" href="study-material-checkout.html?id='+encodeURIComponent(u.materialId)+'">Buy for ₹'+price+'</a>':'')+'</div>'}).join("");
  $("unitButtons").querySelectorAll("[data-unit]").forEach(b=>b.addEventListener("click",()=>{unitIndex=Number(b.dataset.unit);draw()}));
  if(!unit){$("noteArea").innerHTML='<div class="note-card muted">No notes have been uploaded for this subject yet.</div>';return;}
  const sample=unit.previewUrl||unit.url;let actions="";if(unit.accessType==="free"){actions=sample?'<p><strong>Free resource</strong></p><iframe class="sample-frame" src="'+esc(sample)+'#toolbar=0&navpanes=0" title="Free study notes preview" loading="lazy"></iframe>':'<p>This free file is not available yet.</p>';}else if(unit.materialId){actions=(sample?'<p>Preview the sample pages below. Purchase the complete notes to access the full PDF.</p><iframe class="sample-frame" src="'+esc(sample)+'#toolbar=0&navpanes=0" title="Study notes sample preview" loading="lazy"></iframe>':'<p class="muted">A sample preview is not available for this material yet.</p>')+'<a href="study-material-checkout.html?id='+encodeURIComponent(unit.materialId)+'">Buy full notes for ₹'+Number(unit.price||49).toLocaleString("en-IN")+'</a>';}else{actions='<div class="sample-warning">This file needs to be re-uploaded to enable preview and purchase.</div>';} $("noteArea").innerHTML='<div class="note-card">'+actions+'</div>';
