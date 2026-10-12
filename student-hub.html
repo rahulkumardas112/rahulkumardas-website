@@ -85,7 +85,7 @@ function drawChoices(container,items,selected,onPick){$(container).innerHTML=ite
  $("semesterArea").hidden=!(selectedUniversity&&selectedCourse);
  if(selectedCourse){
   const count=bachelors.includes(selectedCourse)?8:4;
-  const items=Array.from({length:count},(_,i)=>{const ord=i===0?"1st":i===1?"2nd":i===2?"3rd":(i+1)+"th";return {value:ord+" Semester",label:selectedCourse+" "+ord+" Semester",note:"Open subjects and unit-wise notes"}});
+  const items=Array.from({length:count},(_,i)=>{const ord=i===0?"1st":i===1?"2nd":i===2?"3rd":(i+1)+"th";return {value:ord+" Semester",label:selectedCourse+" "+ord+" Semester",note:"Open subjects, unit-wise notes and question papers"}});
   drawChoices("semesterChoices",items,selectedSemester,v=>{
    const target="semester-subjects.html?"+new URLSearchParams({university:selectedUniversity,course:selectedCourse,semester:v}).toString();
    window.location.href=target;
