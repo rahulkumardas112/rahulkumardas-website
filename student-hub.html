@@ -17,7 +17,36 @@
 </style>
 <style>
 .resource-section{background:#f8f6f1;padding:58px 0}.resource-intro{max-width:760px}.resource-intro p{color:#625d56;line-height:1.7}.resource-filters{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;margin:24px 0}.resource-filters input,.resource-filters select{width:100%;padding:13px;border:1px solid #d5cec3;border-radius:8px;background:#fff;font:inherit}.resource-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:16px}.resource-card{background:#fff;border:1px solid #e5dfd6;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:11px}.resource-card h3{margin:0;font-size:20px}.resource-card p{color:#625d56;line-height:1.6;flex:1}.resource-pills{display:flex;gap:6px;flex-wrap:wrap}.resource-pill{font-size:12px;padding:5px 9px;background:#f0eee9;border-radius:20px}.resource-pill.free{background:#e1f5e7;color:#176b38}.resource-pill.paid{background:#e4edff;color:#204c9a}.resource-price{font-weight:800;font-size:22px}.resource-button{display:inline-flex;justify-content:center;padding:11px 14px;border-radius:7px;background:#1c1b19;color:#fff;text-decoration:none;font-weight:700}.resource-empty{padding:22px;border:1px dashed #d5cec3;border-radius:10px;background:#fff;color:#625d56}.resource-admin-link{display:inline-block;margin-top:18px;font-size:13px;color:#625d56}@media(max-width:650px){.resource-filters{grid-template-columns:1fr}}
-</style><style>.hub-browse{margin:32px 0;padding:26px;background:#fff;border:1px solid #e5dfd6;border-radius:14px}.hub-browse-head{max-width:760px}.hub-browse-head p{color:#625d56;line-height:1.65}.hub-choice-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px;margin:14px 0 24px}.hub-choice{padding:13px 15px;text-align:left;border:1px solid #d9d1c5;border-radius:9px;background:#fff;color:#24211d;font:inherit;font-weight:700;cursor:pointer}.hub-choice:hover,.hub-choice.active{background:#211f1b;color:#fff;border-color:#211f1b}.hub-choice small{display:block;font-weight:400;margin-top:5px;opacity:.78}.hub-selection{padding:12px 14px;border-radius:8px;background:#f4f0e8;color:#50483e;font-size:14px}.hub-browse h3{margin:18px 0 8px}@media(max-width:650px){.hub-browse{padding:18px}.hub-choice-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}</style></head>
+</style><style>.hub-browse{margin:32px 0;padding:26px;background:#fff;border:1px solid #e5dfd6;border-radius:14px}.hub-browse-head{max-width:760px}.hub-browse-head p{color:#625d56;line-height:1.65}.hub-choice-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px;margin:14px 0 24px}.hub-choice{padding:13px 15px;text-align:left;border:1px solid #d9d1c5;border-radius:9px;background:#fff;color:#24211d;font:inherit;font-weight:700;cursor:pointer}.hub-choice:hover,.hub-choice.active{background:#211f1b;color:#fff;border-color:#211f1b}.hub-choice small{display:block;font-weight:400;margin-top:5px;opacity:.78}.hub-selection{padding:12px 14px;border-radius:8px;background:#f4f0e8;color:#50483e;font-size:14px}.hub-browse h3{margin:18px 0 8px}@media(max-width:650px){.hub-browse{padding:18px}.hub-choice-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}</style>
+<style>
+/* Simplified Students Hub layout */
+.hub-hero, main > section.section { display:none !important; }
+.resource-section { padding:30px 0 !important; background:#f7f6f2 !important; }
+.resource-intro { max-width:850px; margin:0 auto 18px; }
+.resource-intro .eyebrow { margin-bottom:6px; }
+.resource-intro h2 { margin:0 0 8px; font-size:clamp(26px,4vw,36px); }
+.resource-intro p:not(.eyebrow) { margin:0; }
+.hub-browse { margin:16px 0 !important; padding:20px !important; border-radius:12px !important; }
+.hub-browse-head h2 { margin:0 0 6px; font-size:23px; }
+.hub-browse-head p { margin:0 0 12px; }
+.hub-browse h3 { margin:14px 0 7px !important; font-size:15px; }
+.hub-choice-grid { margin:10px 0 16px !important; gap:8px !important; }
+.hub-choice { padding:12px !important; }
+#resourceLevel,#resourceUniversity,#resourceCourse,#resourceSemester { display:none !important; }
+.resource-filters { grid-template-columns:minmax(0,2fr) 1fr 1fr !important; gap:8px !important; margin:16px 0 10px !important; }
+.resource-filters input,.resource-filters select { padding:11px !important; min-width:0; }
+#resourceCount { margin:10px 0; }
+.resource-cards { grid-template-columns:repeat(auto-fit,minmax(220px,1fr)) !important; gap:12px !important; }
+.resource-card { padding:16px !important; gap:8px !important; }
+.resource-admin-link { display:none !important; }
+@media(max-width:650px) {
+ .resource-section { padding:22px 0 !important; }
+ .hub-browse { padding:15px !important; }
+ .resource-filters { grid-template-columns:1fr !important; }
+ .resource-cards { grid-template-columns:1fr !important; }
+}
+</style>
+</head>
 <body>
 <header class="site-header"><div class="container nav-wrap"><a class="brand" href="index.html"><span>Rahul Kumar Das</span><small>Student Learning Hub</small></a><button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button><nav id="mainNav"><a href="index.html">Home</a><a href="books.html">Books</a><a href="academic.html">Academic Store</a><a href="assam-history.html">Assam History</a><a href="author-publishing.html">Publishing Studio</a><a href="account.html">Create Account</a></nav></div></header>
 <main>
@@ -29,7 +58,7 @@
 </div></div></section>
 <section class="section paper"><div class="container"><div class="hub-note"><strong>Help shape the first version.</strong><p>Tell us your university, course, semester and subject. This helps identify which learning resources are most needed first. Resources will be added progressively and should always be checked against the current syllabus prescribed by your institution.</p><a class="text-link" href="index.html#contact">Suggest a subject or resource →</a></div></div></section>
 <section class="section"><div class="container"><div class="hub-contact"><h2>What are you studying right now?</h2><p>Send your course, semester and subject requirements. You can also ask about study material already available in the Academic Store.</p><a class="btn" href="index.html#contact">Send a learning enquiry</a></div></div></section>
-<section class="resource-section" id="study-resources"><div class="container"><div class="resource-intro"><p class="eyebrow">FREE AND PREMIUM RESOURCES</p><h2>Find the material you need.</h2><p>Access published previous year question papers and syllabus resources free of cost. Browse detailed notes, solved question papers and semester study packages when you need more structured exam preparation.</p></div><section class="hub-browse" aria-labelledby="schoolBrowseTitle" id="school-resources">
+<section class="resource-section" id="study-resources"><div class="container"><div class="resource-intro"><p class="eyebrow">FREE AND PREMIUM RESOURCES</p><h2>Find the material you need.</h2><p>Choose your board or university, then select your class or course and subject. Search the available notes, question papers and study materials below. Free resources open directly; paid resources show the payment option.</p></div><section class="hub-browse" aria-labelledby="schoolBrowseTitle" id="school-resources">
 <div class="hub-browse-head"><p class="eyebrow">CLASS XI AND CLASS XII</p><h2 id="schoolBrowseTitle">School Learning Hub</h2><p>Choose your board, class and stream to explore subjects, question papers, study materials and notes. Available resources will appear below.</p></div>
 <h3>1. Choose your board</h3><div id="schoolBoardChoices" class="hub-choice-grid"></div>
 <div id="schoolClassArea" hidden><h3>2. Choose your class</h3><div id="schoolClassChoices" class="hub-choice-grid"></div></div>
