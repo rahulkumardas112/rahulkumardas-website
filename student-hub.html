@@ -73,13 +73,13 @@ function drawChoices(container,items,selected,onPick){$(container).innerHTML=ite
  drawChoices("universityChoices",universityNames.map(v=>({value:v,label:v,note:"Browse courses and semesters"})),selectedUniversity,v=>{
   selectedUniversity=v;selectedCourse="";selectedSemester="";universityBrowseType="notes";
   schoolBoard="";schoolClass="";schoolStream="";schoolResourceType="";schoolSubject="";
-  $("schoolClassArea").hidden=true;$("schoolStreamArea").hidden=true;$("schoolResourceArea").hidden=true;
+  if($("schoolClassArea"))$("schoolClassArea").hidden=true;if($("schoolStreamArea"))$("schoolStreamArea").hidden=true;if($("schoolResourceArea"))$("schoolResourceArea").hidden=true;
   drawSchoolBrowse();$("courseArea").hidden=false;$("semesterArea").hidden=true;drawBrowse();render();
  });
  drawChoices("universityQuestionPaperChoices",universityNames.map(v=>({value:v,label:v+" - Question Papers",note:"Browse previous-year papers by course and semester"})),universityBrowseType==="question-papers"?selectedUniversity:"",v=>{
   selectedUniversity=v;selectedCourse="";selectedSemester="";universityBrowseType="question-papers";
   schoolBoard="";schoolClass="";schoolStream="";schoolResourceType="";schoolSubject="";
-  $("schoolClassArea").hidden=true;$("schoolStreamArea").hidden=true;$("schoolResourceArea").hidden=true;
+  if($("schoolClassArea"))$("schoolClassArea").hidden=true;if($("schoolStreamArea"))$("schoolStreamArea").hidden=true;if($("schoolResourceArea"))$("schoolResourceArea").hidden=true;
   $("courseArea").hidden=false;$("semesterArea").hidden=true;drawBrowse();render();
  });
  $("courseArea").hidden=!selectedUniversity;
@@ -98,7 +98,7 @@ function drawChoices(container,items,selected,onPick){$(container).innerHTML=ite
   });
  }
  const parts=[selectedUniversity,selectedCourse].filter(Boolean);
- $("selectionSummary").textContent=parts.length?"Selected: "+parts.join(" · ")+(selectedCourse?". Choose a semester to open its own subjects and unit-wise notes page.":". Choose a course to see all semesters."):"Choose a university to begin.";
+ $("selectionSummary").textContent=parts.length?"Selected: "+parts.join(" · ")+(selectedCourse?(universityBrowseType==="question-papers"?". Choose a semester to browse question papers by subject and year.":". Choose a semester to open its own subjects and unit-wise notes page."):(universityBrowseType==="question-papers"?". Choose a course to find question papers.":". Choose a course to see all semesters.")):"Choose a university to begin.";
 }["resourceSearch","resourceLevel","resourceUniversity","resourceCourse","resourceSemester","resourceAccess","resourceType"].forEach(id=>$(id).addEventListener(id==="resourceSearch"?"input":"change",render));loadStructuredConfig().then(()=>{if(selectedSemester)drawStructuredBrowser()});sb.from("study_materials").select("id,title,description,resource_type,university,course,semester,subject,academic_level,exam_year,price,access_type,file_url,published,created_at").eq("published",true).order("created_at",{ascending:false}).then(({data,error})=>{if(error)throw error;resources=data||[];drawBrowse();drawSchoolBrowse();const universities=[...new Set(resources.map(m=>m.university).filter(Boolean))].sort();$("resourceUniversity").innerHTML='<option value="">All universities</option>'+universities.map(v=>'<option>'+esc(v)+'</option>').join("");render()}).catch(e=>{$("resourceCount").textContent="The resource catalogue is being configured."; $("resourceCards").innerHTML='<div class="resource-empty">Study materials could not be loaded right now. Please try again later.</div>';console.error(e)});})();
 </script><script src="analytics.js" defer></script>
 </body></html>
