@@ -36,6 +36,13 @@
 #submitStudio:hover:not(:disabled){transform:translateY(-2px);filter:saturate(1.08);box-shadow:0 12px 25px #c65b3248}
 #submitStudio:focus-visible{outline:3px solid #263b32;outline-offset:3px}
 #submitStudio:disabled{opacity:.7;cursor:wait;transform:none}
+
+/* Highlight the hero Submit a manuscript link separately from the account CTA */
+.studio-nav a[href="#submit-project"]{display:inline-flex;align-items:center;justify-content:center;padding:13px 17px;border:0;border-radius:7px;background:linear-gradient(115deg,#e58a24 0%,#c94e32 100%);color:#fff;text-decoration:none;font-size:12px;font-weight:700;box-shadow:0 7px 18px #c65b3238;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease}
+.studio-nav a[href="#submit-project"]:hover{transform:translateY(-2px);filter:saturate(1.08);box-shadow:0 11px 23px #c65b3248}
+.studio-nav a[href="#submit-project"]:focus-visible{outline:3px solid #263b32;outline-offset:3px}
+@media(max-width:560px){.studio-nav a[href="#submit-project"]{width:100%;box-sizing:border-box;text-align:center}}
+
 </style>
 <link rel="canonical" href="https://rahulkumardas.in/author-publishing.html">
 <meta property="og:title" content="Publish Your Book | Rahul Kumar Das Author Publishing Studio"><meta property="og:description" content="Explore book preparation, ISBN guidance, bookstore listing support, social promotion, royalty records and your author dashboard.">
