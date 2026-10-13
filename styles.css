@@ -43,3 +43,21 @@ button:disabled,[aria-disabled="true"]{cursor:not-allowed;opacity:.65}
   html{scroll-behavior:auto!important}
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
+
+
+/* Compact secondary navigation keeps the header focused on primary tasks */
+.nav-more{position:relative;font-size:13px}
+.nav-more>summary{list-style:none;cursor:pointer;color:#4d4943;padding:8px 2px;font-weight:600}
+.nav-more>summary::-webkit-details-marker{display:none}
+.nav-more>summary::after{content:" ▾";font-size:11px;color:#746f67}
+.nav-more[open]>summary,.nav-more>summary:hover{color:var(--accent)}
+.nav-more-menu{position:absolute;top:calc(100% + 8px);right:0;z-index:120;display:grid;grid-template-columns:repeat(2,minmax(125px,1fr));gap:2px;min-width:300px;padding:8px;background:#fbfaf7;border:1px solid #e2dbd1;border-radius:10px;box-shadow:0 14px 30px rgba(28,27,25,.15)}
+.site-header .nav-more-menu a{display:flex;align-items:center;min-height:40px;padding:9px 11px;border-radius:6px;white-space:normal}
+.site-header .nav-more-menu a:hover{background:#e8f0ef;color:#17464b}
+@media(max-width:1150px) and (min-width:951px){.site-header .nav-wrap nav{gap:11px;font-size:12px}.nav-students-hub{padding:8px 9px!important}}
+@media(max-width:950px){
+ .site-header .nav-wrap .nav-more{width:100%;padding:0 5px}
+ .site-header .nav-wrap .nav-more>summary{display:flex;align-items:center;min-height:44px;padding:11px 13px;border-bottom:1px solid #eee8df}
+ .site-header .nav-wrap .nav-more[open] .nav-more-menu{position:static;min-width:0;grid-template-columns:repeat(2,minmax(0,1fr));box-shadow:none;border:0;border-radius:0;padding:4px 4px 8px;background:#f4f0e8}
+ .site-header .nav-wrap .nav-more-menu a{min-height:42px;padding:10px}
+}
