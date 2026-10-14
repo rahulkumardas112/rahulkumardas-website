@@ -38,7 +38,7 @@ function comboAmount(price){return selectedCurrency()==="USD"?Number(price)*2:Nu
 function displayComboPrice(price){return money(price)+" / "+usdMoney(price)}
 function activePackage(){return PACKAGES.find(p=>p.count===selectedCount)||null}
 function renderPackages(){
- $("comboPackages").innerHTML=PACKAGES.map(p=>'<button type="button" class="combo-package" data-count="'+p.count+'" aria-pressed="'+(p.count===selectedCount)+'"><span>'+p.count+' books</span><strong>'+money(p.price)+'</strong><span>'+money(p.price/p.count)+' per book on average</span></button>').join("");
+ $("comboPackages").innerHTML=PACKAGES.map(p=>'<button type="button" class="combo-package" data-count="'+p.count+'" aria-pressed="'+(p.count===selectedCount)+'"><span>'+p.count+' books</span><strong>'+displayComboPrice(p.price)+'</strong><span>'+money(p.price/p.count)+' per book on average in India</span></button>').join("");
 }
 function renderCategories(){
  const categories=[...new Set(books.map(b=>String(b.category||"General / Other")).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
@@ -125,6 +125,6 @@ $("comboOrderForm").addEventListener("submit",async e=>{
   button.disabled=false;button.textContent="Submit Book Combo Order";
  }
 });
-$("comboCurrency").addEventListener("change",updateComboPayment);$("copyPaypal").addEventListener("click",async()=>{try{await navigator.clipboard.writeText("rahulkumardas112@gmail.com");$("comboStatus").textContent="PayPal ID copied."}catch(e){$("comboStatus").textContent="PayPal ID: rahulkumardas112@gmail.com"}});$("comboCurrency").addEventListener("change",updateComboPayment);$("copyPaypal").addEventListener("click",async()=>{try{await navigator.clipboard.writeText("rahulkumardas112@gmail.com");$("comboStatus").textContent="PayPal ID copied."}catch(e){$("comboStatus").textContent="PayPal ID: rahulkumardas112@gmail.com"}});renderPackages();loadBooks();
+$("comboCurrency").addEventListener("change",updateComboPayment);$("copyPaypal").addEventListener("click",async()=>{try{await navigator.clipboard.writeText("rahulkumardas112@gmail.com");$("comboStatus").textContent="PayPal ID copied."}catch(e){$("comboStatus").textContent="PayPal ID: rahulkumardas112@gmail.com"}});renderPackages();loadBooks();
 </script><script src="analytics.js" defer></script>
 </body></html>
