@@ -52,7 +52,7 @@ async function init(){
   baseInternationalInr=internationalUsdPrice/(rates.USD||0.0108);
   renderCart();
   const {data:s}=await sb.from("site_settings").select("data").eq("id","site").maybeSingle();
-  const p=s?.data?.data?.payment||JSON.parse(localStorage.getItem("rkd_payment")||"{}");
+  const p=s?.data?.payment||JSON.parse(localStorage.getItem("rkd_payment")||"{}");
   if(!p.upiId)p.upiId="9101885778@ybl";if(!p.upiName)p.upiName="Rahul Kumar Das";
   upiText.textContent=p?.upiId?("UPI ID: "+p.upiId+(p.upiName?" | "+p.upiName:"")):"Please configure your UPI ID and QR code in Admin.";
   if(p?.upiId){
