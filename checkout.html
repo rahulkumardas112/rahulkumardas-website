@@ -69,11 +69,12 @@ async function updateInternationalPrice(){
  const label=document.getElementById("referenceLabel"),input=document.getElementById("utr");
  label.firstChild.textContent=isIndia?"UPI Transaction / UTR Number":"PayPal Transaction / Reference Number";
  input.placeholder=isIndia?"Enter the transaction reference number":"Enter the PayPal transaction/reference number";
- const selected=country.options[country.selectedIndex],preferred=selected?.dataset?.currency;
- if(preferred&&preferred!=="INR"&&currency.value!==preferred)currency.value=preferred;
- if(isIndia){amount.textContent="Indian total: "+fmtINR(totalIndianPrice);return;}
- const cur=currency.value,value=intlPrice(cur);
- paypalPrice.textContent=(currencySymbols[cur]||"")+value.toFixed(cur==="JPY"?0:2)+" "+cur;
+ const countryEl=document.getElementById("country"),currencyEl=document.getElementById("currency"),amountEl=document.getElementById("amount"),paypalPriceEl=document.getElementById("paypalPrice");
+ const selected=countryEl.options[countryEl.selectedIndex],preferred=selected?.dataset?.currency;
+ if(preferred&&preferred!=="INR"&&currencyEl.value!==preferred)currencyEl.value=preferred;
+ if(isIndia){amountEl.textContent="Indian total: "+fmtINR(totalIndianPrice);return;}
+ const cur=currencyEl.value,value=intlPrice(cur);
+ paypalPriceEl.textContent=(currencySymbols[cur]||"")+value.toFixed(cur==="JPY"?0:2)+" "+cur;
 }
 function copyPaypalEmail(){navigator.clipboard?.writeText("rahulkumardas112@gmail.com").then(()=>alert("PayPal ID copied."));}
 async function placeOrder(e){
