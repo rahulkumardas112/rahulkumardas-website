@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Books | Rahul Kumar Das</title><link rel="stylesheet" href="styles.css?v=20261013-quality2"><link rel="canonical" href="https://rahulkumardas.in/books.html">
+<title>Books | Rahul Kumar Das</title><link rel="stylesheet" href="styles.css?v=20261015-checkout-flow"><link rel="canonical" href="https://rahulkumardas.in/books.html">
 <meta name="description" content="Explore books by Rahul Kumar Das across psychology, human behaviour, relationships, fiction, finance, accountancy and academic subjects.">
 <meta property="og:title" content="Books by Rahul Kumar Das | Complete Catalogue"><meta property="og:description" content="Explore books by Rahul Kumar Das across psychology, human behaviour, relationships, fiction, finance, accountancy and academic subjects.">
 </head>
@@ -36,7 +36,7 @@ function render(){
    const id=encodeURIComponent(String(b.id)), title=esc(b.title||"Untitled");
    const desc=esc((b.description||"").length>150?b.description.slice(0,150).trim()+"…":(b.description||""));
    const cover=b.cover_url?'<img src="'+esc(b.cover_url)+'" alt="'+title+'" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;border-radius:6px">':'<div style="display:flex;align-items:center;justify-content:center;height:100%;padding:18px;text-align:center;font-weight:600">'+title+'</div>';
-   const buy=b.buy_link||("checkout.html?id="+id);
+   const buy="checkout.html?id="+id;
    return '<article class="product-card"><div class="cover">'+cover+'</div><div class="product-body"><h3>'+title+'</h3><p class="book-excerpt">'+desc+'</p><span class="price">₹'+Number(b.price||0)+' <small class="intl-price" data-inr="'+Number(b.price||0)*2+'"> · $5.50</small></span><div class="card-actions"><a class="small-btn" href="book.html?id='+id+'">View Book</a><a class="small-btn" href="book.html?id='+id+'#sample">Read Sample</a><a class="small-btn primary" href="'+esc(buy)+'">Buy Ebook</a></div></div></article>';
  }).join("");
  updateIntlPrices();
