@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Book | Rahul Kumar Das</title><link rel="stylesheet" href="styles.css?v=20261015-checkout-flow">
+<title>Book | Rahul Kumar Das</title><link rel="stylesheet" href="styles.css?v=20261015-multi-ebook-cart">
 <style>
 .sample{margin-top:45px;max-width:900px;margin-left:auto;margin-right:auto}
 .sample-page{background:#fffdf8;border:1px solid #e6e0d5;padding:30px 34px;margin:18px 0;border-radius:8px;line-height:1.85;box-shadow:0 3px 14px rgba(0,0,0,.04)}
@@ -105,7 +105,7 @@ function renderBook(b){
  const pdfUrl=b.pdf||b.pdf_path||"";
  const hasPdf=!!pdfUrl;
  const buy=document.getElementById("buy");
- if(hasPdf){ buy.href="checkout.html?id="+encodeURIComponent(String(b.id)); buy.textContent="Buy Ebook"; buy.style.pointerEvents="auto"; buy.style.opacity="1"; buy.removeAttribute("aria-disabled"); }
+ if(hasPdf){ const addMode=new URLSearchParams(location.search).get("addMore")==="1"; buy.href=addMode?"checkout.html?add="+encodeURIComponent(String(b.id)):"checkout.html?id="+encodeURIComponent(String(b.id)); buy.textContent=addMode?"Add to Order":"Buy Ebook"; buy.style.pointerEvents="auto"; buy.style.opacity="1"; buy.removeAttribute("aria-disabled"); }
  else{ buy.removeAttribute("href"); buy.textContent="Ebook PDF Coming Soon"; buy.style.pointerEvents="none"; buy.style.opacity=".55"; buy.setAttribute("aria-disabled","true"); }
  document.getElementById("sampleTitle").textContent=b.sampleTitle||"Read a Sample";
  const shareButton=document.getElementById("shareBookButton");
