@@ -73,7 +73,7 @@ function upiUri(){
 function updateComboPayment(){const p=activePackage();if(!p)return;const usd=selectedCurrency()==="USD";$("inrPayBox").hidden=usd;$("usdPayBox").hidden=!usd;$("currencyExplanation").textContent=usd?"International price is set at twice the INR package amount, shown in US dollars. PayPal payment is required.":"Indian customers can pay the INR package amount using UPI.";$("paymentAmount").textContent=money(p.price);$("usdPaymentAmount").textContent=usdMoney(p.price);$("comboReferenceLabel").textContent=usd?"PayPal transaction or reference number":"UPI transaction reference";$("comboUtr").placeholder=usd?"Enter your PayPal transaction/reference number":"Enter your UTR or transaction reference";$("comboUpiId").textContent=currentUpi;$("upiPayLink").href=upiUri();$("comboQr").src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&data="+encodeURIComponent(upiUri());$("checkoutSummary").textContent="You have selected "+p.count+" different ebooks for "+(usd?usdMoney(p.price):money(p.price))+". Please review the titles before paying."}\nfunction prepareCheckout(){
  const p=activePackage();if(!p||selectedIds.size!==p.count)return;
  const chosen=books.filter(b=>selectedIds.has(Number(b.id)));
- $("checkoutSummary").textContent="You have selected "+p.count+" different ebooks. Choose INR for the Indian price or USD for the international price.");
+ $("checkoutSummary").textContent="You have selected "+p.count+" different ebooks. Choose INR for the Indian price or USD for the international price.";
  $("selectedSummary").innerHTML="<strong>Your selected books</strong><ol>"+chosen.map(b=>"<li>"+esc(b.title)+"</li>").join("")+"</ol><p><strong>Total package price: "+money(p.price)+"</strong></p>";
  $("paymentAmount").textContent=money(p.price);$("comboUpiId").textContent=currentUpi;
  $("upiPayLink").href=upiUri();
@@ -127,6 +127,6 @@ $("comboOrderForm").addEventListener("submit",async e=>{
   button.disabled=false;button.textContent="Submit Book Combo Order";
  }
 });
-$("comboCurrency").addEventListener("change",updateComboPayment);$("copyPaypal").addEventListener("click",async()=>{try{await navigator.clipboard.writeText("rahulkumardas112@gmail.com");$("comboStatus").textContent="PayPal ID copied."}catch(e){$("comboStatus").textContent="PayPal ID: rahulkumardas112@gmail.com"}});renderPackages();loadBooks();
+$("comboCurrency").addEventListener("change",updateComboPayment);$("copyPaypal").addEventListener("click",async()=>{try{await navigator.clipboard.writeText("rahulkumardas112@gmail.com");$("comboStatus").textContent="PayPal ID copied."}catch(e){$("comboStatus").textContent="PayPal ID: rahulkumardas112@gmail.com"}});$("comboCurrency").addEventListener("change",updateComboPayment);$("copyPaypal").addEventListener("click",async()=>{try{await navigator.clipboard.writeText("rahulkumardas112@gmail.com");$("comboStatus").textContent="PayPal ID copied."}catch(e){$("comboStatus").textContent="PayPal ID: rahulkumardas112@gmail.com"}});renderPackages();loadBooks();
 </script><script src="analytics.js" defer></script>
 </body></html>
