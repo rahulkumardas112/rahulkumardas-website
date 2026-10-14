@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Books | Rahul Kumar Das</title><link rel="stylesheet" href="styles.css?v=20261015-checkout-flow"><link rel="canonical" href="https://rahulkumardas.in/books.html">
+<title>Books | Rahul Kumar Das</title><link rel="stylesheet" href="styles.css?v=20261015-multi-ebook-cart"><link rel="canonical" href="https://rahulkumardas.in/books.html">
 <meta name="description" content="Explore books by Rahul Kumar Das across psychology, human behaviour, relationships, fiction, finance, accountancy and academic subjects.">
 <meta property="og:title" content="Books by Rahul Kumar Das | Complete Catalogue"><meta property="og:description" content="Explore books by Rahul Kumar Das across psychology, human behaviour, relationships, fiction, finance, accountancy and academic subjects.">
 </head>
 <body><header class="site-header"><div class="container nav-wrap"><a class="brand" href="index.html"><span>Rahul Kumar Das</span><small>Author · Academic · Educator · Researcher</small></a><nav style="display:flex"><a href="index.html">Home</a><a href="book-combos.html">Build a Book Combo</a><a href="academic.html">Academic Store</a><a href="student-hub.html">Students Hub</a><a href="reviews.html">Reader Reviews</a><a href="faq.html">FAQ</a><a href="library.html">My Library</a></nav></div></header>
-<main class="inner-page"><div class="container"><p class="eyebrow">BOOKS</p><h1 class="page-title">The complete bookshelf.</h1><p>Explore literary works, new releases and books on the human experience.</p><div class="actions" style="margin:22px 0"><a class="btn dark" href="book-combos.html">Build Your Own Book Combo</a></div>
+<main class="inner-page"><div class="container"><p class="eyebrow">BOOKS</p><h1 class="page-title">The complete bookshelf.</h1><p>Explore literary works, new releases and books on the human experience.</p><div class="actions" style="margin:22px 0"><a class="btn dark" href="book-combos.html">Build Your Own Book Combo</a></div><div id="addMoreNotice" class="notice" style="display:none;margin:18px 0">Choose <strong>Add to Order</strong> on each ebook you want. You will return to checkout after each selection, and pay for all selected ebooks together.</div>
+<script>if(new URLSearchParams(location.search).get("addMore")==="1"){const n=document.getElementById("addMoreNotice");if(n)n.style.display="block";}</script>
 <div class="toolbar"><input placeholder="Search books..." oninput="filterBooks(this.value)"><select id="categoryFilter" onchange="render()">
 <option>All Categories</option>
 <option>General / Other</option>
@@ -36,8 +37,8 @@ function render(){
    const id=encodeURIComponent(String(b.id)), title=esc(b.title||"Untitled");
    const desc=esc((b.description||"").length>150?b.description.slice(0,150).trim()+"…":(b.description||""));
    const cover=b.cover_url?'<img src="'+esc(b.cover_url)+'" alt="'+title+'" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;border-radius:6px">':'<div style="display:flex;align-items:center;justify-content:center;height:100%;padding:18px;text-align:center;font-weight:600">'+title+'</div>';
-   const buy="checkout.html?id="+id;
-   return '<article class="product-card"><div class="cover">'+cover+'</div><div class="product-body"><h3>'+title+'</h3><p class="book-excerpt">'+desc+'</p><span class="price">₹'+Number(b.price||0)+' <small class="intl-price" data-inr="'+Number(b.price||0)*2+'"> · $5.50</small></span><div class="card-actions"><a class="small-btn" href="book.html?id='+id+'">View Book</a><a class="small-btn" href="book.html?id='+id+'#sample">Read Sample</a><a class="small-btn primary" href="'+esc(buy)+'">Buy Ebook</a></div></div></article>';
+   const addMode=new URLSearchParams(location.search).get("addMore")==="1"; const buy=addMode?"checkout.html?add="+id:"checkout.html?id="+id; const buyLabel=addMode?"Add to Order":"Buy Ebook";
+   return '<article class="product-card"><div class="cover">'+cover+'</div><div class="product-body"><h3>'+title+'</h3><p class="book-excerpt">'+desc+'</p><span class="price">₹'+Number(b.price||0)+' <small class="intl-price" data-inr="'+Number(b.price||0)*2+'"> · $5.50</small></span><div class="card-actions"><a class="small-btn" href="book.html?id='+id+'">View Book</a><a class="small-btn" href="book.html?id='+id+'#sample">Read Sample</a><a class="small-btn primary" href="'+esc(buy)+'">'+buyLabel+'</a></div></div></article>';
  }).join("");
  updateIntlPrices();
 }
