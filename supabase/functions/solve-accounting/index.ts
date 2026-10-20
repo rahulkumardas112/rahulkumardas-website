@@ -31,7 +31,8 @@ Deno.serve(async (req: Request) => {
   const origin = req.headers.get("origin") ?? "";
   const corsHeaders = {
     "Access-Control-Allow-Origin": allowedOrigins.has(origin) ? origin : "https://rahulkumardas.in",
-    "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info",
+    "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info, x-supabase-api-version, x-requested-with, accept, prefer, range",
+    "Access-Control-Max-Age": "86400",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Vary": "Origin"
   };
@@ -97,7 +98,7 @@ Deno.serve(async (req: Request) => {
         model: "gpt-4.1-mini",
         instructions: systemInstructions,
         input: [{ role: "user", content }],
-        max_output_tokens: 4000
+        max_output_tokens: 2500
       }),
       signal: AbortSignal.timeout(90000)
     });
