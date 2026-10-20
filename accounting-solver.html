@@ -28,7 +28,10 @@
 <select id="subject"><option>Financial Accounting</option><option>Cost Accounting</option><option>Management Accounting</option><option>Corporate Accounting</option><option>Financial Management</option><option>Taxation</option><option>Auditing</option><option>General Accounting</option></select>
 <label for="question">Your question</label>
 <textarea id="question" maxlength="12000" placeholder="For example, prepare a cost sheet from the following information..."></textarea>
-<label for="photo">Question photograph</label><input id="photo" type="file" accept="image/jpeg,image/png,image/webp">
+<label>Question photograph</label>
+<div class="actions" style="margin-top:0"><button class="btn secondary" id="cameraButton" type="button">Take a photo</button><button class="btn secondary" id="galleryButton" type="button">Choose from photos</button></div>
+<input id="photo" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+<input id="cameraPhoto" type="file" accept="image/*" capture="environment" hidden>
 <img id="photoPreview" alt="Preview of your uploaded accounting question">
 <p class="hint">Use a clear JPG, PNG or WebP image smaller than 5 MB. Your image is processed to answer the question and is not stored in saved history.</p>
 <div class="actions"><button class="btn" id="solveButton" type="submit">Solve my problem</button><button class="btn secondary" id="clearButton" type="button">Clear</button></div>
@@ -55,7 +58,11 @@
   const form = document.getElementById("solverForm");
   const questionBox = document.getElementById("question");
   const photoBox = document.getElementById("photo");
+  const cameraBox = document.getElementById("cameraPhoto");
+  const cameraButton = document.getElementById("cameraButton");
+  const galleryButton = document.getElementById("galleryButton");
   const preview = document.getElementById("photoPreview");
+  let selectedPhoto = null;
   const status = document.getElementById("status");
   const solveButton = document.getElementById("solveButton");
   const answerBox = document.getElementById("answer");
@@ -80,23 +87,33 @@
     });
   }
 
-  photoBox.addEventListener("change", () => {
-    const file = photoBox.files[0];
-    if (!file) { preview.style.display = "none"; preview.removeAttribute("src"); return; }
+  function handlePhotoSelection(file, sourceInput) {
+    if (!file) return;
     if (!["image/jpeg", "image/png", "image/webp"].includes(file.type) || file.size > 5 * 1024 * 1024) {
-      photoBox.value = ""; preview.style.display = "none";
-      setStatus("Choose a JPG, PNG or WebP image smaller than 5 MB."); return;
+      sourceInput.value = "";
+      selectedPhoto = null;
+      preview.style.display = "none";
+      preview.removeAttribute("src");
+      setStatus("Choose a JPG, PNG or WebP image smaller than 5 MB.");
+      return;
     }
+    selectedPhoto = file;
+    photoBox.value = "";
+    cameraBox.value = "";
     preview.src = URL.createObjectURL(file);
     preview.style.display = "block";
-    setStatus("");
-  });
+    setStatus("Photo ready. Submit your question when you are ready.");
+  }
+  photoBox.addEventListener("change", () => handlePhotoSelection(photoBox.files[0], photoBox));
+  cameraBox.addEventListener("change", () => handlePhotoSelection(cameraBox.files[0], cameraBox));
+  galleryButton.addEventListener("click", () => photoBox.click());
+  cameraButton.addEventListener("click", () => cameraBox.click());
 
   form.addEventListener("submit", async event => {
     event.preventDefault();
     if (!db) { setStatus("The database client could not load. Refresh the page and try again."); return; }
     const question = questionBox.value.trim();
-    const file = photoBox.files[0];
+    const file = selectedPhoto;
     if (!question && !file) { setStatus("Enter a question or upload a photograph."); return; }
 
     solveButton.disabled = true;
@@ -204,6 +221,9 @@
   });
   document.getElementById("clearButton").addEventListener("click", () => {
     form.reset();
+    selectedPhoto = null;
+    cameraBox.value = "";
+    photoBox.value = "";
     preview.style.display = "none";
     preview.removeAttribute("src");
     solutionPanel.hidden = true;
