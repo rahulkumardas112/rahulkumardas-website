@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Accounting Solver | Rahul Kumar Das</title>
+<meta name="description" content="Solve accounting problems with detailed calculations, working notes and step by step explanations.">
+<link rel="canonical" href="https://rahulkumardas.in/accounting-solver.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#29251f;--muted:#71695f;--paper:#f6f3ed;--card:#fff;--line:#e3ddd3;--green:#203f35;--green2:#2c5b4b}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:"DM Sans",Arial,sans-serif;line-height:1.65}a{color:inherit}
+.site-header{background:var(--green);color:#fff;padding:24px 0}.wrap{width:min(1000px,92%);margin:0 auto}.brand{font-weight:700;text-decoration:none;font-size:18px}.back{color:#e2ece6;font-size:13px;text-decoration:none}.intro{padding:28px 0 12px}.eyebrow{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#547568;font-weight:700}.intro h1{font-family:"Playfair Display",Georgia,serif;font-size:clamp(32px,5vw,48px);line-height:1.12;margin:8px 0 12px}.intro p{max-width:720px;color:#625d56}.layout{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(250px,.75fr);gap:20px;padding:12px 0 42px}.panel{background:var(--card);padding:24px;border:1px solid var(--line);border-radius:13px;box-shadow:0 8px 28px rgba(45,37,27,.035);margin-bottom:18px}.panel h2{font-size:20px;margin:0 0 8px}.sub{color:var(--muted);font-size:14px;margin:0 0 18px}label{display:block;font-weight:700;font-size:13px;margin:17px 0 7px}textarea,select,input[type=file]{width:100%;padding:12px;border:1px solid #d5cec3;border-radius:8px;background:#fff;color:var(--ink);font:inherit}textarea{min-height:160px;resize:vertical}textarea:focus,select:focus,input:focus{outline:2px solid #b5cabe;outline-offset:1px}.btn{border:0;border-radius:8px;padding:12px 17px;background:var(--green);color:white;font:inherit;font-weight:700;cursor:pointer}.btn:hover{background:var(--green2)}.btn:disabled{opacity:.55;cursor:wait}.btn.secondary{background:#ece6dc;color:var(--ink)}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}.hint,.fine{font-size:12px;color:var(--muted)}#status{min-height:24px;font-size:13px;color:#426554;margin:12px 0 0}#photoPreview{max-width:100%;max-height:300px;display:none;object-fit:contain;margin-top:12px;border-radius:8px;border:1px solid var(--line)}.answer{overflow-wrap:anywhere}.answer h1,.answer h2,.answer h3{font-family:"Playfair Display",Georgia,serif;line-height:1.25}.answer h2{margin-top:24px}.answer table{border-collapse:collapse;width:100%;display:block;overflow-x:auto;margin:16px 0}.answer th,.answer td{border:1px solid var(--line);padding:9px;text-align:left;vertical-align:top;min-width:90px}.answer th{background:#f4f0e8}.answer blockquote{margin:12px 0;padding:8px 14px;border-left:3px solid #91aa9d;background:#f7f4ee}.answer code{background:#f1eee8;padding:2px 4px;border-radius:4px}.answer pre{overflow:auto;background:#f4f0e8;padding:12px;border-radius:8px}.history-list{display:grid;gap:8px;margin-top:14px}.history-item{border:1px solid var(--line);border-radius:8px;padding:12px;background:#fff;text-align:left;cursor:pointer}.history-item strong{display:block;font-size:13px}.history-item span{display:block;font-size:12px;color:var(--muted);margin-top:4px}.empty{font-size:13px;color:var(--muted);padding:10px 0}.pill{display:inline-block;background:#e9f0eb;color:#305847;border-radius:99px;padding:4px 9px;font-size:11px;font-weight:700}.subject-list{padding-left:18px;color:#625d56;font-size:13px}.subject-list li{margin:5px 0}.footer{border-top:1px solid var(--line);padding:22px 0 30px;color:var(--muted);font-size:12px}@media(max-width:760px){.layout{grid-template-columns:1fr}.panel{padding:18px}.intro{padding-top:22px}}
+</style>
+</head>
+<body>
+<header class="site-header"><div class="wrap"><a class="brand" href="index.html">Rahul Kumar Das</a><div style="margin-top:8px"><a class="back" href="index.html">← Return to the main website</a></div></div></header>
+<main class="wrap">
+<section class="intro"><div class="eyebrow">Learn by understanding every step</div><h1>AI Accounting Solver</h1><p>Enter a numerical problem or upload a clear photograph. Get the concept, formulas, working notes, calculations and final answer explained in student friendly language.</p><span class="pill">Up to 5 free solutions per day after sign in</span></section>
+<div class="layout">
+<div>
+<section class="panel">
+<h2>What would you like to solve?</h2><p class="sub">You can enter the question, attach a photograph, or use both together.</p>
+<form id="solverForm">
+<label for="subject">Accounting subject</label>
+<select id="subject"><option>Financial Accounting</option><option>Cost Accounting</option><option>Management Accounting</option><option>Corporate Accounting</option><option>Financial Management</option><option>Taxation</option><option>Auditing</option><option>General Accounting</option></select>
+<label for="question">Your question</label>
+<textarea id="question" maxlength="12000" placeholder="For example, prepare a cost sheet from the following information..."></textarea>
+<label for="photo">Question photograph</label><input id="photo" type="file" accept="image/jpeg,image/png,image/webp">
+<img id="photoPreview" alt="Preview of your uploaded accounting question">
+<p class="hint">Use a clear JPG, PNG or WebP image smaller than 5 MB. Your image is processed to answer the question and is not stored in saved history.</p>
+<div class="actions"><button class="btn" id="solveButton" type="submit">Solve my problem</button><button class="btn secondary" id="clearButton" type="button">Clear</button></div>
+<p id="status" role="status" aria-live="polite"></p>
+</form>
+</section>
+<section class="panel" id="solutionPanel" hidden><h2>Your detailed solution</h2><p class="sub">Review the working notes and assumptions before using the answer.</p><article id="answer" class="answer"></article><div class="actions"><button class="btn secondary" id="copyButton" type="button">Copy answer</button></div></section>
+</div>
+<aside>
+<section class="panel"><h2>Your saved questions</h2><p class="sub">Sign in to save and revisit up to 30 recent solutions.</p><button class="btn secondary" id="refreshHistory" type="button">Refresh history</button><div id="history" class="history-list"><p class="empty">Checking your account…</p></div></section>
+<section class="panel"><h2>Subjects supported</h2><ul class="subject-list"><li>Financial accounting and final accounts</li><li>Cost sheets and overheads</li><li>Marginal and standard costing</li><li>Management accounting and ratios</li><li>Corporate accounting</li><li>Financial management</li><li>Taxation and auditing</li></ul></section>
+<section class="panel"><h2>Study responsibly</h2><p class="fine">AI answers can contain errors. Check calculations, applicable tax rules and accounting standards before relying on them. If information is missing or a photograph is unclear, the solver should say so.</p></section>
+</aside>
+</div>
+</main>
+<footer class="footer"><div class="wrap">© 2026 Rahul Kumar Das · <a href="privacy.html">Privacy Policy</a> · <a href="index.html">Main website</a></div></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="cloud-cms.js?v=20261020-accounting-solver"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
+<script>
+(() => {
+  const db = window.rkdSupabase;
+  const form = document.getElementById("solverForm");
+  const questionBox = document.getElementById("question");
+  const photoBox = document.getElementById("photo");
+  const preview = document.getElementById("photoPreview");
+  const status = document.getElementById("status");
+  const solveButton = document.getElementById("solveButton");
+  const answerBox = document.getElementById("answer");
+  const solutionPanel = document.getElementById("solutionPanel");
+  const historyBox = document.getElementById("history");
+  let latestAnswer = "";
+
+  function setStatus(message) { status.textContent = message; }
+  function renderAnswer(markdown) {
+    if (window.marked && window.DOMPurify) {
+      answerBox.innerHTML = DOMPurify.sanitize(marked.parse(markdown));
+    } else {
+      answerBox.textContent = markdown;
+    }
+  }
+  function readPhoto(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(new Error("Could not read the photograph."));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  photoBox.addEventListener("change", () => {
+    const file = photoBox.files[0];
+    if (!file) { preview.style.display = "none"; preview.removeAttribute("src"); return; }
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type) || file.size > 5 * 1024 * 1024) {
+      photoBox.value = ""; preview.style.display = "none";
+      setStatus("Choose a JPG, PNG or WebP image smaller than 5 MB."); return;
+    }
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = "block";
+    setStatus("");
+  });
+
+  form.addEventListener("submit", async event => {
+    event.preventDefault();
+    if (!db) { setStatus("The database client could not load. Refresh the page and try again."); return; }
+    const question = questionBox.value.trim();
+    const file = photoBox.files[0];
+    if (!question && !file) { setStatus("Enter a question or upload a photograph."); return; }
+
+    solveButton.disabled = true;
+    setStatus("Reading your question and preparing a detailed solution…");
+    solutionPanel.hidden = true;
+
+    try {
+      const { data: sessionData, error: sessionError } = await db.auth.getSession();
+      if (sessionError) throw sessionError;
+      const session = sessionData.session;
+      if (!session) {
+        setStatus("Please sign in using your website account, then return here to solve your question.");
+        return;
+      }
+
+      const image = file ? await readPhoto(file) : null;
+      const { data, error } = await db.functions.invoke("solve-accounting", {
+        body: { question, subject: document.getElementById("subject").value, image }
+      });
+      if (error) {
+        let detail = error.message || "The AI request failed.";
+        try { if (error.context) { const body = await error.context.json(); detail = body.error || detail; } } catch (_) {}
+        throw new Error(detail);
+      }
+      if (!data || !data.answer) throw new Error(data?.error || "No solution was returned.");
+
+      latestAnswer = data.answer;
+      renderAnswer(latestAnswer);
+      solutionPanel.hidden = false;
+      setStatus("Solution prepared. Saving it to your history…");
+
+      const { error: saveError } = await db.from("accounting_history").insert({
+        user_id: session.user.id,
+        question: question || "[Question submitted as a photograph]",
+        answer: latestAnswer,
+        subject: document.getElementById("subject").value
+      });
+      if (saveError) {
+        console.error("History save failed:", saveError.message);
+        setStatus("Your solution is ready, but it could not be saved to history.");
+      } else {
+        setStatus("Your solution is ready and saved.");
+        await loadHistory();
+      }
+      solutionPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+    } catch (error) {
+      console.error("Accounting solver:", error);
+      setStatus(error.message || "Something went wrong. Please try again.");
+    } finally {
+      solveButton.disabled = false;
+    }
+  });
+
+  async function loadHistory() {
+    historyBox.replaceChildren();
+    if (!db) { historyBox.textContent = "The database client is unavailable."; return; }
+    try {
+      const { data: sessionData } = await db.auth.getSession();
+      if (!sessionData.session) {
+        historyBox.textContent = "Sign in to save and view your questions.";
+        return;
+      }
+      const { data, error } = await db.from("accounting_history")
+        .select("id,question,answer,subject,created_at")
+        .order("created_at", { ascending: false }).limit(30);
+      if (error) throw error;
+      if (!data || !data.length) {
+        historyBox.textContent = "Your saved questions will appear here.";
+        historyBox.className = "history-list empty";
+        return;
+      }
+      historyBox.className = "history-list";
+      data.forEach(item => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "history-item";
+        const title = document.createElement("strong");
+        title.textContent = item.subject || "Accounting";
+        const detail = document.createElement("span");
+        detail.textContent = (item.question || "Photo question").slice(0, 130);
+        button.append(title, detail);
+        button.addEventListener("click", () => {
+          questionBox.value = item.question.startsWith("[Question submitted as a photograph]") ? "" : item.question;
+          document.getElementById("subject").value = item.subject || "General Accounting";
+          latestAnswer = item.answer;
+          renderAnswer(latestAnswer);
+          solutionPanel.hidden = false;
+          solutionPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+        historyBox.appendChild(button);
+      });
+    } catch (error) {
+      console.error("History load failed:", error);
+      historyBox.textContent = "Could not load history. Please refresh and try again.";
+    }
+  }
+
+  document.getElementById("refreshHistory").addEventListener("click", loadHistory);
+  document.getElementById("copyButton").addEventListener("click", async () => {
+    if (!latestAnswer) return;
+    try {
+      await navigator.clipboard.writeText(latestAnswer);
+      setStatus("Answer copied to clipboard.");
+    } catch (_) { setStatus("Clipboard access was blocked by your browser."); }
+  });
+  document.getElementById("clearButton").addEventListener("click", () => {
+    form.reset();
+    preview.style.display = "none";
+    preview.removeAttribute("src");
+    solutionPanel.hidden = true;
+    latestAnswer = "";
+    setStatus("");
+  });
+  if (db) loadHistory();
+})();
+</script>
+</body>
+</html>
