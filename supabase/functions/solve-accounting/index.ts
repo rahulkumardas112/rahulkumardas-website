@@ -42,6 +42,8 @@ Deno.serve(async (req: Request) => {
     });
 
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  // Safe health check: reports configuration presence only, never exposes secret values.
+  if (req.method === "GET") return json({ status: "active", openAiConfigured: Boolean(Deno.env.get("OPENAI_API_KEY")), supabaseConfigured: Boolean(Deno.env.get("SUPABASE_URL") && Deno.env.get("SUPABASE_ANON_KEY")) });
   if (req.method !== "POST") return json({ error: "Use POST for accounting questions." }, 405);
   if (!allowedOrigins.has(origin)) return json({ error: "Website origin is not permitted." }, 403);
 
