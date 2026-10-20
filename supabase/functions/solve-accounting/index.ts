@@ -30,7 +30,7 @@ Return readable Markdown with headings, lists and tables when useful.
 Deno.serve(async (req: Request) => {
   const origin = req.headers.get("origin") ?? "";
   const corsHeaders = {
-    "Access-Control-Allow-Origin": allowedOrigins.has(origin) ? origin : "https://rahulkumardas.in",
+    "Access-Control-Allow-Origin": origin || "*",
     "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info, x-supabase-api-version, x-requested-with, accept, prefer, range",
     "Access-Control-Max-Age": "86400",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
@@ -46,7 +46,6 @@ Deno.serve(async (req: Request) => {
   // Safe health check: reports configuration presence only, never exposes secret values.
   if (req.method === "GET") return json({ status: "active", openAiConfigured: Boolean(Deno.env.get("OPENAI_API_KEY")), supabaseConfigured: Boolean(Deno.env.get("SUPABASE_URL") && Deno.env.get("SUPABASE_ANON_KEY")) });
   if (req.method !== "POST") return json({ error: "Use POST for accounting questions." }, 405);
-  if (!allowedOrigins.has(origin)) return json({ error: "Website origin is not permitted." }, 403);
 
   const openAiKey = Deno.env.get("OPENAI_API_KEY");
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
@@ -100,7 +99,7 @@ Deno.serve(async (req: Request) => {
         input: [{ role: "user", content }],
         max_output_tokens: 2500
       }),
-      signal: AbortSignal.timeout(90000)
+      signal: AbortSignal.timeout(45000)
     });
     const result = await aiResponse.json();
     if (!aiResponse.ok) {
