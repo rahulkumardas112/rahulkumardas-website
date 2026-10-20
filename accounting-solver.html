@@ -130,9 +130,13 @@
       }
 
       const image = file ? await readPhoto(file) : null;
-      const { data, error } = await db.functions.invoke("solve-accounting", {
+      const request = db.functions.invoke("solve-accounting", {
         body: { question, subject: document.getElementById("subject").value, image }
       });
+      const timeout = new Promise((_, reject) => {
+        window.setTimeout(() => reject(new Error("The solver did not respond within 50 seconds. Please try a short text question first. If this repeats, the AI service configuration needs checking.")), 50000);
+      });
+      const { data, error } = await Promise.race([request, timeout]);
       if (error) {
         let detail = error.message || "The AI request failed.";
         try { if (error.context) { const body = await error.context.json(); detail = body.error || detail; } } catch (_) {}
