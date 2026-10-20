@@ -29,12 +29,15 @@ Return readable Markdown with headings, lists and tables when useful.
 
 Deno.serve(async (req: Request) => {
   const origin = req.headers.get("origin") ?? "";
+  const requestedHeaders = req.headers.get("access-control-request-headers");
+  const requestedMethod = req.headers.get("access-control-request-method");
   const corsHeaders = {
-    "Access-Control-Allow-Origin": origin || "*",
-    "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info, x-supabase-api-version, x-requested-with, accept, prefer, range",
+    "Access-Control-Allow-Origin": origin || "https://rahulkumardas.in",
+    "Access-Control-Allow-Credentials": "true",
+    "Access-Control-Allow-Headers": requestedHeaders || "authorization, apikey, content-type, x-client-info, x-supabase-api-version, x-requested-with, accept, prefer, range",
     "Access-Control-Max-Age": "86400",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Vary": "Origin"
+    "Access-Control-Allow-Methods": requestedMethod ? `${requestedMethod}, OPTIONS` : "POST, OPTIONS",
+    "Vary": "Origin, Access-Control-Request-Headers, Access-Control-Request-Method"
   };
   const json = (body: unknown, status = 200) =>
     new Response(JSON.stringify(body), {
@@ -42,7 +45,10 @@ Deno.serve(async (req: Request) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" }
     });
 
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  if (req.method === "OPTIONS") {
+    console.log("Accounting solver CORS preflight", JSON.stringify({ origin, requestedMethod, requestedHeaders }));
+    return new Response("ok", { headers: corsHeaders });
+  }
   // Safe health check: reports configuration presence only, never exposes secret values.
   if (req.method === "GET") return json({ status: "active", openAiConfigured: Boolean(Deno.env.get("OPENAI_API_KEY")), supabaseConfigured: Boolean(Deno.env.get("SUPABASE_URL") && Deno.env.get("SUPABASE_ANON_KEY")) });
   if (req.method !== "POST") return json({ error: "Use POST for accounting questions." }, 405);
