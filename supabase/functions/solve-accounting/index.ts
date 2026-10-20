@@ -74,7 +74,7 @@ Deno.serve(async (req: Request) => {
     const { data: userData, error: userError } = await userClient.auth.getUser();
     if (userError || !userData.user) return json({ error: "Your session is invalid. Please sign in again." }, 401);
 
-    const { data: allowed, error: quotaError } = await userClient.rpc("consume_accounting_quota");
+    const { data: allowed, error: quotaError } = await userClient.rpc("consume_accounting_quota", { p_limit: 5 });
     if (quotaError) {
       console.error("Quota check failed:", quotaError.message);
       return json({ error: "Usage limits are temporarily unavailable. Please try again later." }, 503);
