@@ -1,6 +1,6 @@
-drop function if exists public.consume_accounting_quota(integer);
-
-create or replace function public.consume_accounting_quota()
+create or replace function public.consume_accounting_quota(
+  p_limit integer default 5
+)
 returns boolean
 language plpgsql
 security definer
@@ -16,6 +16,8 @@ begin
     raise exception 'Authentication required';
   end if;
 
+  -- The allowance is fixed at five. The argument is retained for compatibility
+  -- with the earlier function signature but cannot increase the allowance.
   insert into public.accounting_usage (user_id, usage_date, request_count, updated_at)
   values (v_user_id, current_date, 1, now())
   on conflict (user_id, usage_date)
@@ -29,5 +31,5 @@ begin
 end;
 $$;
 
-revoke all on function public.consume_accounting_quota() from public, anon;
-grant execute on function public.consume_accounting_quota() to authenticated;
+revoke all on function public.consume_accounting_quota(integer) from public, anon;
+grant execute on function public.consume_accounting_quota(integer) to authenticated;
