@@ -135,15 +135,14 @@
 </style>
 <style id="site-polish">
 /* Consistent, calmer navigation and buttons */
-#mainNav a[href="#books"],#mainNav a[href="author-publishing.html"],#mainNav a.nav-students-hub{display:inline-flex!important;background:none!important;color:#4d4943!important;box-shadow:none!important;border:0!important;border-radius:0!important;padding:6px 0!important;margin:0!important;font-weight:500!important;filter:none!important;transform:none!important}
-#mainNav a[href="#books"]:hover,#mainNav a[href="author-publishing.html"]:hover,#mainNav a.nav-students-hub:hover{color:#1c1b19!important;outline:none!important}
+#mainNav a[href="#books"]{display:inline-flex!important;background:none!important;color:#4d4943!important;box-shadow:none!important;border:0!important;border-radius:0!important;padding:6px 0!important;margin:0!important;font-weight:500!important;filter:none!important;transform:none!important}
+#mainNav a[href="#books"]:hover{color:#1c1b19!important;outline:none!important}
 #mainNav a:focus-visible{outline:2px solid #9b7953!important;outline-offset:3px!important}
-#mainNav a.nav-students-hub span[aria-hidden]{display:none}
 .hero .actions a.btn.dark[href="#books"]{background:#1c1b19!important;border:1px solid #1c1b19!important;border-radius:3px!important;box-shadow:none!important;font-weight:600!important;filter:none!important;transform:none!important}
 .hero-publishing-button,.students-hub-home-cta,.combo-home-cta,.be-author-cta{background:#1c1b19!important;color:#fff!important;border:1px solid #1c1b19!important;border-radius:3px!important;box-shadow:none!important;font-weight:600!important;filter:none!important;transform:none!important}
 .hero-publishing-button:hover,.students-hub-home-cta:hover,.combo-home-cta:hover,.be-author-cta:hover,.hero .actions a.btn.dark[href="#books"]:hover{background:#9b7953!important;border-color:#9b7953!important}
 .hero-publishing-promo,.book-bundle-promo{box-shadow:none!important}
-@media(max-width:950px){#mainNav a[href="#books"],#mainNav a[href="author-publishing.html"],#mainNav a.nav-students-hub{display:block!important;padding:12px 10px!important;border-bottom:1px solid #eee9e1!important}}
+@media(max-width:950px){#mainNav a[href="#books"]{display:block!important;align-self:stretch!important;padding:12px 10px!important;margin:0!important;border-bottom:1px solid #eee9e1!important}}
 @media(min-width:951px){#mainNav{gap:16px}#mainNav a,#mainNav summary{white-space:nowrap}.site-header .brand small{white-space:nowrap;letter-spacing:.08em}}
 @media(min-width:951px) and (max-width:1220px){#mainNav{gap:12px;font-size:12px}.site-header .brand small{display:none}}
 
@@ -168,6 +167,23 @@
 .wa-icon{width:18px;height:18px;flex:none}
 .whatsapp-float .wa-label{font-size:12.5px;line-height:1.2}
 @media(max-width:600px){.whatsapp-float{padding:12px!important;border-radius:50%!important}.wa-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}}
+
+/* Bold feature buttons: Students Hub (teal) and Publishing Studio (bronze) */
+#mainNav a.nav-students-hub,#mainNav a[href="author-publishing.html"]{display:inline-flex!important;align-items:center;gap:7px;padding:9px 14px!important;margin:0!important;border-radius:6px!important;font-weight:700!important;letter-spacing:.01em;color:#fff!important;border:0!important;filter:none!important;transform:none!important;transition:background .2s ease,box-shadow .2s ease,transform .2s ease!important}
+#mainNav a.nav-students-hub{background:#0f5e63!important;box-shadow:0 4px 12px rgba(15,94,99,.28)!important}
+#mainNav a[href="author-publishing.html"]{background:#a5743a!important;box-shadow:0 4px 12px rgba(165,116,58,.3)!important}
+#mainNav a.nav-students-hub:hover{background:#0b4b4f!important;transform:translateY(-1px)!important}
+#mainNav a[href="author-publishing.html"]:hover{background:#8a5f2d!important;transform:translateY(-1px)!important}
+#mainNav a.nav-students-hub .students-hub-arrow{font-size:12px;opacity:.85}
+#mainNav a[href="author-publishing.html"]::before{content:"";width:14px;height:14px;flex:none;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4' fill='none' stroke='black' stroke-width='2.2' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4' fill='none' stroke='black' stroke-width='2.2' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat}
+@media(max-width:950px){#mainNav a.nav-students-hub,#mainNav a[href="author-publishing.html"]{display:flex!important;justify-content:center;margin:6px 0!important;padding:12px 14px!important;border-bottom:0!important}}
+
+.site-header .brand span{white-space:nowrap}
+.site-header .container{width:min(1320px,100% - 48px)}
+@media(min-width:951px) and (max-width:1560px){.site-header .brand small{display:none}}
+@media(min-width:951px) and (max-width:1300px){#mainNav{gap:12px!important;font-size:12.5px}#mainNav a.nav-students-hub,#mainNav a[href="author-publishing.html"]{padding:8px 11px!important}}
+@media(min-width:951px) and (max-width:1180px){#mainNav a[href="#recently-added"]{display:none!important}#mainNav{gap:10px!important;font-size:12px}.site-header .nav-wrap{gap:14px}}
+@media(max-width:950px){#mainNav a.nav-students-hub,#mainNav a[href="author-publishing.html"]{align-self:stretch!important;justify-content:flex-start!important}}
 </style>
 </head>
 <body>
