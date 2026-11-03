@@ -288,6 +288,7 @@ async function renderRecentlyAdded(){
  const grid=document.getElementById("recentlyAddedGrid");if(!grid)return;
  const items=[];
  ((typeof getBooks==="function"?getBooks():window.rkdBooksCache)||[]).filter(b=>String(b.status||"Published").toLowerCase()!=="draft").forEach(b=>items.push({kind:"Book",title:b.title||"Untitled Book",description:b.desc||b.description||"Explore this book by Rahul Kumar Das.",date:dateValue(b.createdAt||b.created_at),fallback:Number(b.id||0),image:b.cover||b.cover_url||"",url:"book.html?id="+encodeURIComponent(String(b.id)),label:"View book"}));
+ items.push({kind:"Article",title:"Could the Iran Conflict Become a Nuclear Crisis? The Warning That Has Put the World on Edge",description:"Tucker Carlson’s warning, the unverified claims behind it and the global consequences of nuclear escalation.",date:dateValue("2026-11-04T01:00:00+05:30"),fallback:1000000,image:"iran-nuclear-crisis-thumbnail.svg",url:"could-iran-conflict-become-nuclear-crisis.html",label:"Read article"});
  items.push({kind:"Article",title:"UK Emergency Alert: Why People Are Being Asked to Store Food, Keep Cash at Home and Prepare for 3 Days",description:"What the UK’s three day emergency preparedness guidance means, what households are advised to keep ready, and why preparation does not mean an emergency is imminent.",date:dateValue("2026-10-29T12:00:00"),fallback:999999,image:"emergency-preparedness-thumbnail.svg",url:"uk-emergency-alert-three-day-preparedness.html",label:"Read article"});
  try{
   const settings=await window.rkdCloud.getSettings();
